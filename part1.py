@@ -13,6 +13,12 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 from pyspark.sql.window import Window
 from pyspark.sql.functions import *
 
+
+def check(li)
+
+
+
+
 if __name__ == "__main__":
 
     sc = SparkContext()
