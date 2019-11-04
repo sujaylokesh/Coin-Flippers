@@ -30,15 +30,14 @@ def output(metadata,_sc, table_name ):
 
 def profile(data,_sc, sqlContext, table_name):
     results = {}
-#    for i in range(0, len(data.columns)):
-    for i in range(0, 1):
+    for i in range(0, len(data.columns)):
         colName = data.columns[i]
         query = "select distinct %s from %s " %\
                 (colName, table_name)
         temp = sqlContext.sql(query)
         null_count = temp.filter(temp[0].isNull()).count()
         non_empty = temp.count() - null_count
-        results = {
+        temp_col = {
             "column_name": colName,
             "number_non_empty_cells": non_empty,
             "number_empty_cells": null_count,
@@ -46,6 +45,7 @@ def profile(data,_sc, sqlContext, table_name):
             "frequent_values": "null",
             "data_types": ["test1","test2"]
         }
+        results.append(temp_col)
 
     return results
 
