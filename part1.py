@@ -23,78 +23,43 @@ import json
 def output(metadata,_sc, table_name ):
     results = {
         "dataset_name": table_name,
-        "columns":metadata,
+        "columns": metadata,
         "key_column_candidates": ["test1", "test2"]
     }
-   # print(results)
+    print(results)
 
 def profile(data,_sc, sqlContext, table_name):
     results = []
-    for i in range(0,len(data.columns)):
+    for i in range(0, 1):
         colName = data.columns[i]
         print(colName)
-        query = "select distinct %s from %s " %(colName, table_name)
+        query = "select distinct %s from %s " % (colName, table_name)
         temp = sqlContext.sql(query)
         null_count = temp.filter(temp[0].isNull()).count()
         non_empty = temp.count() - null_count
-        temp_col = {
+        distinct_count = temp.distinct().count()
+        query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
+        top5 = sqlContext.sql(query)
+        top5 = top5.rdd.map(lambda x: x[0]).take(5)
+        temp_col_metadata = {
             "column_name": colName,
             "number_non_empty_cells": non_empty,
             "number_empty_cells": null_count,
-            "number_distinct_values": temp.distinct().count(),
-            "frequent_values": "null",
+            "number_distinct_values": distinct_count,
+            "frequent_values": top5,
             "data_types": ["test1","test2"]
         }
-        results.append(temp_col)
+        results.append(temp_col_metadata)
     return results
 
 
 def extractMeta(_sc, sql):
-    metaSchema = StructType([StructField("UniqueKey", StringType(), True),  # LongType
-                             StructField("CreatedDate", StringType(), True),  # TimestampType
-                             StructField("ClosedDate", StringType(), True),  # TimestampType
-                             StructField("Agency", StringType(), True),
-                             StructField("AgencyName", StringType(), True),
-                             StructField("ComplaintType", StringType(), True),
-                             StructField("Descriptor", StringType(), True),
-                             StructField("LocationType", StringType(), True),
-                             StructField("IncidentZip", StringType(), True),
-                             StructField("IncidentAddress", StringType(), True),
-                             StructField("StreeName", StringType(), True),
-                             StructField("CrossStreet1", StringType(), True),
-                             StructField("CrossStreet2", StringType(), True),
-                             StructField("IntersectionStreet1", StringType(), True),
-                             StructField("IntersectionStreet2", StringType(), True),
-                             StructField("AddressType", StringType(), True),
-                             StructField("City", StringType(), True),
-                             StructField("Landmark", StringType(), True),
-                             StructField("FacilityType", StringType(), True),
-                             StructField("Status", StringType(), True),
-                             StructField("DueDate", StringType(), True),  # TimestampType
-                             StructField("ResolutionDescription", StringType(), True),
-                             StructField("ResolutionActionUpdatedDate", StringType(), True),  # TimestampType
-                             StructField("Community", StringType(), True),
-                             StructField("BBL", StringType(), True),
-                             StructField("Borough", StringType(), True),
-                             StructField("X", StringType(), True),  # IntegerType
-                             StructField("Y", StringType(), True),  # IntegerType
-                             StructField("OpenDataChannelType", StringType(), True),
-                             StructField("ParkFacilityName", StringType(), True),
-                             StructField("ParkBorough", StringType(), True),
-                             StructField("VehicleType", StringType(), True),
-                             StructField("TaxiCompanyBorough", StringType(), True),
-                             StructField("TaxiPickupLocation", StringType(), True),
-                             StructField("BridgeHighwayName", StringType(), True),
-                             StructField("BridgeHighwayDirection", StringType(), True),
-                             StructField("RoadRamp", StringType(), True),
-                             StructField("BridgeHighwaySegment", StringType(), True),
-                             StructField("Latitude", StringType(), True),  # DoubleType
-                             StructField("Longitude", StringType(), True),  # DoubleType
-                             StructField("Location", StringType(), True)
-                             ])
     data = _sc.read.csv(path=sys.argv[1],sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
-        data=data.withColumnRenamed(data.columns[col],data.columns[col].replace(" ",""))
+        data = data.withColumnRenamed(data.columns[col],
+                                      data.columns[col].replace(" ","")
+                                      .replace("(", "")
+                                      .replace(")", ""))
     data.printSchema()
     table_name = "ThreeOneOne"
     data.createOrReplaceTempView(table_name)
