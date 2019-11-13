@@ -99,8 +99,24 @@ def statistics(_sc,column):
         }
     }
 
-
-
+    #count number of integers in each word in a list
+    templist = txtList
+    counts = []
+    max_values = []
+    for txt in range(0,len(templist)):
+        counts[txt] = templist[txt].count()
+    for i in range(0,len(counts)):
+        first = max(counts)
+        counts.remove(first)
+        second = max(counts)
+        counts.remove(second)
+        third = max(counts)
+        counts.remove(third)
+        fourth = max(counts)
+        counts.remove(fourth)
+        fifth = max(counts)
+    max_values = [first,second,third,fourth,fifth]
+    res.append(max_values)
     return res
 
 def dateStatistics(_sc, column):
