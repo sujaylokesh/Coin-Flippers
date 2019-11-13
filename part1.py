@@ -66,18 +66,42 @@ def extractMeta(_sc, sql):
     metadata = profile(data,_sc, sql, table_name)
     output(metadata,_sc, table_name)
 
-def integerStatistics(_sc,column):
+def statistics(_sc,column):
+    intList =[]
+    dateList=[]
+    txtList=[]
+    datatype = set()
+    res = {}
 
-    result = {
-        "type": "INTEGER",
-        "count": column.count(),
-        "max_value": column.max(),
-        "min_value": column.min(),
-        "mean": column.mean(),
-        "stddev":column.std()
+    for i in range(len(column)):
+        typeElement = type(column[i])
+
+        if(typeElement == int or typeElement == float ):
+            intList.append(column[i])
+            datatype.add("Integer/Real")
+        elif(isinstance(column[i], datetime.date)):
+            dateList.append(column[i])
+            datatype.add("Date")
+        elif(typeElement == str):
+            txtList.append(column[i])
+            datatype.add("Text")
+
+
+
+    if(len(intList)>0){
+        result = {
+            "type": "INTEGER/REAL",
+            "count": column.count(),
+            "max_value": column.max(),
+            "min_value": column.min(),
+            "mean": column.mean(),
+            "stddev": column.std()
+        }
     }
 
-    return result
+
+
+    return res
 
 def dateStatistics(_sc, column):
 
