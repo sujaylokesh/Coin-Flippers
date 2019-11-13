@@ -66,7 +66,30 @@ def extractMeta(_sc, sql):
     metadata = profile(data,_sc, sql, table_name)
     output(metadata,_sc, table_name)
 
+def integerStatistics(_sc,column):
 
+    result = {
+        "type": "INTEGER",
+        "count": column.count(),
+        "max_value": column.max(),
+        "min_value": column.min(),
+        "mean": column.mean(),
+        "stddev":column.std()
+    }
+
+    return result
+
+def dateStatistics(_sc, column):
+
+    df = spark.createDataFrame(column, "string").selectExpr("CAST(value AS date) AS date")
+    min_date, max_date = df.select(min("date"), max("date")).first()
+
+    result = {
+        "type": "DATE/TIME",
+        "count": column.count(),
+        "max_value" : max_date,
+        "min_value" : min_date
+    }
 
 if __name__ == "__main__":
     sc = SparkContext()
