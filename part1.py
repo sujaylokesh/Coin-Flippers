@@ -98,8 +98,17 @@ def statistics(_sc,column):
             "mean": statistics.mean(intList) ,
             "stddev": statistics.stdev(intList)
         }
-<<<<<<< HEAD
-    }
+        res.append(result)
+
+    if len(dateList) > 0:
+        result = {
+            "type": "DATE/TIME",
+            "count": len(dateList),
+            # "max_value" : max_date,
+            # "min_value" : min_date
+        }
+        res.append(result)
+    
 
     #count number of integers in each word in a list
     templist = txtList
@@ -119,19 +128,7 @@ def statistics(_sc,column):
         fifth = max(counts)
     max_values = [first,second,third,fourth,fifth]
     res.append(max_values)
-=======
-        res.append(result)
-
-    if len(dateList) > 0:
-        result = {
-            "type": "DATE/TIME",
-            "count": len(dateList),
-            # "max_value" : max_date,
-            # "min_value" : min_date
-        }
-        res.append(result)
-
->>>>>>> 019a0011a7fbcd8d6c17eaa667e6bb1fb0963b9a
+ 
     return res
 
 if __name__ == "__main__":
