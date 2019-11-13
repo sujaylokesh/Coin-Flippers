@@ -6,7 +6,7 @@ from _ctypes import Array
 
 import pyspark
 import string
-
+import statistics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
@@ -80,6 +80,7 @@ def statistics(_sc,column):
             intList.append(column[i])
             datatype.add("Integer/Real")
         elif(isinstance(column[i], datetime.date)):
+
             dateList.append(column[i])
             datatype.add("Date")
         elif(typeElement == str):
@@ -88,32 +89,27 @@ def statistics(_sc,column):
 
 
 
-    if(len(intList)>0){
+    if len(intList) > 0:
         result = {
             "type": "INTEGER/REAL",
-            "count": column.count(),
-            "max_value": column.max(),
-            "min_value": column.min(),
-            "mean": column.mean(),
-            "stddev": column.std()
+            "count": len(intList),
+            "max_value": max(intList),
+            "min_value": min(intList),
+            "mean": statistics.mean(intList) ,
+            "stddev": statistics.stdev(intList)
         }
-    }
+        res.append(result)
 
-
+    if len(dateList) > 0:
+        result = {
+            "type": "DATE/TIME",
+            "count": len(dateList),
+            # "max_value" : max_date,
+            # "min_value" : min_date
+        }
+        res.append(result)
 
     return res
-
-def dateStatistics(_sc, column):
-
-    df = spark.createDataFrame(column, "string").selectExpr("CAST(value AS date) AS date")
-    min_date, max_date = df.select(min("date"), max("date")).first()
-
-    result = {
-        "type": "DATE/TIME",
-        "count": column.count(),
-        "max_value" : max_date,
-        "min_value" : min_date
-    }
 
 if __name__ == "__main__":
     sc = SparkContext()
