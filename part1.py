@@ -66,6 +66,7 @@ def extractMeta(_sc, sql):
     metadata = profile(data,_sc, sql, table_name)
     output(metadata,_sc, table_name)
 
+# getting statistics based on data type of the elements in a column
 def statistics(_sc,column):
     intList =[]
     dateList=[]
@@ -80,7 +81,6 @@ def statistics(_sc,column):
             intList.append(column[i])
             datatype.add("Integer/Real")
         elif(isinstance(column[i], datetime.date)):
-
             dateList.append(column[i])
             datatype.add("Date")
         elif(typeElement == str):
@@ -129,7 +129,7 @@ def statistics(_sc,column):
     max_values = [first,second,third,fourth,fifth]
     res.append(max_values)
  
-    return res
+    return res, datatype
 
 if __name__ == "__main__":
     sc = SparkContext()
