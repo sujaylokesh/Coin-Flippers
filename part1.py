@@ -71,7 +71,6 @@ def statistics(_sc,column):
     intList =[]
     dateList=[]
     txtList=[]
-    datatype = set()
     res = {}
 
     for i in range(len(column)):
@@ -129,7 +128,7 @@ def statistics(_sc,column):
     max_values = [first,second,third,fourth,fifth]
     res.append(max_values)
  
-    return res, datatype
+    return res
 
 if __name__ == "__main__":
     sc = SparkContext()
