@@ -66,11 +66,11 @@ def extractMeta(_sc, sql):
     metadata = profile(data,_sc, sql, table_name)
     output(metadata,_sc, table_name)
 
+# getting statistics based on data type of the elements in a column
 def statistics(_sc,column):
     intList =[]
     dateList=[]
     txtList=[]
-    datatype = set()
     res = {}
 
     for i in range(len(column)):
@@ -80,7 +80,6 @@ def statistics(_sc,column):
             intList.append(column[i])
             datatype.add("Integer/Real")
         elif(isinstance(column[i], datetime.date)):
-
             dateList.append(column[i])
             datatype.add("Date")
         elif(typeElement == str):
