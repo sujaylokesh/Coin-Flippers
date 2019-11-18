@@ -136,9 +136,9 @@ def statistics(_sc,column):
         res.append(max_values)
 
     #Top 5 Shortest Values
-        templist = txtList
+    templist = txtList
     counts = []
-    min_values = []
+    min_values = {}
     if len(templist) > 0:
         for txt in range(0,len(templist)):
             counts[txt] = templist[txt].count()
@@ -152,7 +152,7 @@ def statistics(_sc,column):
             fourth = min(counts)
             counts.remove(fourth)
             fifth = min(counts)
-            min_values ={
+        min_values ={
             "1st Lowest" = first,
             "2nd Lowest" = second,
             "3rd Lowest" = third,
@@ -160,7 +160,17 @@ def statistics(_sc,column):
             "5th Lowest" = fifth
             }
         res.append(min_values)
- 
+    #Average Number
+    templist = txtList
+    counts = []
+    avg = 0
+    average = {}
+    if len(templist) > 0:
+        for txt in range(0,len(templist)):
+            counts[txt] = templist[txt].count()
+        avg = sum(counts)/len(templist)
+        average = {"Average":avg}
+        res.append(average)
     return res
 
 if __name__ == "__main__":
