@@ -113,21 +113,54 @@ def statistics(_sc,column):
     #count number of integers in each word in a list
     templist = txtList
     counts = []
-    max_values = []
-    for txt in range(0,len(templist)):
-        counts[txt] = templist[txt].count()
-    for i in range(0,len(counts)):
-        first = max(counts)
-        counts.remove(first)
-        second = max(counts)
-        counts.remove(second)
-        third = max(counts)
-        counts.remove(third)
-        fourth = max(counts)
-        counts.remove(fourth)
-        fifth = max(counts)
-    max_values = [first,second,third,fourth,fifth]
-    res.append(max_values)
+    max_values = {}
+    if len(templist) > 0:
+        for txt in range(0,len(templist)):
+            counts[txt] = templist[txt].count()
+        for i in range(0,len(counts)):
+            first = max(counts)
+            counts.remove(first)
+            second = max(counts)
+            counts.remove(second)
+            third = max(counts)
+            counts.remove(third)
+            fourth = max(counts)
+            counts.remove(fourth)
+            fifth = max(counts)
+        max_values ={
+            "1st Highest" = first,
+            "2nd Highest" = second,
+            "3rd Highest" = third,
+            "4th Highest" = fourth,
+            "5th Highest" = fifth
+            }
+        res.append(max_values)
+
+    #Top 5 Shortest Values
+        templist = txtList
+    counts = []
+    min_values = []
+    if len(templist) > 0:
+        for txt in range(0,len(templist)):
+            counts[txt] = templist[txt].count()
+        for i in range(0,len(counts)):
+            first = min(counts)
+            counts.remove(first)
+            second = min(counts)
+            counts.remove(second)
+            third = min(counts)
+            counts.remove(third)
+            fourth = min(counts)
+            counts.remove(fourth)
+            fifth = min(counts)
+            min_values ={
+            "1st Lowest" = first,
+            "2nd Lowest" = second,
+            "3rd Lowest" = third,
+            "4th Lowest" = fourth,
+            "5th Lowest" = fifth
+            }
+        res.append(min_values)
  
     return res
 
