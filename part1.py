@@ -3,7 +3,8 @@
 
 import sys
 from _ctypes import Array
-
+#pip install names-dataset
+from names_dataset import NameDataset
 import pyspark
 import string
 import statistics
@@ -75,7 +76,6 @@ def statistics(_sc,column):
 
     for i in range(len(column)):
         typeElement = type(column[i])
-
         if(typeElement == int or typeElement == float ):
             intList.append(column[i])
             datatype.add("Integer/Real")
@@ -112,24 +112,98 @@ def statistics(_sc,column):
     #count number of integers in each word in a list
     templist = txtList
     counts = []
-    max_values = []
-    for txt in range(0,len(templist)):
-        counts[txt] = templist[txt].count()
-    for i in range(0,len(counts)):
-        first = max(counts)
-        counts.remove(first)
-        second = max(counts)
-        counts.remove(second)
-        third = max(counts)
-        counts.remove(third)
-        fourth = max(counts)
-        counts.remove(fourth)
-        fifth = max(counts)
-    max_values = [first,second,third,fourth,fifth]
-    res.append(max_values)
- 
+    max_values = {}
+    if len(templist) > 0:
+        for txt in range(0,len(templist)):
+            counts[txt] = templist[txt].count()
+        for i in range(0,len(counts)):
+            first = max(counts)
+            counts.remove(first)
+            second = max(counts)
+            counts.remove(second)
+            third = max(counts)
+            counts.remove(third)
+            fourth = max(counts)
+            counts.remove(fourth)
+            fifth = max(counts)
+        max_values ={
+            "1st Highest" = first,
+            "2nd Highest" = second,
+            "3rd Highest" = third,
+            "4th Highest" = fourth,
+            "5th Highest" = fifth
+            }
+        res.append(max_values)
+
+    #Top 5 Shortest Values
+    templist = txtList
+    counts = []
+    min_values = {}
+    if len(templist) > 0:
+        for txt in range(0,len(templist)):
+            counts[txt] = templist[txt].count()
+        for i in range(0,len(counts)):
+            first = min(counts)
+            counts.remove(first)
+            second = min(counts)
+            counts.remove(second)
+            third = min(counts)
+            counts.remove(third)
+            fourth = min(counts)
+            counts.remove(fourth)
+            fifth = min(counts)
+        min_values ={
+            "1st Lowest" = first,
+            "2nd Lowest" = second,
+            "3rd Lowest" = third,
+            "4th Lowest" = fourth,
+            "5th Lowest" = fifth
+            }
+        res.append(min_values)
+    #Average Number
+    templist = txtList
+    counts = []
+    avg = 0
+    average = {}
+    if len(templist) > 0:
+        for txt in range(0,len(templist)):
+            counts[txt] = templist[txt].count()
+        avg = sum(counts)/len(templist)
+        average = {"Average":avg}
+        res.append(average)
     return res
 
+def SemanticCheck(_sc,column):
+    #NameCheck SL
+    count = 0
+    for i in range(0,int(round(1*len(names)))):
+        inp = names[random.randint(0,len(names)-1)]
+        if m.search_first_name(inp) == False:
+            if m.search_last_name(inp) == False:
+                print("not a name")
+            else: 
+                count+=1
+                print(inp,m.search_last_name(inp))
+        else:
+            count+=1
+            print(inp,m.search_first_name(inp))
+    probability = (count/len(names))*100
+    if probability >= 90:
+        print("Name Column")
+    #Phone Number Check SL
+    countrycode = '1'
+    n = '15179181419'
+    if len(n) == 10:
+        num = countrycode+n
+    else:
+        num = n
+    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number='+num+'&country_code=&format=1'
+    r = requests.get(url)
+    js = r.json()
+    if js['valid'] == False:
+        print("not real")
+    else:
+        print("real")
 if __name__ == "__main__":
     sc = SparkContext()
 
