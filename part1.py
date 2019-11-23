@@ -174,7 +174,7 @@ def statistics(_sc,column):
     return res
 
 def SemanticCheck(_sc,column):
-    #NameCheck
+    #NameCheck SL
     count = 0
     for i in range(0,int(round(1*len(names)))):
         inp = names[random.randint(0,len(names)-1)]
@@ -190,7 +190,20 @@ def SemanticCheck(_sc,column):
     probability = (count/len(names))*100
     if probability >= 90:
         print("Name Column")
-
+    #Phone Number Check SL
+    countrycode = '1'
+    n = '15179181419'
+    if len(n) == 10:
+        num = countrycode+n
+    else:
+        num = n
+    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number='+num+'&country_code=&format=1'
+    r = requests.get(url)
+    js = r.json()
+    if js['valid'] == False:
+        print("not real")
+    else:
+        print("real")
 if __name__ == "__main__":
     sc = SparkContext()
 
