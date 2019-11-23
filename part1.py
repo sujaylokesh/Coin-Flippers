@@ -3,7 +3,8 @@
 
 import sys
 from _ctypes import Array
-
+#pip install names-dataset
+from names_dataset import NameDataset
 import pyspark
 import string
 import statistics
@@ -75,7 +76,6 @@ def statistics(_sc,column):
 
     for i in range(len(column)):
         typeElement = type(column[i])
-
         if(typeElement == int or typeElement == float ):
             intList.append(column[i])
             datatype.add("Integer/Real")
@@ -172,6 +172,24 @@ def statistics(_sc,column):
         average = {"Average":avg}
         res.append(average)
     return res
+
+def SemanticCheck(_sc,column):
+    #NameCheck
+    count = 0
+    for i in range(0,int(round(1*len(names)))):
+        inp = names[random.randint(0,len(names)-1)]
+        if m.search_first_name(inp) == False:
+            if m.search_last_name(inp) == False:
+                print("not a name")
+            else: 
+                count+=1
+                print(inp,m.search_last_name(inp))
+        else:
+            count+=1
+            print(inp,m.search_first_name(inp))
+    probability = (count/len(names))*100
+    if probability >= 90:
+        print("Name Column")
 
 if __name__ == "__main__":
     sc = SparkContext()
