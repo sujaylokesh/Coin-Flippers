@@ -72,6 +72,11 @@ test_df = sql.sql("select _1 as category, _2 as text, _3 as id from test")
 test_df.show()
 
 test_df.rdd.collect()
+# test_df.rdd.toDF().select(format_string('%s\t%s, %s, %s, %s',
+#                                 test_df.category,
+#                                 test_df.text,
+#                                 test_df.id)) \
+#     .write.save("report1", format="text")
 
 # test_df.rdd.saveAsTextFile("report.txt")
 
