@@ -9,22 +9,24 @@ from pandas.io.json import json_normalize
 
 def generalCheck(column, list):
     size = len(column)
+    sampleSize = size * 0.1
+    check = sampleSize
     cnt = 0
-    check = size * 0.1
 
     while check > 0:
-        ele = str(column[random.randint(0, size)])
+        rand = random.randint(0, size - 1)
+        ele = str(column[rand])
         flag = False
         for s in list:
-            if (fuzz.partial_ratio(ele.lower(), s.lower()) > 0.8):
+            if (fuzz.partial_ratio(ele.lower(), s.lower()) > 70):
                 flag = True
                 break
-
+        #print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
         if (flag):
             cnt += 1
         check -= 1
 
-    if ((cnt / size) > 0.5):
+    if ((cnt / sampleSize) > 0.5):
         return True
     else:
         return False
@@ -43,6 +45,7 @@ def checkSchoolLevel(column):
 
 
 def checkStreetName(column):
+    ## If this is not enough, then we can use real street data
     street = ['avenue', 'street', 'st', 'east', 'west', 'north', 'south', 'ave']
     return generalCheck(column, street)
 
@@ -159,3 +162,13 @@ def checkBuildingType(column):
                     'Z3	POST OFFICE', 'Z4	FOREIGN GOVERNMENT', 'Z5	UNITED NATIONS', 'Z7	EASEMENT',
                     'Z8	CEMETERY', 'Z9	OTHER MISCELLANEOUS']
     return generalCheck(column, buildingType)
+
+
+if __name__ == '__main__':
+    column = ['facebook', 'google', 'Spotify', 'nyu']
+    name = ['Sujay', 'school', 'Wayne']
+    street = ['200 schermerhorn st', 'layafayette st', 'boradway']
+    print(checkBusinessName(column))
+    print(checkBusinessName(name))
+    print(checkBusinessName(street))
+    print(checkStreetName(street))

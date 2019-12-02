@@ -48,7 +48,7 @@ def profile(data,_sc, sqlContext, table_name):
             "number_empty_cells": null_count,
             "number_distinct_values": distinct_count,
             "frequent_values": top5,
-            "data_types": ["test1","test2"]
+            "data_types": {statistics(_sc, colName)}
         }
         results.append(temp_col_metadata)
     return results
