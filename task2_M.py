@@ -183,6 +183,7 @@ def checkBuildingType(column):
                     'Z3	POST OFFICE', 'Z4	FOREIGN GOVERNMENT', 'Z5	UNITED NATIONS', 'Z7	EASEMENT',
                     'Z8	CEMETERY', 'Z9	OTHER MISCELLANEOUS'])
     return generalCheck(column, buildingType)
+
      def SemanticCheck(_sc,column):
     #NameCheck SL
     count = 0
