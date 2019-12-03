@@ -278,7 +278,9 @@ def namecheck(column):
             print(inp,m.search_first_name(inp))
     probability = (count/len(names))*100
     if probability >= 90:
-        print("Name Column")
+        return True
+    else:
+        return False
 
 def phonecheck(column):
     countrycode = '1'
@@ -291,9 +293,9 @@ def phonecheck(column):
     r = requests.get(url)
     js = r.json()
     if js['valid'] == False:
-        print("not real")
+        return False
     else:
-        print("real")
+        return True
 
     def zipcodeCheck(column):
         val = '560043'
@@ -301,9 +303,9 @@ def phonecheck(column):
         a = requests.get(url)
         json_data = json.loads(a.text)
         if len(json_data)==0:
-            print("Not zipcode ")
+            return False
         else:
-            print("zip code")
+            return True
     
     def collegeCheck(column):
         val = 'nyu'
@@ -313,7 +315,23 @@ def phonecheck(column):
         if temp > max:
             max = temp
             maxid = ind
-        print(maxid,df['NAME'][maxid],max)
+        if max > 50
+            return True
+        else:
+            return False
+    
+    def FieldCheck(column):
+        val = 'nyu'
+        max = 0
+        for ind in df.index:
+            temp = fuzz.ratio(val,df['Arts'][ind])
+            if temp > max:
+                max = temp
+                maxid = ind
+        if max > 50
+            return True
+        else:
+            return False
 
 
  # def SemanticCheck(,column):
