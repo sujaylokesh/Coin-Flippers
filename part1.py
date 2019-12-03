@@ -22,7 +22,7 @@ import task2_M as task2
 
 
 key_column_threshold = 10
-output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
+output_path = '/Users/mina/Dropbox/2019Fall/BigData/projectOutput'
 
 def output(metadata, key_columns, _sc, table_name ):
     results = {
@@ -38,7 +38,7 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(0, 1):
+    for i in range(15, 20):
         colName = data.columns[i]
         print(colName)
         query = "select %s from %s " % (colName, table_name)
@@ -66,6 +66,7 @@ def profile(data,_sc, sqlContext, table_name):
         results.append(temp_col_metadata)
         #### need updates for count
         semantics = task2.semanticCheck(discinct_rows)
+        print("semantics", semantics)
         results.append(semantics)
 
         #check if this column can be a keycolumn
