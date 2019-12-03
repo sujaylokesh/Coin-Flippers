@@ -209,9 +209,12 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
+    task2.initialize()
+
     extractMeta(spark, sqlContext)
     # get command-line arguments
     inFile = sys.argv[1]
 
     # Enter your modules here
     sc.stop()
+    task2.checkNeiborhoods(0)

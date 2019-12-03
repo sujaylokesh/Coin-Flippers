@@ -6,81 +6,53 @@ import pandas as pd
 import random
 import numpy as np
 from pandas.io.json import json_normalize
+import re
+
+labels = 0
+neiborhood_names = 0
+boroughs = 0
+business_data = 0
+schoolLevels = 0
+streets = 0
+parks = 0
+buildingTypes = 0
 
 
-## Main Function
-def semanticCheck(col):
-    labels = ["Business Name", 'School Levels','Park/Playground','Building Classification','College/University names',\
-              'Phone number', 'Address', 'Street Name', 'City', 'Neighborhood','LAT/LON coordinates'\
-              'Zip code', 'Borough','School Name','Color','Car Make','City agency'\
-              'Areas of study', 'Subjects in school',"Person Name",  \
-              'Websites','Vehicle Type', 'Type of location']
+def initialize():
+    global labels
+    labels = np.asarray(["Business Name", 'School Levels', 'Park/Playground', 'Building Classification',
+              'College/University names', \
+              'Phone number', 'Address', 'Street Name', 'City', 'Neighborhood', 'LAT/LON coordinates' \
+                                                                                'Zip code', 'Borough', 'School Name',
+              'Color', 'Car Make', 'City agency' \
+                                   'Areas of study', 'Subjects in school', "Person Name", \
+              'Websites', 'Vehicle Type', 'Type of location'])
 
-    checkEach = [checkBusinessName(col),
-                 checkSchoolLevel(col),
-                 checkStreetName(col),
-                 checkParkandPlayground(col),
-                 checkCityAgencies(col),
-                 checkBuildingType(col)]
-    result = []
-    for i in range(0, len(checkEach)):
-        if checkEach[i]:
-            result.append(labels[i])
-
-    return result
+    global neiborhood_names
+    global boroughs
+    response = requests.get("https://data.cityofnewyork.us/resource/xyye-rtrs.json")
+    neiborhood_data = response.json()
+    temp_borough_set = set()
+    for item in neiborhood_data:
+        neiborhood_names.append(item["name"])
+        temp_borough_set.add(item["name"])
 
 
-
-def generalCheck(column, list):
-    size = column.count()
-    columns = column.collect()
-    sampleSize = size * 0.1
-    check = sampleSize
-    cnt = 0
-
-    while check > 0:
-        rand = random.randint(0, size - 1)
-        ele = str(columns[rand])
-        flag = False
-        for s in list:
-            if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
-                flag = True
-                break
-        #print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
-        if flag:
-            cnt += 1
-        check -= 1
-
-    return cnt / sampleSize > 0.5
-
-
-
-def checkBusinessName(column):
+    global business_data
     response = requests.get("https://data.ny.gov/resource/n9v6-gdp6.json")
-    data = response.json()
-    businessName = [item['current_entity_name'] for item in data]
-    return generalCheck(column, businessName)
+    business_data = response.json()
 
-
-def checkSchoolLevel(column):
+    global schoolLevels
     schoolLevels = np.asarray(['K-12','K-11','K-10','K-9','K-8','K-7','K-6','K-5','K-4','K-3','K-2','K-1','Elementry','Middle school','high school','college','grade'])
-    return generalCheck(column, schoolLevels)
 
-def checkStreetName(column):
-    ## If this is not enough, then we can use real street data
-    street = np.asarray(['avenue', 'street', 'st', 'east', 'west', 'north', 'south', 'ave'])
-    return generalCheck(column, street)
+    global streets
+    streets = np.asarray(['avenue', 'street', 'st', 'east', 'west', 'north', 'south', 'ave'])
 
-def checkParkandPlayground(column):
-    park = np.asarray(['park','playground','field'])
-    return generalCheck(column, park)
+    global parks
+    parks = np.asarray(['park','playground','field'])
 
-def checkCityAgencies(column):
-    park = np.asarray(["Actuary, NYC Office of the (NYCOA)","Administrative Justice Coordinator, NYC Office of (AJC)","Administrative Tax Appeals, Office of","Administrative Trials and Hearings, Office of (OATH)","Aging, Department for the (DFTA)","Appointments, Mayor's Office of (MOA)","Brooklyn Public Library (BPL)","Buildings, Department of (DOB)","Business Integrity Commission (BIC)","Campaign Finance Board (CFB)","Center for Innovation through Data Intelligence (CIDI)","Charter Revision Commission","Chief Medical Examiner, NYC Office of (OCME)","Children's Services, Administration for (ACS)","City Clerk, Office of the (CLERK)","City Council, New York","City Planning, Department of (DCP)","City University of New York (CUNY)","Citywide Administrative Services, Department of (DCAS)","Citywide Event Coordination and Management, Office of (CECM)","Civic Engagement Commission (CEC)","Civil Service Commission (CSC)","Civilian Complaint Review Board (CCRB)","Climate Policy & Programs","Commission on Gender Equity (CGE)","Commission to Combat Police Corruption (CCPC)","Community Affairs Unit (CAU)","Community Boards (CB)","Comptroller (COMP)","Conflicts of Interest Board (COIB)","Consumer Affairs, Department of (DCA)","Consumer and Worker Protection, Department of (DCWP)","Contract Services, Mayor's Office of (MOCS)","Correction, Board of (BOC)","Correction, Department of (DOC)","Criminal Justice, Mayor's Office of","Cultural Affairs, Department of (DCLA)","Data Analytics, Mayor's Office of (MODA)","Design and Construction, Department of (DDC)","District Attorney - Bronx County","District Attorney - Kings County (Brooklyn)","District Attorney - New York County (Manhattan)","District Attorney - Queens County","District Attorney - Richmond County (Staten Island)","Education, Department of (DOE)","Elections, Board of (BOE)","Emergency Management, NYC","Environmental Coordination, Mayor’s Office of (MOEC)","Environmental Protection, Department of (DEP)","Equal Employment Practices Commission (EEPC)","Finance, Department of (DOF)","Fire Department, New York City (FDNY)","Fiscal Year 2005 Securitization Corporation","Food Policy Director, Office of the","GreeNYC (GNYC)","Health and Mental Hygiene, Department of (DOHMH)","Homeless Services, Department of (DHS)","Housing Authority, New York City (NYCHA)","Housing Preservation and Development, Department of (HPD)","Housing Recovery Operations (HRO)","Hudson Yards Infrastructure Corporation","Human Resources Administration (HRA)","Human Rights, City Commission on (CCHR)","Immigrant Affairs, Mayor's Office of (MOIA)","Independent Budget Office, NYC (IBO)","Information Privacy, Mayor's Office of (MOIP)","Information Technology and Telecommunications, Department of (DOITT)","Inspector General NYPD, Office of the","Intergovernmental Affairs, Mayor's Office of (MOIGA)","Investigation, Department of (DOI)","Judiciary, Mayor's Advisory Committee on the (MACJ)","Labor Relations, NYC Office of (OLR)","Landmarks Preservation Commission (LPC)","Law Department (LAW)","Library, Brooklyn Public (BPL)","Library, New York Public (NYPL)","Library, Queens Public (QL)","Loft Board (LOFT)","Management and Budget, Office of (OMB)","Mayor's Committee on City Marshals (MCCM)","Mayor's Fund to Advance NYC (Mayor's Fund)","Mayor's Office (OM)","Mayor's Office for Economic Opportunity","Mayor's Office for International Affairs (IA)","Mayor's Office for People with Disabilities (MOPD)","Mayor's Office of Environmental Remediation (OER)","Mayor's Office of Special Projects & Community Events (MOSPCE)","Mayor's Office of the Chief Technology Officer","Mayor’s Office of Minority and Women-Owned Business Enterprises (OMWBE)","Mayor’s Office of Strategic Partnerships (OSP)","Mayor’s Office to End Domestic and Gender-Based Violence (ENDGBV)","Media and Entertainment, Mayor's Office of (MOME)","Media, NYC","NYC & Company (NYCGO)","NYC Children's Cabinet","NYC Cyber Command","NYC Economic Development Corporation (NYCEDC)","NYC Employees' Retirement System (NYCERS)","NYC Health + Hospitals","NYC Service (SERVICE)","NYC Young Men’s Initiative","New York City Transitional Finance Authority (TFA)","New York Public Library (NYPL)","Office of Recovery & Resiliency","Office of ThriveNYC","Office of the Census for NYC","Operations, Mayor's Office of (OPS)","Parks and Recreation, Department of (DPR)","Payroll Administration, Office of (OPA)","Police Department (NYPD)","Police Pension Fund (PPF)","Probation, Department of (DOP)","Procurement Policy Board (PPB)","Property Tax Reform, Advisory Commission on","Public Administrator - Bronx County (BCPA)","Public Administrator - Kings County (KCPA)","Public Administrator - New York County (NYCountyPA)","Public Administrator - Queens County (QPA)","Public Administrator - Richmond County (RCPA)","Public Advocate (PUB ADV)","Public Design Commission","Queens Public Library (QPL)","Records and Information Services, Department of (DORIS)","Rent Guidelines Board (RGB)","Sales Tax Asset Receivable Corporation (STAR)","Sanitation, Department of (DSNY)","School Construction Authority (SCA)","Small Business Services (SBS)","Social Services, Department of (DSS)","Special Commissioner of Investigation for the New York City School District","Special Enforcement, Mayor’s Office of (OSE)","Special Narcotics Prosecutor, NYC Office of the (SNP)","Standards and Appeals, Board of (BSA)","Sustainability, Mayor's Office Of","TSASC, Inc.","Tax Appeals Tribunal, New York City (TAT)","Tax Commission, New York City (TC)","Taxi and Limousine Commission (TLC)","Teachers' Retirement System of the City of New York","Transportation, Department of (DOT)","Veterans' Services, Department of (DVS)","Water Board (NYWB)","Water Finance Authority, NYC Municipal (NYW)","Workforce Development, Mayor's Office of","Youth and Community Development, Department of (DYCD)"])
-    return generalCheck(column, park)
-
-def checkBuildingType(column):
-    buildingType = np.asarray(['A0	CAPE COD', 'A1	TWO STORIES - DETACHED SM OR MID',
+    global buildingTypes
+    buildingTypes = np.asarray(['A0	CAPE COD', 'A1	TWO STORIES - DETACHED SM OR MID',
                                'A2	ONE STORY - PERMANENT LIVING QUARTER', 'A3	LARGE SUBURBAN RESIDENCE',
                                'A4	CITY RESIDENCE ONE FAMILY', 'A5	ONE FAMILY ATTACHED OR SEMI-DETACHED',
                                'A6	SUMMER COTTAGE', 'A7	MANSION TYPE OR TOWN HOUSE',
@@ -212,7 +184,83 @@ def checkBuildingType(column):
                                'Z3	POST OFFICE', 'Z4	FOREIGN GOVERNMENT', 'Z5	UNITED NATIONS',
                                'Z7	EASEMENT',
                                'Z8	CEMETERY', 'Z9	OTHER MISCELLANEOUS'])
-    return generalCheck(column, buildingType)
+
+    global agencies
+    agencies = np.asarray(["Actuary, NYC Office of the (NYCOA)","Administrative Justice Coordinator, NYC Office of (AJC)","Administrative Tax Appeals, Office of","Administrative Trials and Hearings, Office of (OATH)","Aging, Department for the (DFTA)","Appointments, Mayor's Office of (MOA)","Brooklyn Public Library (BPL)","Buildings, Department of (DOB)","Business Integrity Commission (BIC)","Campaign Finance Board (CFB)","Center for Innovation through Data Intelligence (CIDI)","Charter Revision Commission","Chief Medical Examiner, NYC Office of (OCME)","Children's Services, Administration for (ACS)","City Clerk, Office of the (CLERK)","City Council, New York","City Planning, Department of (DCP)","City University of New York (CUNY)","Citywide Administrative Services, Department of (DCAS)","Citywide Event Coordination and Management, Office of (CECM)","Civic Engagement Commission (CEC)","Civil Service Commission (CSC)","Civilian Complaint Review Board (CCRB)","Climate Policy & Programs","Commission on Gender Equity (CGE)","Commission to Combat Police Corruption (CCPC)","Community Affairs Unit (CAU)","Community Boards (CB)","Comptroller (COMP)","Conflicts of Interest Board (COIB)","Consumer Affairs, Department of (DCA)","Consumer and Worker Protection, Department of (DCWP)","Contract Services, Mayor's Office of (MOCS)","Correction, Board of (BOC)","Correction, Department of (DOC)","Criminal Justice, Mayor's Office of","Cultural Affairs, Department of (DCLA)","Data Analytics, Mayor's Office of (MODA)","Design and Construction, Department of (DDC)","District Attorney - Bronx County","District Attorney - Kings County (Brooklyn)","District Attorney - New York County (Manhattan)","District Attorney - Queens County","District Attorney - Richmond County (Staten Island)","Education, Department of (DOE)","Elections, Board of (BOE)","Emergency Management, NYC","Environmental Coordination, Mayor’s Office of (MOEC)","Environmental Protection, Department of (DEP)","Equal Employment Practices Commission (EEPC)","Finance, Department of (DOF)","Fire Department, New York City (FDNY)","Fiscal Year 2005 Securitization Corporation","Food Policy Director, Office of the","GreeNYC (GNYC)","Health and Mental Hygiene, Department of (DOHMH)","Homeless Services, Department of (DHS)","Housing Authority, New York City (NYCHA)","Housing Preservation and Development, Department of (HPD)","Housing Recovery Operations (HRO)","Hudson Yards Infrastructure Corporation","Human Resources Administration (HRA)","Human Rights, City Commission on (CCHR)","Immigrant Affairs, Mayor's Office of (MOIA)","Independent Budget Office, NYC (IBO)","Information Privacy, Mayor's Office of (MOIP)","Information Technology and Telecommunications, Department of (DOITT)","Inspector General NYPD, Office of the","Intergovernmental Affairs, Mayor's Office of (MOIGA)","Investigation, Department of (DOI)","Judiciary, Mayor's Advisory Committee on the (MACJ)","Labor Relations, NYC Office of (OLR)","Landmarks Preservation Commission (LPC)","Law Department (LAW)","Library, Brooklyn Public (BPL)","Library, New York Public (NYPL)","Library, Queens Public (QL)","Loft Board (LOFT)","Management and Budget, Office of (OMB)","Mayor's Committee on City Marshals (MCCM)","Mayor's Fund to Advance NYC (Mayor's Fund)","Mayor's Office (OM)","Mayor's Office for Economic Opportunity","Mayor's Office for International Affairs (IA)","Mayor's Office for People with Disabilities (MOPD)","Mayor's Office of Environmental Remediation (OER)","Mayor's Office of Special Projects & Community Events (MOSPCE)","Mayor's Office of the Chief Technology Officer","Mayor’s Office of Minority and Women-Owned Business Enterprises (OMWBE)","Mayor’s Office of Strategic Partnerships (OSP)","Mayor’s Office to End Domestic and Gender-Based Violence (ENDGBV)","Media and Entertainment, Mayor's Office of (MOME)","Media, NYC","NYC & Company (NYCGO)","NYC Children's Cabinet","NYC Cyber Command","NYC Economic Development Corporation (NYCEDC)","NYC Employees' Retirement System (NYCERS)","NYC Health + Hospitals","NYC Service (SERVICE)","NYC Young Men’s Initiative","New York City Transitional Finance Authority (TFA)","New York Public Library (NYPL)","Office of Recovery & Resiliency","Office of ThriveNYC","Office of the Census for NYC","Operations, Mayor's Office of (OPS)","Parks and Recreation, Department of (DPR)","Payroll Administration, Office of (OPA)","Police Department (NYPD)","Police Pension Fund (PPF)","Probation, Department of (DOP)","Procurement Policy Board (PPB)","Property Tax Reform, Advisory Commission on","Public Administrator - Bronx County (BCPA)","Public Administrator - Kings County (KCPA)","Public Administrator - New York County (NYCountyPA)","Public Administrator - Queens County (QPA)","Public Administrator - Richmond County (RCPA)","Public Advocate (PUB ADV)","Public Design Commission","Queens Public Library (QPL)","Records and Information Services, Department of (DORIS)","Rent Guidelines Board (RGB)","Sales Tax Asset Receivable Corporation (STAR)","Sanitation, Department of (DSNY)","School Construction Authority (SCA)","Small Business Services (SBS)","Social Services, Department of (DSS)","Special Commissioner of Investigation for the New York City School District","Special Enforcement, Mayor’s Office of (OSE)","Special Narcotics Prosecutor, NYC Office of the (SNP)","Standards and Appeals, Board of (BSA)","Sustainability, Mayor's Office Of","TSASC, Inc.","Tax Appeals Tribunal, New York City (TAT)","Tax Commission, New York City (TC)","Taxi and Limousine Commission (TLC)","Teachers' Retirement System of the City of New York","Transportation, Department of (DOT)","Veterans' Services, Department of (DVS)","Water Board (NYWB)","Water Finance Authority, NYC Municipal (NYW)","Workforce Development, Mayor's Office of","Youth and Community Development, Department of (DYCD)"])
+
+
+
+## Main Function
+def semanticCheck(col):
+
+    checkEach = [checkBusinessName(col),
+                 checkSchoolLevel(col),
+                 checkStreetName(col),
+                 checkParkandPlayground(col),
+                 checkCityAgencies(col),
+                 checkBuildingType(col),
+                 checkNeiborhoods(col)]
+    result = []
+    for i in range(0, len(checkEach)):
+        if checkEach[i]:
+            result.append(labels[i])
+
+    return result
+
+
+
+def generalCheck(column, list):
+    size = column.count()
+    columns = column.collect()
+    sampleSize = size * 0.1
+    check = sampleSize
+    cnt = 0
+
+    while check > 0:
+        rand = random.randint(0, size - 1)
+        ele = str(columns[rand])
+        flag = False
+        for s in list:
+            if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
+                flag = True
+                break
+        #print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
+        if flag:
+            cnt += 1
+        check -= 1
+
+    return cnt / sampleSize > 0.5
+
+def checkNeiborhoods(column):
+    return generalCheck(column, neiborhood_names)
+
+def checkBoroughs(column):
+    return generalCheck(column, boroughs)
+
+def checkWebsites(column):
+    exp = "^(?:http(s)?:\\/\\/?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\.~:\\?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"
+    result = re.search(exp, column)
+    return result
+
+def checkBusinessName(column):
+    businessNames = [item['current_entity_name'] for item in business_data]
+    return generalCheck(column, businessNames)
+
+def checkSchoolLevel(column):
+    return generalCheck(column, schoolLevels)
+
+def checkStreetName(column):
+    ## If this is not enough, then we can use real street data
+    return generalCheck(column, streets)
+
+def checkParkandPlayground(column):
+    return generalCheck(column, parks)
+
+def checkCityAgencies(column):
+    return generalCheck(column, agencies)
+
+def checkBuildingType(column):
+    return generalCheck(column, buildingTypes)
 
 
 if __name__ == '__main__':
