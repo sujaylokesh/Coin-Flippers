@@ -1,2 +1,4 @@
 .Rapp.history
 .idea
+*.pyc
+filestestJsonFIle.json
