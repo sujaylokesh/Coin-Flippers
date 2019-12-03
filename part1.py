@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import sys
+import datetime
 from _ctypes import Array
 #pip install names-dataset
 from names_dataset import NameDataset
@@ -19,7 +20,7 @@ from pyspark.sql.types import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import *
 import json
-
+import task2_M as task2
 
 def output(metadata,_sc, table_name ):
     results = {
@@ -48,9 +49,14 @@ def profile(data,_sc, sqlContext, table_name):
             "number_empty_cells": null_count,
             "number_distinct_values": distinct_count,
             "frequent_values": top5,
-            "data_types": ["test1","test2"]
+            "data_types": {statistics(_sc, colName)}
         }
         results.append(temp_col_metadata)
+        #### need updates for count
+        semantics = task2.semanticCheck(colName)
+        results.append(semantics)
+        print(results)
+
     return results
 
 
@@ -71,6 +77,7 @@ def extractMeta(_sc, sql):
 def statistics(_sc,column):
     intList =[]
     dateList=[]
+    datatype=[]
     txtList=[]
     res = {}
 
@@ -78,13 +85,13 @@ def statistics(_sc,column):
         typeElement = type(column[i])
         if(typeElement == int or typeElement == float ):
             intList.append(column[i])
-            datatype.add("Integer/Real")
+            datatype.append("Integer/Real")
         elif(isinstance(column[i], datetime.date)):
             dateList.append(column[i])
-            datatype.add("Date")
+            datatype.append("Date")
         elif(typeElement == str):
             txtList.append(column[i])
-            datatype.add("Text")
+            datatype.append("Text")
 
 
 
@@ -94,7 +101,7 @@ def statistics(_sc,column):
             "count": len(intList),
             "max_value": max(intList),
             "min_value": min(intList),
-            "mean": statistics.mean(intList) ,
+            "mean": statistics.mean(intList),
             "stddev": statistics.stdev(intList)
         }
         res.append(result)
@@ -127,11 +134,11 @@ def statistics(_sc,column):
             counts.remove(fourth)
             fifth = max(counts)
         max_values ={
-            "1st Highest" = first,
-            "2nd Highest" = second,
-            "3rd Highest" = third,
-            "4th Highest" = fourth,
-            "5th Highest" = fifth
+            "1st Highest" : first,
+            "2nd Highest" : second,
+            "3rd Highest" : third,
+            "4th Highest" : fourth,
+            "5th Highest" : fifth
             }
         res.append(max_values)
 
@@ -153,11 +160,11 @@ def statistics(_sc,column):
             counts.remove(fourth)
             fifth = min(counts)
         min_values ={
-            "1st Lowest" = first,
-            "2nd Lowest" = second,
-            "3rd Lowest" = third,
-            "4th Lowest" = fourth,
-            "5th Lowest" = fifth
+            "1st Lowest" : first,
+            "2nd Lowest" : second,
+            "3rd Lowest" : third,
+            "4th Lowest" : fourth,
+            "5th Lowest" : fifth
             }
         res.append(min_values)
     #Average Number
@@ -173,37 +180,7 @@ def statistics(_sc,column):
         res.append(average)
     return res
 
-def SemanticCheck(_sc,column):
-    #NameCheck SL
-    count = 0
-    for i in range(0,int(round(1*len(names)))):
-        inp = names[random.randint(0,len(names)-1)]
-        if m.search_first_name(inp) == False:
-            if m.search_last_name(inp) == False:
-                print("not a name")
-            else: 
-                count+=1
-                print(inp,m.search_last_name(inp))
-        else:
-            count+=1
-            print(inp,m.search_first_name(inp))
-    probability = (count/len(names))*100
-    if probability >= 90:
-        print("Name Column")
-    #Phone Number Check SL
-    countrycode = '1'
-    n = '15179181419'
-    if len(n) == 10:
-        num = countrycode+n
-    else:
-        num = n
-    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number='+num+'&country_code=&format=1'
-    r = requests.get(url)
-    js = r.json()
-    if js['valid'] == False:
-        print("not real")
-    else:
-        print("real")
+
 if __name__ == "__main__":
     sc = SparkContext()
 

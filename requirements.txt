@@ -1,0 +1,5 @@
+requests==2.22.0
+pyspark==2.4.4
+pandas==0.25.1
+fuzzywuzzy==0.17.0
+names_dataset==1.9.0
