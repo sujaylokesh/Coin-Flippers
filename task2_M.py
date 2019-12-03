@@ -305,7 +305,16 @@ def phonecheck(column):
         else:
             print("zip code")
     
-    
+    def collegeCheck(column):
+        val = 'nyu'
+        max = 0
+        for ind in df.index:
+            temp = fuzz.ratio(val,df['NAME'][ind])
+        if temp > max:
+            max = temp
+            maxid = ind
+        print(maxid,df['NAME'][maxid],max)
+
 
  # def SemanticCheck(,column):
  #    #NameCheck SL
