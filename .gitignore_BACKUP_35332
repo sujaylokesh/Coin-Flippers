@@ -1,0 +1,8 @@
+.Rapp.history
+.idea
+<<<<<<< HEAD
+*.pyc
+=======
+__pycache__/task2_M.cpython-37.pyc
+>>>>>>> b0bde8bf87269b22e4227d10fab7fc0b31fbdcb1
+filestestJsonFIle.json
