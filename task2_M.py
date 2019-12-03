@@ -8,7 +8,7 @@ import numpy as np
 from pandas.io.json import json_normalize
 import re
 
-labels = 0
+
 neiborhood_names = 0
 boroughs = 0
 business_data = 0
@@ -32,6 +32,7 @@ def initialize():
     response = requests.get("https://data.cityofnewyork.us/resource/xyye-rtrs.json")
     neiborhood_data = response.json()
     temp_borough_set = set()
+    neiborhood_names=[]
     for item in neiborhood_data:
         neiborhood_names.append(item["name"])
         temp_borough_set.add(item["name"])
@@ -227,6 +228,7 @@ def generalCheck(column, list):
         if flag:
             cnt += 1
         check -= 1
+
 
     return cnt / sampleSize > 0.5
 
