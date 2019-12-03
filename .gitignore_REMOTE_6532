@@ -1,4 +1,4 @@
 .Rapp.history
 .idea
-*.pyc
+__pycache__/task2_M.cpython-37.pyc
 filestestJsonFIle.json

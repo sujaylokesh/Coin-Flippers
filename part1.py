@@ -4,7 +4,6 @@
 import sys
 import datetime
 from _ctypes import Array
-#pip install names-dataset
 from names_dataset import NameDataset
 import pyspark
 import string
@@ -15,31 +14,44 @@ from pyspark.sql import SQLContext
 from pyspark import SparkContext
 from csv import reader
 from pyspark.sql import types
-
+import math
 from pyspark.sql.types import *
 from pyspark.sql.window import Window
-from pyspark.sql.functions import *
 import json
 import task2_M as task2
 
-def output(metadata,_sc, table_name ):
+
+key_column_threshold = 10
+output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
+
+def output(metadata, key_columns, _sc, table_name ):
     results = {
         "dataset_name": table_name,
         "columns": metadata,
-        "key_column_candidates": ["test1", "test2"]
+        "key_column_candidates": key_columns
     }
     print(results)
+    with open(output_path, 'w') as json_file:
+        json.dump(results, json_file)
+
 
 def profile(data,_sc, sqlContext, table_name):
     results = []
+    key_columns = []
     for i in range(0, 1):
         colName = data.columns[i]
         print(colName)
-        query = "select distinct %s from %s " % (colName, table_name)
+        query = "select %s from %s " % (colName, table_name)
         temp = sqlContext.sql(query)
-        null_count = temp.filter(temp[0].isNull()).count()
+
+        #get data sets
+        discinct_rows = temp.distinct()
+        non_empty_rows = temp.filter(temp[0].isNull())
+
+        null_count = non_empty_rows.count()
         non_empty = temp.count() - null_count
-        distinct_count = temp.distinct().count()
+        distinct_count = discinct_rows.count()
+
         query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
         top5 = sqlContext.sql(query)
         top5 = top5.rdd.map(lambda x: x[0]).take(5)
@@ -49,15 +61,21 @@ def profile(data,_sc, sqlContext, table_name):
             "number_empty_cells": null_count,
             "number_distinct_values": distinct_count,
             "frequent_values": top5,
-            "data_types": {statistics(_sc, colName)}
+            "data_types": calc_statistics(_sc, discinct_rows)
         }
         results.append(temp_col_metadata)
         #### need updates for count
-        semantics = task2.semanticCheck(colName)
+        semantics = task2.semanticCheck(discinct_rows)
         results.append(semantics)
+
+        #check if this column can be a keycolumn
+        diff = abs(non_empty - distinct_count)
+        if diff < key_column_threshold:
+            key_columns.append(colName)
+
         print(results)
 
-    return results
+    return [results, key_columns]
 
 
 def extractMeta(_sc, sql):
@@ -70,30 +88,30 @@ def extractMeta(_sc, sql):
     data.printSchema()
     table_name = "ThreeOneOne"
     data.createOrReplaceTempView(table_name)
-    metadata = profile(data,_sc, sql, table_name)
-    output(metadata,_sc, table_name)
+    data = profile(data,_sc, sql, table_name)
+    col_metadata = data[0]
+    key_col_candidate = data[1]
+    output(col_metadata,key_col_candidate,_sc, table_name)
 
 # getting statistics based on data type of the elements in a column
-def statistics(_sc,column):
+def calc_statistics(_sc, discinct_rows):
     intList =[]
     dateList=[]
     datatype=[]
     txtList=[]
-    res = {}
-
-    for i in range(len(column)):
-        typeElement = type(column[i])
-        if(typeElement == int or typeElement == float ):
-            intList.append(column[i])
+    res = []
+    rows = discinct_rows.collect()
+    for i in range(len(rows)):
+        typeElement = type(rows[i][0])
+        if typeElement == int or typeElement == float:
+            intList.append(rows[i][0])
             datatype.append("Integer/Real")
-        elif(isinstance(column[i], datetime.date)):
-            dateList.append(column[i])
+        elif isinstance(rows[i][0], datetime.date):
+            dateList.append(rows[i][0])
             datatype.append("Date")
-        elif(typeElement == str):
-            txtList.append(column[i])
+        elif typeElement == str:
+            txtList.append(rows[i][0])
             datatype.append("Text")
-
-
 
     if len(intList) > 0:
         result = {
@@ -122,7 +140,7 @@ def statistics(_sc,column):
     max_values = {}
     if len(templist) > 0:
         for txt in range(0,len(templist)):
-            counts[txt] = templist[txt].count()
+            counts[txt] = len(templist[txt])
         for i in range(0,len(counts)):
             first = max(counts)
             counts.remove(first)
@@ -134,11 +152,11 @@ def statistics(_sc,column):
             counts.remove(fourth)
             fifth = max(counts)
         max_values ={
-            "1st Highest" : first,
-            "2nd Highest" : second,
-            "3rd Highest" : third,
-            "4th Highest" : fourth,
-            "5th Highest" : fifth
+            "1st Highest": first,
+            "2nd Highest": second,
+            "3rd Highest": third,
+            "4th Highest": fourth,
+            "5th Highest": fifth
             }
         res.append(max_values)
 
@@ -160,11 +178,11 @@ def statistics(_sc,column):
             counts.remove(fourth)
             fifth = min(counts)
         min_values ={
-            "1st Lowest" : first,
-            "2nd Lowest" : second,
-            "3rd Lowest" : third,
-            "4th Lowest" : fourth,
-            "5th Lowest" : fifth
+            "1st Lowest": first,
+            "2nd Lowest": second,
+            "3rd Lowest": third,
+            "4th Lowest": fourth,
+            "5th Lowest": fifth
             }
         res.append(min_values)
     #Average Number
@@ -191,10 +209,12 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    extractMeta(spark, sqlContext)
+    task2.initialize()
 
+    extractMeta(spark, sqlContext)
     # get command-line arguments
     inFile = sys.argv[1]
 
     # Enter your modules here
     sc.stop()
+    task2.checkNeiborhoods(0)
