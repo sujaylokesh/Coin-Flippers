@@ -39,7 +39,7 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(10, 13):
+    for i in range(9,11):
         colName = data.columns[i]
         #data = data.collect()
         query = "select %s from %s" % (colName, table_name)
@@ -114,6 +114,8 @@ def calc_statistics(_sc, discinct_rows):
         elif typeElement == str:
             txtList.append(rows[i][0])
             datatype.append("Text")
+
+    datatype = list(set(datatype))
 
     if len(intList) > 0:
         result = {

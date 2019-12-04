@@ -21,9 +21,9 @@ buildingTypes = 0
 def initialize():
     global labels # DO NOT CHANGE THE ORDER OF LABELS
     labels = np.asarray(["Business Name", 'School Levels',  'Street Name', 'Park/Playground', 'City agency', 'Building Classification',\
-                        'Neighborhood', 'Borough','Car Make', 'Subjects in school', 'Websites', \
+                        'Neighborhood', 'Borough','Car Make', 'Areas of study', 'Websites','Color','Type of location','Subjects in school',  \
                          'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
-                        'Zip code',  'School Name', 'Color', 'Areas of study', "Person Name", 'Vehicle Type', 'Type of location'])
+                        'Zip code',  'School Name',  "Person Name", 'Vehicle Type', ])
 
     global neiborhood_names
     global boroughs
@@ -192,6 +192,19 @@ def initialize():
     global carBrand
     carBrand = np.asarray(['Mercedes-Benz','Audi','Volkswagen','BMW','Opel','Porsche','Fiat','Lancia','AlfaRomeo','Lamborghini','Maserati','Ferrari','Citroen','Renault','Bugatti','Alpine','Peugeot','McLaren','AstonMartin','Vauxhall','Bentley','Rolls-Royce','LandRover','Mini','Chrysler','Dodge','Jeep','Chevrolet','Buick','GMC','Cadillac','Lincoln','Ford','Honda','Toyota','Suzuki','Lexus','Infiniti','Mazda','Mitsubishi','Nissan','Hyundai','Kia','Daewoo','Geely','Chery','Hongqi','Brilliance','BYD'])
 
+    global color
+    color = np.asarray(['White','Yellow','Blue','Red','Green','Black','Brown','Azure','Ivory','Teal','Silver','Purple','Navy blue','Pea green','Gray','Orange','Maroon','Charcoal','Aquamarine','Coral','Fuchsia','Wheat','Lime','Crimson','Khaki','Hot pink','Magenta','Olden','Plum','Olive','Cyan'])
+
+    global schoolName
+    schoolName = np.asarray(['institute', 'school', 'university', 'college', 'campus'])
+
+    global poi
+    poi = np.asarray(['accounting','airport','amusement_park','aquarium','art_gallery','atm','bakery','bank','bar','beauty_salon','bicycle_store','book_store','bowling_alley','bus_station','cafe','campground','car_dealer','car_rental','car_repair','car_wash','casino','cemetery','church','city_hall','clothing_store','convenience_store','courthouse','dentist','department_store','doctor','drugstore','electrician','electronics_store','embassy','fire_station','florist','funeral_home','furniture_store','gas_station','grocery_or_supermarket','gym','hair_care','hardware_store','hindu_temple','home_goods_store','hospital','insurance_agency','jewelry_store','laundry','lawyer','library','light_rail_station','liquor_store','local_government_office','locksmith','lodging','meal_delivery','meal_takeaway','mosque','movie_rental','movie_theater','moving_company','museum','night_club','painter','park','parking','pet_store','pharmacy','physiotherapist','plumber','police','post_office','primary_school','real_estate_agency','restaurant','roofing_contractor','rv_park','school','secondary_school','shoe_store','shopping_mall','spa','stadium','storage','store','subway_station','supermarket','synagogue','taxi_stand','tourist_attraction','train_station','transit_station','travel_agency','university','veterinary_care','zoo'])
+
+    global schoolSubject
+    schoolSubject =np.asarray(['Math','Art','Algebra','Geometry','Science','English','Music','History','Science','Geography','Information technology','Biology','Drama','Swimming','Physical education','Physics','Chemistry'])
+
+
 ## Main Function
 def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
@@ -204,8 +217,11 @@ def semanticCheck(col):
                  checkNeiborhoods(col),
                  checkBoroughs(col),
                  checkCarMake(col),
-                 checkSchoolSubject(col),
-                 checkWebsites(col)]
+                 checkAreasOfStudy(col),
+                 checkWebsites(col),
+                 checkColor(col),
+                 checkTypeOfLocation(col),
+                 checkSchoolSubject(col)]
     result = []
     for i in range(0, len(checkEach)):
         if checkEach[i]:
@@ -272,11 +288,26 @@ def checkCityAgencies(column):
 def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
-def checkSchoolSubject(column):
+def checkAreasOfStudy(column):
     return generalCheck(column, subjects)
 
 def checkCarMake(column):
     return generalCheck(column, carBrand)
+
+def checkColor(column):
+    return generalCheck(column, color)
+
+def checkSchoolName(column):
+    return generalCheck(column, schoolName)
+
+def checkTypeOfLocation(column):
+    return generalCheck(column, poi)
+
+def checkSchoolSubject(column):
+    return generalCheck(column, schoolSubject)
+
+
+
 
 #
 # def namecheck(column):
