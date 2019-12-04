@@ -277,38 +277,92 @@ def checkSchoolSubject(column):
 def checkCarMake(column):
     return generalCheck(column, carBrand)
 
-
- # def SemanticCheck(_sc,column):
- #    #NameCheck SL
- #    count = 0
- #    for i in range(0,int(round(1*len(names)))):
- #        inp = names[random.randint(0,len(names)-1)]
- #        if m.search_first_name(inp) == False:
- #            if m.search_last_name(inp) == False:
- #                print("not a name")
- #            else:
- #                count+=1
- #                print(inp,m.search_last_name(inp))
- #        else:
- #            count+=1
- #            print(inp,m.search_first_name(inp))
- #    probability = (count/len(names))*100
- #    if probability >= 90:
- #        print("Name Column")
- #    #Phone Number Check SL
- #    countrycode = '1'
- #    n = '15179181419'
- #    if len(n) == 10:
- #        num = countrycode+n
- #    else:
- #        num = n
- #    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number='+num+'&country_code=&format=1'
- #    r = requests.get(url)
- #    js = r.json()
- #    if js['valid'] == False:
- #        print("not real")
- #    else:
- #        print("real")
+#
+# def namecheck(column):
+#     count = 0
+#     for i in range(0,int(round(1*len(names)))):
+#         inp = names[random.randint(0,len(names)-1)]
+#         if m.search_first_name(inp) == False:
+#             if m.search_last_name(inp) == False:
+#                 print("not a name")
+#             else:
+#                 count+=1
+#                 print(inp,m.search_last_name(inp))
+#         else:
+#             count+=1
+#             print(inp,m.search_first_name(inp))
+#     probability = (count/len(names))*100
+#     if probability >= 90:
+#         return True
+#     else:
+#         return False
+#
+# def phonecheck(column):
+#     countrycode = '1'
+#     n = '15179181419'
+#     if len(n) == 10:
+#         num = countrycode+n
+#     else:
+#         num = n
+#     url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number='+num+'&country_code=&format=1'
+#     r = requests.get(url)
+#     js = r.json()
+#     if js['valid'] == False:
+#         return False
+#     else:
+#         return True
+#
+# def zipcodeCheck(column):
+#     val = '560043'
+#     url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/'+val+'?key=DEMOAPIKEY'
+#     a = requests.get(url)
+#     json_data = json.loads(a.text)
+#     if len(json_data)==0:
+#         return False
+#     else:
+#         return True
+#
+# def collegeCheck(column):
+#     val = 'nyu'
+#     max = 0
+#     for ind in df.index:
+#         temp = fuzz.ratio(val,df['NAME'][ind])
+#     if temp > max:
+#         max = temp
+#         maxid = ind
+#     if max > 50
+#         return True
+#     else:
+#         return False
+#
+# def FieldCheck(column):
+#     val = 'nyu'
+#     max = 0
+#     for ind in df.index:
+#         temp = fuzz.ratio(val,df['Arts'][ind])
+#         if temp > max:
+#             max = temp
+#             maxid = ind
+#     if max > 50
+#         return True
+#     else:
+#         return False
+#
+# def CarType(column):
+#     csv_file = 'cars.csv'
+#     fields = ['MOT']
+#     df = pd.read_csv(csv_file,usecols=fields)
+#     val = 'sdn'
+#     max = 0
+#     for ind in df.index:
+#         temp = fuzz.ratio(val,df['MOT'][ind])
+#         if temp > max:
+#             max = temp
+#             maxind = ind
+#     if max > 50
+#         return True
+#     else:
+#         return False
 
 
 
