@@ -204,17 +204,16 @@ def semanticCheck(col):
                  checkCityAgencies(col),
                  checkBuildingType(col),
                  checkNeiborhoods(col)]
-    semanticresult = {}
-    semantic = {}
+    result = []
     for i in range(0, len(checkEach)):
         if checkEach[i]:
             semantic = {
                 "semantic_type": labels[i],
-                "count": len(col),
+                "count":0 # len(col),
             }
-            semanticresult.append(semantic)
+            result.append(semantic)
 
-    return semanticresult
+    return result
 
 
 

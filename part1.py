@@ -21,9 +21,6 @@ import json
 import task2_M as task2
 
 
-#local_path = "files/small.tsv"
-
-
 
 key_column_threshold = 10
 output_path = '/Users/mina/Dropbox/2019Fall/BigData/projectOutput/output.json'
@@ -42,7 +39,7 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(15, 20):
+    for i in range(10, 13):
         colName = data.columns[i]
         #data = data.collect()
         query = "select %s from %s" % (colName, table_name)
@@ -224,4 +221,4 @@ if __name__ == "__main__":
 
     # Enter your modules here
     sc.stop()
-    task2.checkNeiborhoods(0)
+
