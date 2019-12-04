@@ -35,7 +35,6 @@ def profile(data,_sc, sqlContext, table_name):
     key_columns = []
     for i in range(0,len(data.columns )):
         colName = data.columns[i]
-        #data = data.collect()
         query = "select %s from %s" % (colName, table_name)
         temp = sqlContext.sql(query)
 
@@ -172,7 +171,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    task2.initialize()
+    #task2.initialize()
 
     # get command-line arguments
     files = []

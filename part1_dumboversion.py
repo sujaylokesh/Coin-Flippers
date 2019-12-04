@@ -5,6 +5,7 @@ import sys
 import datetime
 from _ctypes import Array
 from operator import add
+from datetime import datetime
 
 import pyspark
 import string
@@ -20,30 +21,39 @@ from pyspark.sql.types import *
 from pyspark.sql.window import Window
 import json
 #import task2_M as task2
-from dateutil import parser
+#from dateutil import parser
 
 
 
 key_column_threshold = 10
-output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
-
+output_path = ''
+global start_time
+global end_time
 
 def output(metadata, key_columns, _sc, table_name ):
+    print("printing output")
+
     results = {
         "dataset_name": table_name,
         "columns": metadata,
         "key_column_candidates": key_columns
     }
-    print(results)
-    with open("output.json", 'w') as json_file:
+    now = datetime.now()
+    end_time = now.strftime("%H:%M:%S")
+    print("End Time =", end_time)
+    print(" Time diff =", end_time-start_time)
+    # print(results)
+    path = "%s.json" % (table_name)
+    #path = "%s\\%s.json" % (output_path, table_name)
+    with open(path, 'w') as json_file:
         json.dump(results, json_file)
 
 
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(0,len(data.columns )):
-        colName = data.columns[i]
+    for i in range(0,len(data.columns)):
+        colName = data.columns[i].replace(" ", "_")
         #data = data.collect()
         query = "select %s from %s" % (colName, table_name)
         temp = sqlContext.sql(query)
@@ -68,8 +78,7 @@ def profile(data,_sc, sqlContext, table_name):
             "data_types": calc_statistics(_sc, discinct_rows)
         }
         results.append(temp_col_metadata)
-        #### need updates for count
-     #   semantics = task2.semanticCheck(discinct_rows)
+        #semantics = task2.semanticCheck(discinct_rows)
         #print("semantics", semantics)
         #results.append(semantics)
 
@@ -84,22 +93,32 @@ def profile(data,_sc, sqlContext, table_name):
 
 
 def extractMeta(_sc, sql, file_path):
-    data = _sc.read.csv(path=file_path,sep='\t', header=True, inferSchema=True)
+    print("read data")
+    now = datetime.now()
+    start_time = now.strftime("%H:%M:%S")
+    print("Current Time =", start_time)
+
+    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
-                                      data.columns[col].replace(" ","")
+                                      data.columns[col].replace(" ","_").replace("/","")
                                       .replace("(", "")
                                       .replace(")", ""))
-    data.printSchema()
-    table_name = "ThreeOneOne"
+
+    # data.printSchema()
+    table_name = file_path.split('\\')[-1]
+    dot_index = table_name.find(".")
+    table_name = table_name[0: dot_index].replace("-","_")
     data.createOrReplaceTempView(table_name)
-    data = profile(data,_sc, sql, table_name)
+    data = profile(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
-    output(col_metadata,key_col_candidate,_sc, table_name)
+    output(col_metadata, key_col_candidate, _sc, table_name)
 
 # getting statistics based on data type of the elements in a column
 def calc_statistics(_sc, discinct_rows):
+    print("checking stats")
+
     intList =[]
     txtList=[]
     date_count = 0
@@ -109,8 +128,8 @@ def calc_statistics(_sc, discinct_rows):
     max_int = -100000000000
     min_int = 1000000000000
 
-    max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
-    min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    max_date = datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    min_date = datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
     for i in range(len(rows)):
         typeElement = type(rows[i][0])
@@ -122,7 +141,7 @@ def calc_statistics(_sc, discinct_rows):
         elif typeElement == str:
             #check date
             try:
-                temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+                temp_date = datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
                 max_date = max(max_date, temp_date)
                 min_date = min(min_date, temp_date)
                 date_count = date_count + 1
@@ -170,7 +189,6 @@ def calc_statistics(_sc, discinct_rows):
 
 if __name__ == "__main__":
     sc = SparkContext()
-    #lines = sc.textFile("files/small.tsv")
 
     spark = SparkSession \
         .builder \
@@ -182,6 +200,12 @@ if __name__ == "__main__":
     #task2.initialize()
 
     # get command-line arguments
+    files = []
     for i in range(1, len(sys.argv)):
-        inFile = sys.argv[i]
-        extractMeta(spark, sqlContext, inFile)
+        files.append(sys.argv[i])
+
+    for i in range(0, len(files)):
+        extractMeta(spark, sqlContext, files[i])
+
+
+    sc.stop()

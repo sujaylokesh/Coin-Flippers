@@ -210,6 +210,7 @@ def initialize():
 ## Main Function
 def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
+    result = []
     checkEach = [checkBusinessName(col),
                  checkSchoolLevel(col),
                  checkStreetName(col),
@@ -224,18 +225,32 @@ def semanticCheck(col):
                  checkColor(col),
                  checkTypeOfLocation(col),
                  checkSchoolSubject(col)]
-    result = []
+    colLables1 = []
     for i in range(0, len(checkEach)):
         if checkEach[i]:
-            semantic = {
-                "semantic_type": labels[i],
-                "count": 0 # len(col),
-            }
-            result.append(semantic)
+            colLables1.append(labels[i])
+    colLabels2 = parsecolumn(col)
+    colLabels = colLables1+colLabels2
+    if(len(colLabels)==1):
+        semantic = {
+            "semantic_type": colLabels[0],
+            "count": col.count()
+        }
+        result.append(semantic)
+        return result
+    else:
+        return checkMultipleLabels(col, colLabels)
 
+
+def checkMultipleLabels(col,colLabels):
+    result =[]
+    for i in range(0, len(colLabels)):
+        semantic = {
+            "semantic_type": colLabels[0],
+            "count": col.count()
+        }
+        result.append(semantic)
     return result
-
-
 
 def generalCheck(column, list):
     columns = column.collect()
@@ -302,6 +317,7 @@ def parsecolumn(column):
     res4 = []
     res5 = []
     res6 = []
+    res7 = []
     res8 = []
     li = ['NAME','Phone Number','zipcode','college','field of study','type of vehicle','latitude/longitude','color']
     lis = []
@@ -331,6 +347,7 @@ def parsecolumn(column):
     for i in range(0,len(lis)-1):
         if sum(lis[i]) >= .8*len(lis[i]):
             result.append(li[i])
+    return result
 
 def checkCarMake(column):
     return generalCheck(column, carBrand)
@@ -350,23 +367,9 @@ def checkSchoolSubject(column):
 def checkAreasOfStudy(column):
     return generalCheck(column, subjects)
 
-def checkCarMake(column):
-    return generalCheck(column, carBrand)
-
-def checkColor(column):
-    return generalCheck(column, color)
-
-def checkSchoolName(column):
-    return generalCheck(column, schoolName)
-
-def checkTypeOfLocation(column):
-    return generalCheck(column, poi)
-
-def checkSchoolSubject(column):
-    return generalCheck(column, schoolSubject)
-
 
 def namecheck(inp):
+    m=NameDataset()
     count = 0
     inp = str(inp)
     if m.search_first_name(inp) == False:
@@ -417,7 +420,6 @@ def collegeCheck(item):
         temp = fuzz.ratio(val, df['NAME'][ind])
     if temp > max:
         max = temp
-        maxid = ind
     if max > 50:
         return True
     else:
@@ -434,8 +436,7 @@ def FieldCheck(item):
         temp = fuzz.ratio(val, df['Arts'][ind])
         if temp > max:
             max = temp
-            maxid = ind
-    if max > :
+    if max > 50:
         return True
     else:
         return False
