@@ -12,6 +12,7 @@ from pyspark import SparkContext
 import json
 import task2_M as task2
 from dateutil import parser
+import re
 
 
 key_column_threshold = 10
@@ -73,8 +74,8 @@ def profile(data,_sc, sqlContext, table_name):
     return [results, key_columns]
 
 
-def extractMeta(_sc, sql):
-    data = _sc.read.csv(path=sys.argv[1],sep='\t', header=True, inferSchema=True)
+def extractMeta(_sc, sql, file_path):
+    data = _sc.read.csv(path=file_path,sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
                                       data.columns[col].replace(" ","")
@@ -171,10 +172,10 @@ if __name__ == "__main__":
     sqlContext = SQLContext(spark)
     task2.initialize()
 
-    extractMeta(spark, sqlContext)
-
     # get command-line arguments
-    inFile = sys.argv[1]
+    for i in range(1, len(sys.argv)):
+        inFile = sys.argv[i]
+        extractMeta(spark, sqlContext, inFile)
 
     # Enter your modules here
     sc.stop()
