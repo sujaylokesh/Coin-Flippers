@@ -22,11 +22,9 @@ def initialize():
 
     global labels # DO NOT CHANGE THE ORDER OF LABELS
     labels = np.asarray(["Business Name", 'School Levels',  'Street Name', 'Park/Playground', 'City agency', 'Building Classification',\
-              'Neighborhood', 'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
-             'Zip code', 'Borough', 'School Name', 'Color', 'Car Make',  \
-              'Areas of study', 'Subjects in school', "Person Name", \
-              'Websites', 'Vehicle Type', 'Type of location'])
-
+                        'Neighborhood', 'Borough','Car Make', 'Areas of study', 'Websites','Color','Type of location','Subjects in school',  \
+                         'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
+                        'Zip code',  'School Name',  "Person Name", 'Vehicle Type', ])
 
     global neiborhood_names
     global boroughs
@@ -189,6 +187,23 @@ def initialize():
     global agencies
     agencies = np.asarray(["Actuary, NYC Office of the (NYCOA)","Administrative Justice Coordinator, NYC Office of (AJC)","Administrative Tax Appeals, Office of","Administrative Trials and Hearings, Office of (OATH)","Aging, Department for the (DFTA)","Appointments, Mayor's Office of (MOA)","Brooklyn Public Library (BPL)","Buildings, Department of (DOB)","Business Integrity Commission (BIC)","Campaign Finance Board (CFB)","Center for Innovation through Data Intelligence (CIDI)","Charter Revision Commission","Chief Medical Examiner, NYC Office of (OCME)","Children's Services, Administration for (ACS)","City Clerk, Office of the (CLERK)","City Council, New York","City Planning, Department of (DCP)","City University of New York (CUNY)","Citywide Administrative Services, Department of (DCAS)","Citywide Event Coordination and Management, Office of (CECM)","Civic Engagement Commission (CEC)","Civil Service Commission (CSC)","Civilian Complaint Review Board (CCRB)","Climate Policy & Programs","Commission on Gender Equity (CGE)","Commission to Combat Police Corruption (CCPC)","Community Affairs Unit (CAU)","Community Boards (CB)","Comptroller (COMP)","Conflicts of Interest Board (COIB)","Consumer Affairs, Department of (DCA)","Consumer and Worker Protection, Department of (DCWP)","Contract Services, Mayor's Office of (MOCS)","Correction, Board of (BOC)","Correction, Department of (DOC)","Criminal Justice, Mayor's Office of","Cultural Affairs, Department of (DCLA)","Data Analytics, Mayor's Office of (MODA)","Design and Construction, Department of (DDC)","District Attorney - Bronx County","District Attorney - Kings County (Brooklyn)","District Attorney - New York County (Manhattan)","District Attorney - Queens County","District Attorney - Richmond County (Staten Island)","Education, Department of (DOE)","Elections, Board of (BOE)","Emergency Management, NYC","Environmental Coordination, Mayor’s Office of (MOEC)","Environmental Protection, Department of (DEP)","Equal Employment Practices Commission (EEPC)","Finance, Department of (DOF)","Fire Department, New York City (FDNY)","Fiscal Year 2005 Securitization Corporation","Food Policy Director, Office of the","GreeNYC (GNYC)","Health and Mental Hygiene, Department of (DOHMH)","Homeless Services, Department of (DHS)","Housing Authority, New York City (NYCHA)","Housing Preservation and Development, Department of (HPD)","Housing Recovery Operations (HRO)","Hudson Yards Infrastructure Corporation","Human Resources Administration (HRA)","Human Rights, City Commission on (CCHR)","Immigrant Affairs, Mayor's Office of (MOIA)","Independent Budget Office, NYC (IBO)","Information Privacy, Mayor's Office of (MOIP)","Information Technology and Telecommunications, Department of (DOITT)","Inspector General NYPD, Office of the","Intergovernmental Affairs, Mayor's Office of (MOIGA)","Investigation, Department of (DOI)","Judiciary, Mayor's Advisory Committee on the (MACJ)","Labor Relations, NYC Office of (OLR)","Landmarks Preservation Commission (LPC)","Law Department (LAW)","Library, Brooklyn Public (BPL)","Library, New York Public (NYPL)","Library, Queens Public (QL)","Loft Board (LOFT)","Management and Budget, Office of (OMB)","Mayor's Committee on City Marshals (MCCM)","Mayor's Fund to Advance NYC (Mayor's Fund)","Mayor's Office (OM)","Mayor's Office for Economic Opportunity","Mayor's Office for International Affairs (IA)","Mayor's Office for People with Disabilities (MOPD)","Mayor's Office of Environmental Remediation (OER)","Mayor's Office of Special Projects & Community Events (MOSPCE)","Mayor's Office of the Chief Technology Officer","Mayor’s Office of Minority and Women-Owned Business Enterprises (OMWBE)","Mayor’s Office of Strategic Partnerships (OSP)","Mayor’s Office to End Domestic and Gender-Based Violence (ENDGBV)","Media and Entertainment, Mayor's Office of (MOME)","Media, NYC","NYC & Company (NYCGO)","NYC Children's Cabinet","NYC Cyber Command","NYC Economic Development Corporation (NYCEDC)","NYC Employees' Retirement System (NYCERS)","NYC Health + Hospitals","NYC Service (SERVICE)","NYC Young Men’s Initiative","New York City Transitional Finance Authority (TFA)","New York Public Library (NYPL)","Office of Recovery & Resiliency","Office of ThriveNYC","Office of the Census for NYC","Operations, Mayor's Office of (OPS)","Parks and Recreation, Department of (DPR)","Payroll Administration, Office of (OPA)","Police Department (NYPD)","Police Pension Fund (PPF)","Probation, Department of (DOP)","Procurement Policy Board (PPB)","Property Tax Reform, Advisory Commission on","Public Administrator - Bronx County (BCPA)","Public Administrator - Kings County (KCPA)","Public Administrator - New York County (NYCountyPA)","Public Administrator - Queens County (QPA)","Public Administrator - Richmond County (RCPA)","Public Advocate (PUB ADV)","Public Design Commission","Queens Public Library (QPL)","Records and Information Services, Department of (DORIS)","Rent Guidelines Board (RGB)","Sales Tax Asset Receivable Corporation (STAR)","Sanitation, Department of (DSNY)","School Construction Authority (SCA)","Small Business Services (SBS)","Social Services, Department of (DSS)","Special Commissioner of Investigation for the New York City School District","Special Enforcement, Mayor’s Office of (OSE)","Special Narcotics Prosecutor, NYC Office of the (SNP)","Standards and Appeals, Board of (BSA)","Sustainability, Mayor's Office Of","TSASC, Inc.","Tax Appeals Tribunal, New York City (TAT)","Tax Commission, New York City (TC)","Taxi and Limousine Commission (TLC)","Teachers' Retirement System of the City of New York","Transportation, Department of (DOT)","Veterans' Services, Department of (DVS)","Water Board (NYWB)","Water Finance Authority, NYC Municipal (NYW)","Workforce Development, Mayor's Office of","Youth and Community Development, Department of (DYCD)"])
 
+    global subjects
+    subjects = np.asarray(['Academic Studies in Education','Accounting','Analytical Science','Animal Science','Applied Mathematics','Applied Statistics','Aquatic Sciences','Art History','Arts & Humanities','Astronomy & Planetary Science','Biochemistry','Biology','Building & Planning','Business & Commercial Law','Business & Management','Business Studies','Cardiography','Chemistry','Childhood & Youth Studies','Children, Young People & Families','Chinese','Cinematics & Photography','Civil Engineering','Classical Studies','Climatology','Communication Technologies','Computer Science','Computing & IT','Contract Law','Counselling','Creative Writing','Criminal Law','Criminology','Databases','Design','Development','Early Years','Earth Sciences','Ecology','Economics','Education, Childhood & Youth','Electronic Engineering','Engineering','Engineering Design','English Language','English Literature','Environment & Development','Environmental Management','Environmental Sciences','Environmental Studies','Finance','Forensic Science','French','General Computing','General Design','General Education','General Engineering','General Law','General Nursing','General Social Science','General Technology','Genetics','Geography','Geology','German','Health & Social Care','Health & Wellbeing','Health Sciences','Healthcare Management','Healthcare Practice','Heritage','History','Human Anatomy','Human Computer Interaction','Humanities','Industrial Engineering','Information Systems','Innovation, Enterprise & Creativity','International Business Studies','International Law','Italian','Jurisprudence','Languages','Law','Leadership & Management','Linguistics','Management','Management of Education','Managing Technology','Marketing','Materials Science','Mathematical Methods','Mathematical Modelling','Mathematics','Mathematics & Statistics','Medical Sciences','Mental Health Nursing','Microbiology','Music','Natural Sciences','Networking','Neuroscience','Nursing & Healthcare Practice','Organisational Administration','Other European Languages','Pathology','Philosophy','Physics','Politics','Primary Education','Probability','Product design','Production Manufacturing','Professional Science','Programming','Project Management','Psychology','Psychology & Counselling','Public Law','Pure Mathematics','Religious Studies','Research & Study Skills in Education','Retail Management','Science','Science & Society','Secondary Education','Social Care','Social Sciences','Social Work','Sociology','Software Engineering','Spanish','Sport & Fitness','Statistics','Strategic Management','Teacher Training','Technology','Torts','Translation studies'])
+
+    global carBrand
+    carBrand = np.asarray(['Mercedes-Benz','Audi','Volkswagen','BMW','Opel','Porsche','Fiat','Lancia','AlfaRomeo','Lamborghini','Maserati','Ferrari','Citroen','Renault','Bugatti','Alpine','Peugeot','McLaren','AstonMartin','Vauxhall','Bentley','Rolls-Royce','LandRover','Mini','Chrysler','Dodge','Jeep','Chevrolet','Buick','GMC','Cadillac','Lincoln','Ford','Honda','Toyota','Suzuki','Lexus','Infiniti','Mazda','Mitsubishi','Nissan','Hyundai','Kia','Daewoo','Geely','Chery','Hongqi','Brilliance','BYD'])
+
+    global color
+    color = np.asarray(['White','Yellow','Blue','Red','Green','Black','Brown','Azure','Ivory','Teal','Silver','Purple','Navy blue','Pea green','Gray','Orange','Maroon','Charcoal','Aquamarine','Coral','Fuchsia','Wheat','Lime','Crimson','Khaki','Hot pink','Magenta','Olden','Plum','Olive','Cyan'])
+
+    global schoolName
+    schoolName = np.asarray(['institute', 'school', 'university', 'college', 'campus'])
+
+    global poi
+    poi = np.asarray(['accounting','airport','amusement_park','aquarium','art_gallery','atm','bakery','bank','bar','beauty_salon','bicycle_store','book_store','bowling_alley','bus_station','cafe','campground','car_dealer','car_rental','car_repair','car_wash','casino','cemetery','church','city_hall','clothing_store','convenience_store','courthouse','dentist','department_store','doctor','drugstore','electrician','electronics_store','embassy','fire_station','florist','funeral_home','furniture_store','gas_station','grocery_or_supermarket','gym','hair_care','hardware_store','hindu_temple','home_goods_store','hospital','insurance_agency','jewelry_store','laundry','lawyer','library','light_rail_station','liquor_store','local_government_office','locksmith','lodging','meal_delivery','meal_takeaway','mosque','movie_rental','movie_theater','moving_company','museum','night_club','painter','park','parking','pet_store','pharmacy','physiotherapist','plumber','police','post_office','primary_school','real_estate_agency','restaurant','roofing_contractor','rv_park','school','secondary_school','shoe_store','shopping_mall','spa','stadium','storage','store','subway_station','supermarket','synagogue','taxi_stand','tourist_attraction','train_station','transit_station','travel_agency','university','veterinary_care','zoo'])
+
+    global schoolSubject
+    schoolSubject =np.asarray(['Math','Art','Algebra','Geometry','Science','English','Music','History','Science','Geography','Information technology','Biology','Drama','Swimming','Physical education','Physics','Chemistry'])
 
 
 ## Main Function
@@ -200,19 +215,30 @@ def semanticCheck(col):
                  checkParkandPlayground(col),
                  checkCityAgencies(col),
                  checkBuildingType(col),
-                 checkNeiborhoods(col)]
+                 checkNeiborhoods(col),
+                 checkBoroughs(col),
+                 checkCarMake(col),
+                 checkAreasOfStudy(col),
+                 checkWebsites(col),
+                 checkColor(col),
+                 checkTypeOfLocation(col),
+                 checkSchoolSubject(col)]
     result = []
     for i in range(0, len(checkEach)):
         if checkEach[i]:
-            result.append(labels[i])
+            semantic = {
+                "semantic_type": labels[i],
+                "count":0 # len(col),
+            }
+            result.append(semantic)
 
     return result
 
 
 
 def generalCheck(column, list):
-    size = column.count()
     columns = column.collect()
+    size = column.count()
     sampleSize = size * 0.1
     check = sampleSize
     cnt = 0
@@ -229,7 +255,6 @@ def generalCheck(column, list):
         if flag:
             cnt += 1
         check -= 1
-
 
     return cnt / sampleSize > 0.5
 
@@ -264,7 +289,123 @@ def checkCityAgencies(column):
 def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
- # def SemanticCheck(_sc,column):
+def namecheck(column):
+    count = 0
+    for i in range(0,int(round(1*len(names)))):
+        inp = names[random.randint(0,len(names)-1)]
+        if m.search_first_name(inp) == False:
+            if m.search_last_name(inp) == False:
+                print("not a name")
+            else:
+                count+=1
+                print(inp,m.search_last_name(inp))
+        else:
+            count+=1
+            print(inp,m.search_first_name(inp))
+    probability = (count/len(names))*100
+    if probability >= 90:
+        return True
+    else:
+        return False
+
+def phonecheck(column):
+    countrycode = '1'
+    n = '15179181419'
+    if len(n) == 10:
+        num = countrycode+n
+    else:
+        num = n
+    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number='+num+'&country_code=&format=1'
+    r = requests.get(url)
+    js = r.json()
+    if js['valid'] == False:
+        return False
+    else:
+        return True
+
+    def zipcodeCheck(column):
+        val = '560043'
+        url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/'+val+'?key=DEMOAPIKEY'
+        a = requests.get(url)
+        json_data = json.loads(a.text)
+        if len(json_data)==0:
+            return False
+        else:
+            return True
+    
+    def collegeCheck(column):
+        csv_file = 'college.csv'
+        fields = ['NAME']
+        df = pd.read_csv(csv_file,usecols=fields)
+        val = 'nyu'
+        max = 0
+        for ind in df.index:
+            temp = fuzz.ratio(val,df['NAME'][ind])
+        if temp > max:
+            max = temp
+            maxid = ind
+        if max > 50
+            return True
+        else:
+            return False
+    
+    def FieldCheck(column):
+        csv_file = 'study.csv'
+        fields = ['MOT']
+        df = pd.read_csv(csv_file,usecols=fields)
+        df=df.dropna()
+        val = 'nyu'
+        max = 0
+        for ind in df.index:
+            temp = fuzz.ratio(val,df['Arts'][ind])
+            if temp > max:
+                max = temp
+                maxid = ind
+        if max > 50
+            return True
+        else:
+            return False
+
+    def CarType(column):
+        csv_file = 'cars.csv'
+        fields = ['MOT']
+        df = pd.read_csv(csv_file,usecols=fields)
+        df=df.dropna()
+        val = 'sdn'
+        max = 0
+        for ind in df.index:
+            temp = fuzz.ratio(val,df['MOT'][ind])
+            if temp > max:
+                max = temp
+                maxind = ind
+        if max > 50
+            return True
+        else:
+            return False
+    
+    def latlon(column):
+        pattern = '^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$'
+        test = ''
+        result = re.match(pattern, test)
+        if result:
+            return True
+        else:
+            return False
+
+    def colors(column):
+        csv_file = 'color.csv'
+        df = pd.read_csv(csv_file)
+        df = df.dropna()
+        val1 = 'cyab'
+        max1 = 0
+        for ind in df.index:
+            temp = df['Air Superiority Blue'][ind]
+            val = fuzz.ratio(val1,temp)
+            if val >50:
+                return True
+            else:
+                return False
+ # def SemanticCheck(,column):
  #    #NameCheck SL
  #    count = 0
  #    for i in range(0,int(round(1*len(names)))):
@@ -302,7 +443,7 @@ if __name__ == '__main__':
     column = ['facebook', 'google', 'Spotify', 'nyu']
     name = ['Sujay', 'school', 'Wayne']
     street = ['200 schermerhorn st', 'layafayette st', 'boradway']
-    print(checkBusinessName(column))
-    print(checkBusinessName(name))
-    print(checkBusinessName(street))
+    # print(checkBusinessName(column))
+    # print(checkBusinessName(name))
+    # print(checkBusinessName(street))
     print(checkStreetName(street))
