@@ -42,7 +42,7 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(0,len(data.columns )):
+    for i in range(0,len(data.columns)):
         colName = data.columns[i]
         #data = data.collect()
         query = "select %s from %s" % (colName, table_name)

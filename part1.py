@@ -170,7 +170,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    task2.initialize()
+    #task2.initialize()
 
     # get command-line arguments
     for i in range(1, len(sys.argv)):
