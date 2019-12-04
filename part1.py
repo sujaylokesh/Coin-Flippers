@@ -101,7 +101,6 @@ def extractMeta(_sc, sql):
 # getting statistics based on data type of the elements in a column
 def calc_statistics(_sc, discinct_rows):
     intList =[]
-    datatype=[]
     txtList=[]
     date_count = 0
     res = []
@@ -118,7 +117,6 @@ def calc_statistics(_sc, discinct_rows):
         typeElement = type(rows[i][0])
         if typeElement == int or typeElement == float:
             intList.append(rows[i][0])
-            datatype.append("Integer/Real")
             max_int = max(max_int, rows[i][0])
             min_int = max(min_int, rows[i][0])
         elif isinstance(rows[i][0], datetime.date):
@@ -127,9 +125,7 @@ def calc_statistics(_sc, discinct_rows):
             min_date = max(min_date, rows[i][0])
         elif typeElement == str:
             txtList.append(rows[i][0])
-            datatype.append("Text")
 
-    datatype = list(set(datatype))
 
     if len(intList) > 0:
         result = {
