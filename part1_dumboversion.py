@@ -20,7 +20,7 @@ from pyspark.sql.types import *
 from pyspark.sql.window import Window
 import json
 #import task2_M as task2
-from dateutil import parser
+#from dateutil import parser
 
 
 
@@ -35,7 +35,8 @@ def output(metadata, key_columns, _sc, table_name ):
         "key_column_candidates": key_columns
     }
     print(results)
-    with open("output.json", 'w') as json_file:
+    path = "%s\\%s.json" % (output_path, table_name)
+    with open(path, 'w') as json_file:
         json.dump(results, json_file)
 
 
@@ -170,7 +171,6 @@ def calc_statistics(_sc, discinct_rows):
 
 if __name__ == "__main__":
     sc = SparkContext()
-    #lines = sc.textFile("files/small.tsv")
 
     spark = SparkSession \
         .builder \
@@ -182,6 +182,12 @@ if __name__ == "__main__":
     #task2.initialize()
 
     # get command-line arguments
+    files = []
     for i in range(1, len(sys.argv)):
-        inFile = sys.argv[i]
-        extractMeta(spark, sqlContext, inFile)
+        files.append(sys.argv[i])
+
+    for i in range(0, len(files)):
+        extractMeta(spark, sqlContext, files[i])
+
+
+    sc.stop()

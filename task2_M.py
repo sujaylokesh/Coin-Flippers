@@ -300,6 +300,7 @@ def parsecolumn(column):
     res4 = []
     res5 = []
     res6 = []
+    res7 = []
     res8 = []
     li = ['NAME','Phone Number','zipcode','college','field of study','type of vehicle','latitude/longitude','color']
     lis = []
@@ -345,21 +346,6 @@ def checkSchoolSubject(column):
 
 def checkAreasOfStudy(column):
     return generalCheck(column, subjects)
-
-def checkCarMake(column):
-    return generalCheck(column, carBrand)
-
-def checkColor(column):
-    return generalCheck(column, color)
-
-def checkSchoolName(column):
-    return generalCheck(column, schoolName)
-
-def checkTypeOfLocation(column):
-    return generalCheck(column, poi)
-
-def checkSchoolSubject(column):
-    return generalCheck(column, schoolSubject)
 
 
 def namecheck(column):
@@ -435,7 +421,7 @@ def FieldCheck(item):
         if temp > max:
             max = temp
             maxid = ind
-    if max > :
+    if max > 50:
         return True
     else:
         return False
