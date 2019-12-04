@@ -333,6 +333,21 @@ def phonecheck(column):
         else:
             return False
 
+    def CarType(column):
+        csv_file = 'cars.csv'
+        fields = ['MOT']
+        df = pd.read_csv(csv_file,usecols=fields)
+        val = 'sdn'
+        max = 0
+        for ind in df.index:
+            temp = fuzz.ratio(val,df['MOT'][ind])
+            if temp > max:
+                max = temp
+                maxind = ind
+        if max > 50
+            return True
+        else:
+            return False
 
  # def SemanticCheck(,column):
  #    #NameCheck SL
