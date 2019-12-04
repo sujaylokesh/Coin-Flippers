@@ -250,6 +250,7 @@ def checkMultipleLabels(col,colLabels):
             "count": col.count()
         }
         result.append(semantic)
+    return result
 
 def generalCheck(column, list):
     columns = column.collect()
@@ -270,7 +271,6 @@ def generalCheck(column, list):
         if flag:
             cnt += 1
         check -= 1
-
 
     return cnt / sampleSize > 0.5
 
