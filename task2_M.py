@@ -21,11 +21,9 @@ buildingTypes = 0
 def initialize():
     global labels # DO NOT CHANGE THE ORDER OF LABELS
     labels = np.asarray(["Business Name", 'School Levels',  'Street Name', 'Park/Playground', 'City agency', 'Building Classification',\
-              'Neighborhood', 'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
-             'Zip code', 'Borough', 'School Name', 'Color', 'Car Make',  \
-              'Areas of study', 'Subjects in school', "Person Name", \
-              'Websites', 'Vehicle Type', 'Type of location'])
-
+                        'Neighborhood', 'Borough','Car Make', 'Subjects in school', 'Websites', \
+                         'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
+                        'Zip code',  'School Name', 'Color', 'Areas of study', "Person Name", 'Vehicle Type', 'Type of location'])
 
     global neiborhood_names
     global boroughs
@@ -203,7 +201,11 @@ def semanticCheck(col):
                  checkParkandPlayground(col),
                  checkCityAgencies(col),
                  checkBuildingType(col),
-                 checkNeiborhoods(col)]
+                 checkNeiborhoods(col),
+                 checkBoroughs(col),
+                 checkCarMake(col),
+                 checkSchoolSubject(col),
+                 checkWebsites(col)]
     result = []
     for i in range(0, len(checkEach)):
         if checkEach[i]:
