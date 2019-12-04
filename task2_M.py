@@ -239,7 +239,7 @@ def semanticCheck(col):
 
 def generalCheck(column, list):
     columns = column.collect()
-    size = column.count()
+    size = len(columns)
     sampleSize = size * 0.1
     check = sampleSize
     cnt = 0
@@ -268,7 +268,7 @@ def checkBoroughs(column):
 def checkWebsites(column):
     if type(column) != str:
         return False
-    exp = "^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"
+    exp = "^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
     result = re.search(exp, column)
     return result
 
@@ -293,7 +293,8 @@ def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
 def parsecolumn(column):
-    size = column.count()
+    columns = column.collect()
+    size = len(columns)
     elem = []
     res1 = []
     res2 = []
@@ -305,8 +306,10 @@ def parsecolumn(column):
     li = ['NAME','Phone Number','zipcode','college','field of study','type of vehicle','latitude/longitude','color']
     lis = []
     ran = .1*size
+    ran = int(ran)
+    result = []
     for i in range(0,ran):
-        rand = random.randint(0,size-1)
+        rand = random.randint(0,ran-1)
         elem.append(str(column[rand]))
     for i in range(0,len(elem)-1):
         res1.append(namecheck(elem[i]))
