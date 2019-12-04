@@ -5,6 +5,7 @@ import sys
 import datetime
 from _ctypes import Array
 from operator import add
+from datetime import datetime
 
 import pyspark
 import string
@@ -29,6 +30,8 @@ output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
 
 
 def output(metadata, key_columns, _sc, table_name ):
+    print("printing output")
+
     results = {
         "dataset_name": table_name,
         "columns": metadata,
@@ -44,7 +47,7 @@ def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
     for i in range(0,len(data.columns)):
-        colName = data.columns[i]
+        colName = data.columns[i].replace(" ", "_")
         #data = data.collect()
         query = "select %s from %s" % (colName, table_name)
         temp = sqlContext.sql(query)
@@ -85,22 +88,31 @@ def profile(data,_sc, sqlContext, table_name):
 
 
 def extractMeta(_sc, sql, file_path):
-    data = _sc.read.csv(path=file_path,sep='\t', header=True, inferSchema=True)
+    print("read data")
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time =", current_time)
+
+    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
-                                      data.columns[col].replace(" ","")
+                                      data.columns[col].replace(" ","_")
                                       .replace("(", "")
                                       .replace(")", ""))
-    data.printSchema()
-    table_name = "ThreeOneOne"
+    # data.printSchema()
+    table_name = file_path.split('\\')[-1]
+    dot_index = table_name.find(".")
+    table_name = table_name[0: dot_index].replace("-","_")
     data.createOrReplaceTempView(table_name)
-    data = profile(data,_sc, sql, table_name)
+    data = profile(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
-    output(col_metadata,key_col_candidate,_sc, table_name)
+    output(col_metadata, key_col_candidate, _sc, table_name)
 
 # getting statistics based on data type of the elements in a column
 def calc_statistics(_sc, discinct_rows):
+    print("checking stats")
+
     intList =[]
     txtList=[]
     date_count = 0
@@ -110,25 +122,25 @@ def calc_statistics(_sc, discinct_rows):
     max_int = -100000000000
     min_int = 1000000000000
 
-    max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
-    min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    #max_date = datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    #min_date = datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
-    for i in range(len(rows)):
-        typeElement = type(rows[i][0])
-        val = rows[i][0]
-        if typeElement == int or typeElement == float:
-            intList.append(val)
-            max_int = max(max_int, val)
-            min_int = max(min_int, val)
-        elif typeElement == str:
-            #check date
-            try:
-                temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
-                max_date = max(max_date, temp_date)
-                min_date = min(min_date, temp_date)
-                date_count = date_count + 1
-            except ValueError:
-                txtList.append(rows[i][0])
+    # for i in range(len(rows)):
+    #     typeElement = type(rows[i][0])
+    #     val = rows[i][0]
+    #     if typeElement == int or typeElement == float:
+    #         intList.append(val)
+    #         max_int = max(max_int, val)
+    #         min_int = max(min_int, val)
+    #     elif typeElement == str:
+    #         #check date
+    #         try:
+    #             #temp_date = datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+    #             max_date = max(max_date, temp_date)
+    #             min_date = min(min_date, temp_date)
+    #             date_count = date_count + 1
+    #         except ValueError:
+    #             txtList.append(rows[i][0])
 
     if len(intList) > 0:
         result = {
