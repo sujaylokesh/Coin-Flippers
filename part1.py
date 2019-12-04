@@ -3,25 +3,15 @@
 
 import sys
 import datetime
-from _ctypes import Array
 from operator import add
-
-from names_dataset import NameDataset
-import pyspark
-import string
 import statistics
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
-from csv import reader
-from pyspark.sql import types
-import math
-from pyspark.sql.types import *
-from pyspark.sql.window import Window
 import json
 import task2_M as task2
-
+from dateutil import parser
 
 
 key_column_threshold = 10
@@ -42,7 +32,7 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(9,14):
+    for i in range(0,len(data.columns )):
         colName = data.columns[i]
         #data = data.collect()
         query = "select %s from %s" % (colName, table_name)
@@ -69,16 +59,16 @@ def profile(data,_sc, sqlContext, table_name):
         }
         results.append(temp_col_metadata)
         #### need updates for count
-        semantics = task2.semanticCheck(discinct_rows)
-        print("semantics", semantics)
-        results.append(semantics)
+     #   semantics = task2.semanticCheck(discinct_rows)
+        #print("semantics", semantics)
+        #results.append(semantics)
 
         #check if this column can be a keycolumn
         diff = abs(non_empty - distinct_count)
         if diff < key_column_threshold:
             key_columns.append(colName)
 
-        print(results)
+    print(results)
 
     return [results, key_columns]
 
@@ -109,23 +99,25 @@ def calc_statistics(_sc, discinct_rows):
     max_int = -100000000000
     min_int = 1000000000000
 
-    max_date = datetime.date(1900,1,1)
-    min_date = datetime.date(9999,12,30)
-
+    max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
     for i in range(len(rows)):
         typeElement = type(rows[i][0])
+        val = rows[i][0]
         if typeElement == int or typeElement == float:
-            intList.append(rows[i][0])
-            max_int = max(max_int, rows[i][0])
-            min_int = max(min_int, rows[i][0])
-        elif isinstance(rows[i][0], datetime.date):
-            date_count = date_count + 1
-            max_date = max(max_date, rows[i][0])
-            min_date = max(min_date, rows[i][0])
+            intList.append(val)
+            max_int = max(max_int, val)
+            min_int = max(min_int, val)
         elif typeElement == str:
-            txtList.append(rows[i][0])
-
+            #check date
+            try:
+                temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+                max_date = max(max_date, temp_date)
+                min_date = min(min_date, temp_date)
+                date_count = date_count + 1
+            except ValueError:
+                txtList.append(rows[i][0])
 
     if len(intList) > 0:
         result = {
@@ -139,11 +131,12 @@ def calc_statistics(_sc, discinct_rows):
         res.append(result)
 
     if date_count > 0:
+
         result = {
             "type": "DATE/TIME",
             "count": date_count,
-            "max_value": max_date,
-            "min_value": min_date
+            "max_value": max_date.strftime("%Y/%m/%d %H:%M:%S"),
+            "min_value": min_date.strftime("%Y/%m/%d %H:%M:%S")
         }
         res.append(result)
 
@@ -163,7 +156,7 @@ def calc_statistics(_sc, discinct_rows):
             "average_length": "%.f2" % average
         }
         res.append(result)
-
+    return res
 
 if __name__ == "__main__":
     sc = SparkContext()
