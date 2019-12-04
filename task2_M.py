@@ -226,6 +226,8 @@ def semanticCheck(col):
                  checkTypeOfLocation(col),
                  checkSchoolSubject(col)]
     colLables1 = []
+    colLabels2 = []
+
     for i in range(0, len(checkEach)):
         if checkEach[i]:
             colLables1.append(labels[i])
@@ -325,8 +327,9 @@ def parsecolumn(column):
     ran = int(ran)
     result = []
     for i in range(0,ran):
-        rand = random.randint(0,ran-1)
-        elem.append(str(column[rand]))
+        rand = random.randint(0,size-1)
+        a = str(columns[rand]).split('=')[1].split(')')[0]
+        elem.append(a)
     for i in range(0,len(elem)-1):
         res1.append(namecheck(elem[i]))
         res2.append(phonecheck(elem[i]))
@@ -401,14 +404,10 @@ def phonecheck(item):
         return True
 
 def zipcodeCheck(item):
-    val = str(item)
-    url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/' + val + '?key=DEMOAPIKEY'
-    a = requests.get(url)
-    json_data = json.loads(a.text)
-    if len(json_data) == 0:
-        return False
-    else:
+    if len(item) == 5:
         return True
+    else:
+        return False
 
 def collegeCheck(item):
     csv_file = 'college.csv'
@@ -427,7 +426,7 @@ def collegeCheck(item):
 
 def FieldCheck(item):
     csv_file = 'study.csv'
-    fields = ['MOT']
+    fields = ['Arts']
     df = pd.read_csv(csv_file, usecols=fields)
     df = df.dropna()
     val = str(item)
@@ -443,16 +442,15 @@ def FieldCheck(item):
 
 def CarType(item):
     csv_file = 'cars.csv'
-    fields = ['MOT']
+    fields = ['Unnamed: 0']
     df = pd.read_csv(csv_file, usecols=fields)
     df = df.dropna()
     val = str(item)
     max = 0
     for ind in df.index:
-        temp = fuzz.ratio(val, df['MOT'][ind])
+        temp = fuzz.ratio(val, df['Unnamed: 0'][ind])
         if temp > max:
             max = temp
-            maxind = ind
     if max > 50:
         return True
     else:
@@ -468,7 +466,7 @@ def latlon(item):
         return False
 
 def colors(item):
-    csv_file = 'color.csv'
+    csv_file = 'colors.csv'
     df = pd.read_csv(csv_file)
     df = df.dropna()
     val1 = str(item)
