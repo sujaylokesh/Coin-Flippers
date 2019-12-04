@@ -21,8 +21,9 @@ import json
 import task2_M as task2
 
 
+
 key_column_threshold = 10
-output_path = '/Users/mina/Dropbox/2019Fall/BigData/projectOutput'
+output_path = '/Users/mina/Dropbox/2019Fall/BigData/projectOutput/output.json'
 
 def output(metadata, key_columns, _sc, table_name ):
     results = {
@@ -38,10 +39,10 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(15, 20):
+    for i in range(10, 13):
         colName = data.columns[i]
-        print(colName)
-        query = "select %s from %s " % (colName, table_name)
+        #data = data.collect()
+        query = "select %s from %s" % (colName, table_name)
         temp = sqlContext.sql(query)
 
         #get data sets
@@ -136,72 +137,73 @@ def calc_statistics(_sc, discinct_rows):
     
 
     #count number of integers in each word in a list
-    templist = txtList
-    counts = []
-    max_values = {}
-    if len(templist) > 0:
-        for txt in range(0,len(templist)):
-            counts[txt] = len(templist[txt])
-        for i in range(0,len(counts)):
-            first = max(counts)
-            counts.remove(first)
-            second = max(counts)
-            counts.remove(second)
-            third = max(counts)
-            counts.remove(third)
-            fourth = max(counts)
-            counts.remove(fourth)
-            fifth = max(counts)
-        max_values ={
-            "1st Highest": first,
-            "2nd Highest": second,
-            "3rd Highest": third,
-            "4th Highest": fourth,
-            "5th Highest": fifth
-            }
-        res.append(max_values)
-
-    #Top 5 Shortest Values
-    templist = txtList
-    counts = []
-    min_values = {}
-    if len(templist) > 0:
-        for txt in range(0,len(templist)):
-            counts[txt] = templist[txt].count()
-        for i in range(0,len(counts)):
-            first = min(counts)
-            counts.remove(first)
-            second = min(counts)
-            counts.remove(second)
-            third = min(counts)
-            counts.remove(third)
-            fourth = min(counts)
-            counts.remove(fourth)
-            fifth = min(counts)
-        min_values ={
-            "1st Lowest": first,
-            "2nd Lowest": second,
-            "3rd Lowest": third,
-            "4th Lowest": fourth,
-            "5th Lowest": fifth
-            }
-        res.append(min_values)
-    #Average Number
-    templist = txtList
-    counts = []
-    avg = 0
-    average = {}
-    if len(templist) > 0:
-        for txt in range(0,len(templist)):
-            counts[txt] = templist[txt].count()
-        avg = sum(counts)/len(templist)
-        average = {"Average":avg}
-        res.append(average)
+    # templist = txtList
+    # counts = []
+    # max_values = {}
+    # if len(templist) > 0:
+    #     for txt in range(0,len(templist)):
+    #         counts[txt] = len(templist[txt])
+    #     for i in range(0,len(counts)):
+    #         first = max(counts)
+    #         counts.remove(first)
+    #         second = max(counts)
+    #         counts.remove(second)
+    #         third = max(counts)
+    #         counts.remove(third)
+    #         fourth = max(counts)
+    #         counts.remove(fourth)
+    #         fifth = max(counts)
+    #     max_values ={
+    #         "1st Highest": first,
+    #         "2nd Highest": second,
+    #         "3rd Highest": third,
+    #         "4th Highest": fourth,
+    #         "5th Highest": fifth
+    #         }
+    #     res.append(max_values)
+    #
+    # #Top 5 Shortest Values
+    # templist = txtList
+    # counts = []
+    # min_values = {}
+    # if len(templist) > 0:
+    #     for txt in range(0,len(templist)):
+    #         counts[txt] = templist[txt].count()
+    #     for i in range(0,len(counts)):
+    #         first = min(counts)
+    #         counts.remove(first)
+    #         second = min(counts)
+    #         counts.remove(second)
+    #         third = min(counts)
+    #         counts.remove(third)
+    #         fourth = min(counts)
+    #         counts.remove(fourth)
+    #         fifth = min(counts)
+    #     min_values ={
+    #         "1st Lowest": first,
+    #         "2nd Lowest": second,
+    #         "3rd Lowest": third,
+    #         "4th Lowest": fourth,
+    #         "5th Lowest": fifth
+    #         }
+    #     res.append(min_values)
+    # #Average Number
+    # templist = txtList
+    # counts = []
+    # avg = 0
+    # average = {}
+    # if len(templist) > 0:
+    #     for txt in range(0,len(templist)):
+    #         counts[txt] = templist[txt].count()
+    #     avg = sum(counts)/len(templist)
+    #     average = {"Average":avg}
+    #     res.append(average)
     return res
 
 
 if __name__ == "__main__":
     sc = SparkContext()
+    #lines = sc.textFile("files/small.tsv")
 
     spark = SparkSession \
         .builder \
@@ -213,9 +215,10 @@ if __name__ == "__main__":
     task2.initialize()
 
     extractMeta(spark, sqlContext)
+
     # get command-line arguments
     inFile = sys.argv[1]
 
     # Enter your modules here
     sc.stop()
-    task2.checkNeiborhoods(0)
+

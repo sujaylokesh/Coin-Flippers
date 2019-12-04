@@ -188,7 +188,11 @@ def initialize():
     global agencies
     agencies = np.asarray(["Actuary, NYC Office of the (NYCOA)","Administrative Justice Coordinator, NYC Office of (AJC)","Administrative Tax Appeals, Office of","Administrative Trials and Hearings, Office of (OATH)","Aging, Department for the (DFTA)","Appointments, Mayor's Office of (MOA)","Brooklyn Public Library (BPL)","Buildings, Department of (DOB)","Business Integrity Commission (BIC)","Campaign Finance Board (CFB)","Center for Innovation through Data Intelligence (CIDI)","Charter Revision Commission","Chief Medical Examiner, NYC Office of (OCME)","Children's Services, Administration for (ACS)","City Clerk, Office of the (CLERK)","City Council, New York","City Planning, Department of (DCP)","City University of New York (CUNY)","Citywide Administrative Services, Department of (DCAS)","Citywide Event Coordination and Management, Office of (CECM)","Civic Engagement Commission (CEC)","Civil Service Commission (CSC)","Civilian Complaint Review Board (CCRB)","Climate Policy & Programs","Commission on Gender Equity (CGE)","Commission to Combat Police Corruption (CCPC)","Community Affairs Unit (CAU)","Community Boards (CB)","Comptroller (COMP)","Conflicts of Interest Board (COIB)","Consumer Affairs, Department of (DCA)","Consumer and Worker Protection, Department of (DCWP)","Contract Services, Mayor's Office of (MOCS)","Correction, Board of (BOC)","Correction, Department of (DOC)","Criminal Justice, Mayor's Office of","Cultural Affairs, Department of (DCLA)","Data Analytics, Mayor's Office of (MODA)","Design and Construction, Department of (DDC)","District Attorney - Bronx County","District Attorney - Kings County (Brooklyn)","District Attorney - New York County (Manhattan)","District Attorney - Queens County","District Attorney - Richmond County (Staten Island)","Education, Department of (DOE)","Elections, Board of (BOE)","Emergency Management, NYC","Environmental Coordination, Mayor’s Office of (MOEC)","Environmental Protection, Department of (DEP)","Equal Employment Practices Commission (EEPC)","Finance, Department of (DOF)","Fire Department, New York City (FDNY)","Fiscal Year 2005 Securitization Corporation","Food Policy Director, Office of the","GreeNYC (GNYC)","Health and Mental Hygiene, Department of (DOHMH)","Homeless Services, Department of (DHS)","Housing Authority, New York City (NYCHA)","Housing Preservation and Development, Department of (HPD)","Housing Recovery Operations (HRO)","Hudson Yards Infrastructure Corporation","Human Resources Administration (HRA)","Human Rights, City Commission on (CCHR)","Immigrant Affairs, Mayor's Office of (MOIA)","Independent Budget Office, NYC (IBO)","Information Privacy, Mayor's Office of (MOIP)","Information Technology and Telecommunications, Department of (DOITT)","Inspector General NYPD, Office of the","Intergovernmental Affairs, Mayor's Office of (MOIGA)","Investigation, Department of (DOI)","Judiciary, Mayor's Advisory Committee on the (MACJ)","Labor Relations, NYC Office of (OLR)","Landmarks Preservation Commission (LPC)","Law Department (LAW)","Library, Brooklyn Public (BPL)","Library, New York Public (NYPL)","Library, Queens Public (QL)","Loft Board (LOFT)","Management and Budget, Office of (OMB)","Mayor's Committee on City Marshals (MCCM)","Mayor's Fund to Advance NYC (Mayor's Fund)","Mayor's Office (OM)","Mayor's Office for Economic Opportunity","Mayor's Office for International Affairs (IA)","Mayor's Office for People with Disabilities (MOPD)","Mayor's Office of Environmental Remediation (OER)","Mayor's Office of Special Projects & Community Events (MOSPCE)","Mayor's Office of the Chief Technology Officer","Mayor’s Office of Minority and Women-Owned Business Enterprises (OMWBE)","Mayor’s Office of Strategic Partnerships (OSP)","Mayor’s Office to End Domestic and Gender-Based Violence (ENDGBV)","Media and Entertainment, Mayor's Office of (MOME)","Media, NYC","NYC & Company (NYCGO)","NYC Children's Cabinet","NYC Cyber Command","NYC Economic Development Corporation (NYCEDC)","NYC Employees' Retirement System (NYCERS)","NYC Health + Hospitals","NYC Service (SERVICE)","NYC Young Men’s Initiative","New York City Transitional Finance Authority (TFA)","New York Public Library (NYPL)","Office of Recovery & Resiliency","Office of ThriveNYC","Office of the Census for NYC","Operations, Mayor's Office of (OPS)","Parks and Recreation, Department of (DPR)","Payroll Administration, Office of (OPA)","Police Department (NYPD)","Police Pension Fund (PPF)","Probation, Department of (DOP)","Procurement Policy Board (PPB)","Property Tax Reform, Advisory Commission on","Public Administrator - Bronx County (BCPA)","Public Administrator - Kings County (KCPA)","Public Administrator - New York County (NYCountyPA)","Public Administrator - Queens County (QPA)","Public Administrator - Richmond County (RCPA)","Public Advocate (PUB ADV)","Public Design Commission","Queens Public Library (QPL)","Records and Information Services, Department of (DORIS)","Rent Guidelines Board (RGB)","Sales Tax Asset Receivable Corporation (STAR)","Sanitation, Department of (DSNY)","School Construction Authority (SCA)","Small Business Services (SBS)","Social Services, Department of (DSS)","Special Commissioner of Investigation for the New York City School District","Special Enforcement, Mayor’s Office of (OSE)","Special Narcotics Prosecutor, NYC Office of the (SNP)","Standards and Appeals, Board of (BSA)","Sustainability, Mayor's Office Of","TSASC, Inc.","Tax Appeals Tribunal, New York City (TAT)","Tax Commission, New York City (TC)","Taxi and Limousine Commission (TLC)","Teachers' Retirement System of the City of New York","Transportation, Department of (DOT)","Veterans' Services, Department of (DVS)","Water Board (NYWB)","Water Finance Authority, NYC Municipal (NYW)","Workforce Development, Mayor's Office of","Youth and Community Development, Department of (DYCD)"])
 
+    global subjects
+    subjects = np.asarray(['Academic Studies in Education','Accounting','Analytical Science','Animal Science','Applied Mathematics','Applied Statistics','Aquatic Sciences','Art History','Arts & Humanities','Astronomy & Planetary Science','Biochemistry','Biology','Building & Planning','Business & Commercial Law','Business & Management','Business Studies','Cardiography','Chemistry','Childhood & Youth Studies','Children, Young People & Families','Chinese','Cinematics & Photography','Civil Engineering','Classical Studies','Climatology','Communication Technologies','Computer Science','Computing & IT','Contract Law','Counselling','Creative Writing','Criminal Law','Criminology','Databases','Design','Development','Early Years','Earth Sciences','Ecology','Economics','Education, Childhood & Youth','Electronic Engineering','Engineering','Engineering Design','English Language','English Literature','Environment & Development','Environmental Management','Environmental Sciences','Environmental Studies','Finance','Forensic Science','French','General Computing','General Design','General Education','General Engineering','General Law','General Nursing','General Social Science','General Technology','Genetics','Geography','Geology','German','Health & Social Care','Health & Wellbeing','Health Sciences','Healthcare Management','Healthcare Practice','Heritage','History','Human Anatomy','Human Computer Interaction','Humanities','Industrial Engineering','Information Systems','Innovation, Enterprise & Creativity','International Business Studies','International Law','Italian','Jurisprudence','Languages','Law','Leadership & Management','Linguistics','Management','Management of Education','Managing Technology','Marketing','Materials Science','Mathematical Methods','Mathematical Modelling','Mathematics','Mathematics & Statistics','Medical Sciences','Mental Health Nursing','Microbiology','Music','Natural Sciences','Networking','Neuroscience','Nursing & Healthcare Practice','Organisational Administration','Other European Languages','Pathology','Philosophy','Physics','Politics','Primary Education','Probability','Product design','Production Manufacturing','Professional Science','Programming','Project Management','Psychology','Psychology & Counselling','Public Law','Pure Mathematics','Religious Studies','Research & Study Skills in Education','Retail Management','Science','Science & Society','Secondary Education','Social Care','Social Sciences','Social Work','Sociology','Software Engineering','Spanish','Sport & Fitness','Statistics','Strategic Management','Teacher Training','Technology','Torts','Translation studies'])
 
+    global carBrand
+    carBrand = np.asarray(['Mercedes-Benz','Audi','Volkswagen','BMW','Opel','Porsche','Fiat','Lancia','AlfaRomeo','Lamborghini','Maserati','Ferrari','Citroen','Renault','Bugatti','Alpine','Peugeot','McLaren','AstonMartin','Vauxhall','Bentley','Rolls-Royce','LandRover','Mini','Chrysler','Dodge','Jeep','Chevrolet','Buick','GMC','Cadillac','Lincoln','Ford','Honda','Toyota','Suzuki','Lexus','Infiniti','Mazda','Mitsubishi','Nissan','Hyundai','Kia','Daewoo','Geely','Chery','Hongqi','Brilliance','BYD'])
 
 ## Main Function
 def semanticCheck(col):
@@ -203,15 +207,19 @@ def semanticCheck(col):
     result = []
     for i in range(0, len(checkEach)):
         if checkEach[i]:
-            result.append(labels[i])
+            semantic = {
+                "semantic_type": labels[i],
+                "count":0 # len(col),
+            }
+            result.append(semantic)
 
     return result
 
 
 
 def generalCheck(column, list):
-    size = column.count()
     columns = column.collect()
+    size = column.count()
     sampleSize = size * 0.1
     check = sampleSize
     cnt = 0
@@ -228,7 +236,6 @@ def generalCheck(column, list):
         if flag:
             cnt += 1
         check -= 1
-
 
     return cnt / sampleSize > 0.5
 
@@ -417,7 +424,7 @@ if __name__ == '__main__':
     column = ['facebook', 'google', 'Spotify', 'nyu']
     name = ['Sujay', 'school', 'Wayne']
     street = ['200 schermerhorn st', 'layafayette st', 'boradway']
-    print(checkBusinessName(column))
-    print(checkBusinessName(name))
-    print(checkBusinessName(street))
+    # print(checkBusinessName(column))
+    # print(checkBusinessName(name))
+    # print(checkBusinessName(street))
     print(checkStreetName(street))
