@@ -288,6 +288,12 @@ def checkCityAgencies(column):
 def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
+def parsecolumn(column):
+    size = column.count()
+    while count < 10:
+        rand = random.randint(0,size-1)
+        elem = str(columns[rand])
+        
 def namecheck(column):
     count = 0
     for i in range(0,int(round(1*len(names)))):
