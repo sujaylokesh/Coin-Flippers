@@ -34,8 +34,8 @@ def initialize():
     neiborhood_names=[]
     for item in neiborhood_data:
         neiborhood_names.append(item["name"])
-        temp_borough_set.add(item["name"])
-
+        temp_borough_set.add(item["borough"])
+    boroughs = list(temp_borough_set)
 
     global business_data
     response = requests.get("https://data.ny.gov/resource/n9v6-gdp6.json")
@@ -289,6 +289,12 @@ def checkCityAgencies(column):
 def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
+def parsecolumn(column):
+    size = column.count()
+    while count < 10:
+        rand = random.randint(0,size-1)
+        elem = str(columns[rand])
+        
 def namecheck(column):
     count = 0
     for i in range(0,int(round(1*len(names)))):
