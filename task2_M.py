@@ -325,7 +325,7 @@ def parsecolumn(column):
     lis.append(res7)
     lis.append(res8)
     for i in range(0,len(lis)-1):
-        if sum(lis[i]) > .8*len(lis[i]):
+        if sum(lis[i]) >= .8*len(lis[i]):
             result.append(li[i])
 
 def checkCarMake(column):
@@ -382,9 +382,9 @@ def namecheck(column):
         return False
 
 
-def phonecheck(column):
+def phonecheck(item):
     countrycode = '1'
-    n = '15179181419'
+    n = str(item)
     if len(n) == 10:
         num = countrycode + n
     else:
@@ -397,8 +397,8 @@ def phonecheck(column):
     else:
         return True
 
-def zipcodeCheck(column):
-    val = '560043'
+def zipcodeCheck(item):
+    val = str(item)
     url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/' + val + '?key=DEMOAPIKEY'
     a = requests.get(url)
     json_data = json.loads(a.text)
@@ -407,11 +407,11 @@ def zipcodeCheck(column):
     else:
         return True
 
-def collegeCheck(column):
+def collegeCheck(item):
     csv_file = 'college.csv'
     fields = ['NAME']
     df = pd.read_csv(csv_file, usecols=fields)
-    val = 'nyu'
+    val = str(item)
     max = 0
     for ind in df.index:
         temp = fuzz.ratio(val, df['NAME'][ind])
@@ -423,12 +423,12 @@ def collegeCheck(column):
     else:
         return False
 
-def FieldCheck(column):
+def FieldCheck(item):
     csv_file = 'study.csv'
     fields = ['MOT']
     df = pd.read_csv(csv_file, usecols=fields)
     df = df.dropna()
-    val = 'nyu'
+    val = str(item)
     max = 0
     for ind in df.index:
         temp = fuzz.ratio(val, df['Arts'][ind])
@@ -440,12 +440,12 @@ def FieldCheck(column):
     else:
         return False
 
-def CarType(column):
+def CarType(item):
     csv_file = 'cars.csv'
     fields = ['MOT']
     df = pd.read_csv(csv_file, usecols=fields)
     df = df.dropna()
-    val = 'sdn'
+    val = str(item)
     max = 0
     for ind in df.index:
         temp = fuzz.ratio(val, df['MOT'][ind])
@@ -457,20 +457,20 @@ def CarType(column):
     else:
         return False
 
-def latlon(column):
+def latlon(item):
     pattern = '^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$'
-    test = ''
+    test = str(item)
     result = re.match(pattern, test)
     if result:
         return True
     else:
         return False
 
-def colors(column):
+def colors(item):
     csv_file = 'color.csv'
     df = pd.read_csv(csv_file)
     df = df.dropna()
-    val1 = 'cyab'
+    val1 = str(item)
     max1 = 0
     for ind in df.index:
         temp = df['Air Superiority Blue'][ind]
