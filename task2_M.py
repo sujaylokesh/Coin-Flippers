@@ -308,6 +308,9 @@ def phonecheck(column):
             return True
     
     def collegeCheck(column):
+        csv_file = 'college.csv'
+        fields = ['NAME']
+        df = pd.read_csv(csv_file,usecols=fields)
         val = 'nyu'
         max = 0
         for ind in df.index:
@@ -321,6 +324,10 @@ def phonecheck(column):
             return False
     
     def FieldCheck(column):
+        csv_file = 'study.csv'
+        fields = ['MOT']
+        df = pd.read_csv(csv_file,usecols=fields)
+        df=df.dropna()
         val = 'nyu'
         max = 0
         for ind in df.index:
@@ -337,6 +344,7 @@ def phonecheck(column):
         csv_file = 'cars.csv'
         fields = ['MOT']
         df = pd.read_csv(csv_file,usecols=fields)
+        df=df.dropna()
         val = 'sdn'
         max = 0
         for ind in df.index:
@@ -348,7 +356,29 @@ def phonecheck(column):
             return True
         else:
             return False
+    
+    def latlon(column):
+        pattern = '^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$'
+        test = ''
+        result = re.match(pattern, test)
+        if result:
+            return True
+        else:
+            return False
 
+    def colors(column):
+        csv_file = 'color.csv'
+        df = pd.read_csv(csv_file)
+        df = df.dropna()
+        val1 = 'cyab'
+        max1 = 0
+        for ind in df.index:
+            temp = df['Air Superiority Blue'][ind]
+            val = fuzz.ratio(val1,temp)
+            if val >50:
+                return True
+            else:
+                return False
  # def SemanticCheck(,column):
  #    #NameCheck SL
  #    count = 0
