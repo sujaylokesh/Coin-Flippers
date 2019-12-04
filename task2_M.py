@@ -7,6 +7,7 @@ import random
 import numpy as np
 from pandas.io.json import json_normalize
 import re
+from names_dataset import NameDataset
 
 
 neiborhood_names = 0
@@ -362,24 +363,20 @@ def checkSchoolSubject(column):
     return generalCheck(column, schoolSubject)
 
 
-def namecheck(column):
+def namecheck(inp):
     count = 0
-    for i in range(0, int(round(1 * len(names)))):
-        inp = names[random.randint(0, len(names) - 1)]
-        if m.search_first_name(inp) == False:
-            if m.search_last_name(inp) == False:
-                print("not a name")
-            else:
-                count += 1
-                print(inp, m.search_last_name(inp))
+    inp = str(inp)
+    if m.search_first_name(inp) == False:
+        if m.search_last_name(inp) == False:
+            return False
+        elif m.search_last_name(inp) ==False:
+            return False
         else:
-            count += 1
-            print(inp, m.search_first_name(inp))
-    probability = (count / len(names)) * 100
-    if probability >= 90:
-        return True
-    else:
+            return True
+    elif m.search_first_name(inp) == False:
         return False
+    else:
+        return True
 
 
 def phonecheck(item):
