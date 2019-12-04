@@ -328,25 +328,6 @@ def parsecolumn(column):
         if sum(lis[i]) > .8*len(lis[i]):
             result.append(li[i])
 
-def namecheck(column):
-    count = 0
-    for i in range(0,int(round(1*len(names)))):
-        inp = names[random.randint(0,len(names)-1)]
-        if m.search_first_name(inp) == False:
-            if m.search_last_name(inp) == False:
-                print("not a name")
-            else:
-                count+=1
-                print(inp,m.search_last_name(inp))
-        else:
-            count+=1
-            print(inp,m.search_first_name(inp))
-    probability = (count/len(names))*100
-    if probability >= 90:
-        return True
-    else:
-        return False
-
 def checkCarMake(column):
     return generalCheck(column, carBrand)
 
