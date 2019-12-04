@@ -33,8 +33,8 @@ def initialize():
     neiborhood_names=[]
     for item in neiborhood_data:
         neiborhood_names.append(item["name"])
-        temp_borough_set.add(item["name"])
-
+        temp_borough_set.add(item["borough"])
+    boroughs = list(temp_borough_set)
 
     global business_data
     response = requests.get("https://data.ny.gov/resource/n9v6-gdp6.json")
