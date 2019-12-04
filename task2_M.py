@@ -19,6 +19,7 @@ buildingTypes = 0
 
 
 def initialize():
+
     global labels # DO NOT CHANGE THE ORDER OF LABELS
     labels = np.asarray(["Business Name", 'School Levels',  'Street Name', 'Park/Playground', 'City agency', 'Building Classification',\
               'Neighborhood', 'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \

@@ -4,6 +4,8 @@
 import sys
 import datetime
 from _ctypes import Array
+from operator import add
+
 from names_dataset import NameDataset
 import pyspark
 import string
@@ -22,7 +24,7 @@ import task2_M as task2
 
 
 key_column_threshold = 10
-output_path = '/Users/mina/Dropbox/2019Fall/BigData/projectOutput'
+output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
 
 def output(metadata, key_columns, _sc, table_name ):
     results = {
@@ -38,7 +40,7 @@ def output(metadata, key_columns, _sc, table_name ):
 def profile(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(15, 20):
+    for i in range(1, 3):
         colName = data.columns[i]
         print(colName)
         query = "select %s from %s " % (colName, table_name)
@@ -97,19 +99,30 @@ def extractMeta(_sc, sql):
 # getting statistics based on data type of the elements in a column
 def calc_statistics(_sc, discinct_rows):
     intList =[]
-    dateList=[]
     datatype=[]
     txtList=[]
+    date_count = 0
     res = []
     rows = discinct_rows.collect()
+
+    max_int = -100000000000
+    min_int = 1000000000000
+
+    max_date = datetime.date(1900,1,1)
+    min_date = datetime.date(9999,12,30)
+
+
     for i in range(len(rows)):
         typeElement = type(rows[i][0])
         if typeElement == int or typeElement == float:
             intList.append(rows[i][0])
             datatype.append("Integer/Real")
+            max_int = max(max_int, rows[i][0])
+            min_int = max(min_int, rows[i][0])
         elif isinstance(rows[i][0], datetime.date):
-            dateList.append(rows[i][0])
-            datatype.append("Date")
+            date_count = date_count + 1
+            max_date = max(max_date, rows[i][0])
+            min_date = max(min_date, rows[i][0])
         elif typeElement == str:
             txtList.append(rows[i][0])
             datatype.append("Text")
@@ -118,85 +131,39 @@ def calc_statistics(_sc, discinct_rows):
         result = {
             "type": "INTEGER/REAL",
             "count": len(intList),
-            "max_value": max(intList),
-            "min_value": min(intList),
+            "max_value": max_int,
+            "min_value": min_int,
             "mean": statistics.mean(intList),
             "stddev": statistics.stdev(intList)
         }
         res.append(result)
 
-    if len(dateList) > 0:
+    if date_count > 0:
         result = {
             "type": "DATE/TIME",
-            "count": len(dateList),
-            # "max_value" : max_date,
-            # "min_value" : min_date
+            "count": date_count,
+            "max_value": max_date,
+            "min_value": min_date
         }
         res.append(result)
-    
 
-    #count number of integers in each word in a list
-    templist = txtList
-    counts = []
-    max_values = {}
-    if len(templist) > 0:
-        for txt in range(0,len(templist)):
-            counts[txt] = len(templist[txt])
-        for i in range(0,len(counts)):
-            first = max(counts)
-            counts.remove(first)
-            second = max(counts)
-            counts.remove(second)
-            third = max(counts)
-            counts.remove(third)
-            fourth = max(counts)
-            counts.remove(fourth)
-            fifth = max(counts)
-        max_values ={
-            "1st Highest": first,
-            "2nd Highest": second,
-            "3rd Highest": third,
-            "4th Highest": fourth,
-            "5th Highest": fifth
-            }
-        res.append(max_values)
+    if len(txtList) > 0:
+        templist = _sc.sparkContext.parallelize(txtList)
+        sorted_list = templist.map(lambda x: len(x)).sortBy(lambda x: x, ascending=False)
+        longest = sorted_list.take(5)
+        shortest = sorted_list.take(5)
+        count = templist.count()
+        sum = templist.map(lambda x: len(x)).reduce(add)
+        average = float(sum) / float(count)
+        result = {
+            "type": "TEXT",
+            "count": len(txtList),
+            "shortest_values": shortest,
+            "longest_values": longest,
+            "average_length": "%.f2" % average
+        }
+        res.append(result)
 
-    #Top 5 Shortest Values
-    templist = txtList
-    counts = []
-    min_values = {}
-    if len(templist) > 0:
-        for txt in range(0,len(templist)):
-            counts[txt] = templist[txt].count()
-        for i in range(0,len(counts)):
-            first = min(counts)
-            counts.remove(first)
-            second = min(counts)
-            counts.remove(second)
-            third = min(counts)
-            counts.remove(third)
-            fourth = min(counts)
-            counts.remove(fourth)
-            fifth = min(counts)
-        min_values ={
-            "1st Lowest": first,
-            "2nd Lowest": second,
-            "3rd Lowest": third,
-            "4th Lowest": fourth,
-            "5th Lowest": fifth
-            }
-        res.append(min_values)
-    #Average Number
-    templist = txtList
-    counts = []
-    avg = 0
-    average = {}
-    if len(templist) > 0:
-        for txt in range(0,len(templist)):
-            counts[txt] = templist[txt].count()
-        avg = sum(counts)/len(templist)
-        average = {"Average":avg}
-        res.append(average)
     return res
 
 
@@ -218,4 +185,3 @@ if __name__ == "__main__":
 
     # Enter your modules here
     sc.stop()
-    task2.checkNeiborhoods(0)
