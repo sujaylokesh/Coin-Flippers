@@ -26,8 +26,9 @@ import json
 
 
 key_column_threshold = 10
-output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
-
+output_path = ''
+global start_time
+global end_time
 
 def output(metadata, key_columns, _sc, table_name ):
     print("printing output")
@@ -37,8 +38,13 @@ def output(metadata, key_columns, _sc, table_name ):
         "columns": metadata,
         "key_column_candidates": key_columns
     }
-    print(results)
-    path = "%s\\%s.json" % (output_path, table_name)
+    now = datetime.now()
+    end_time = now.strftime("%H:%M:%S")
+    print("End Time =", end_time)
+    print(" Time diff =", end_time-start_time)
+    # print(results)
+    path = "%s.json" % (table_name)
+    #path = "%s\\%s.json" % (output_path, table_name)
     with open(path, 'w') as json_file:
         json.dump(results, json_file)
 
@@ -72,8 +78,7 @@ def profile(data,_sc, sqlContext, table_name):
             "data_types": calc_statistics(_sc, discinct_rows)
         }
         results.append(temp_col_metadata)
-        #### need updates for count
-     #   semantics = task2.semanticCheck(discinct_rows)
+        #semantics = task2.semanticCheck(discinct_rows)
         #print("semantics", semantics)
         #results.append(semantics)
 
@@ -90,15 +95,16 @@ def profile(data,_sc, sqlContext, table_name):
 def extractMeta(_sc, sql, file_path):
     print("read data")
     now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("Current Time =", current_time)
+    start_time = now.strftime("%H:%M:%S")
+    print("Current Time =", start_time)
 
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
-                                      data.columns[col].replace(" ","_")
+                                      data.columns[col].replace(" ","_").replace("/","")
                                       .replace("(", "")
                                       .replace(")", ""))
+
     # data.printSchema()
     table_name = file_path.split('\\')[-1]
     dot_index = table_name.find(".")
@@ -122,25 +128,25 @@ def calc_statistics(_sc, discinct_rows):
     max_int = -100000000000
     min_int = 1000000000000
 
-    #max_date = datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
-    #min_date = datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    max_date = datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    min_date = datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
-    # for i in range(len(rows)):
-    #     typeElement = type(rows[i][0])
-    #     val = rows[i][0]
-    #     if typeElement == int or typeElement == float:
-    #         intList.append(val)
-    #         max_int = max(max_int, val)
-    #         min_int = max(min_int, val)
-    #     elif typeElement == str:
-    #         #check date
-    #         try:
-    #             #temp_date = datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
-    #             max_date = max(max_date, temp_date)
-    #             min_date = min(min_date, temp_date)
-    #             date_count = date_count + 1
-    #         except ValueError:
-    #             txtList.append(rows[i][0])
+    for i in range(len(rows)):
+        typeElement = type(rows[i][0])
+        val = rows[i][0]
+        if typeElement == int or typeElement == float:
+            intList.append(val)
+            max_int = max(max_int, val)
+            min_int = max(min_int, val)
+        elif typeElement == str:
+            #check date
+            try:
+                temp_date = datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+                max_date = max(max_date, temp_date)
+                min_date = min(min_date, temp_date)
+                date_count = date_count + 1
+            except ValueError:
+                txtList.append(rows[i][0])
 
     if len(intList) > 0:
         result = {
