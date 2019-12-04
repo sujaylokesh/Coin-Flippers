@@ -189,7 +189,3 @@ if __name__ == "__main__":
 
     # Enter your modules here
     sc.stop()
-<<<<<<< HEAD
-=======
-
->>>>>>> 8e5d8f2855dbbd75efce7289bb27cd97c92927fa
