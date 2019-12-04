@@ -5,7 +5,6 @@ import sys
 import datetime
 from operator import add
 import statistics
-from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
@@ -16,7 +15,7 @@ import re
 
 
 key_column_threshold = 10
-output_path = 'E:\\homework\\big data\hw1\project\\filestestJsonFIle.json'
+output_path = 'E:\\homework\\big data\hw1\project\\'
 
 
 def output(metadata, key_columns, _sc, table_name ):
@@ -26,7 +25,8 @@ def output(metadata, key_columns, _sc, table_name ):
         "key_column_candidates": key_columns
     }
     print(results)
-    with open(output_path, 'w') as json_file:
+    path = "%s\\%s.json" % (output_path, table_name)
+    with open(path, 'w') as json_file:
         json.dump(results, json_file)
 
 
@@ -74,20 +74,22 @@ def profile(data,_sc, sqlContext, table_name):
     return [results, key_columns]
 
 
-def extractMeta(_sc, sql, file_path):
+def extractMeta(_sc, sqlContext, file_path):
     data = _sc.read.csv(path=file_path,sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
                                       data.columns[col].replace(" ","")
                                       .replace("(", "")
                                       .replace(")", ""))
-    data.printSchema()
-    table_name = "ThreeOneOne"
+    table_name = file_path.split('\\')[-1]
+    dot_index = table_name.find(".")
+    table_name = table_name[0: dot_index]
     data.createOrReplaceTempView(table_name)
-    data = profile(data,_sc, sql, table_name)
+    data = profile(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
     output(col_metadata,key_col_candidate,_sc, table_name)
+
 
 # getting statistics based on data type of the elements in a column
 def calc_statistics(_sc, discinct_rows):
@@ -173,9 +175,13 @@ if __name__ == "__main__":
     task2.initialize()
 
     # get command-line arguments
+    files = []
     for i in range(1, len(sys.argv)):
-        inFile = sys.argv[i]
-        extractMeta(spark, sqlContext, inFile)
+        files.append(sys.argv[i])
+
+    for i in range(0, len(files)):
+        extractMeta(spark, sqlContext, files[i])
+
 
     # Enter your modules here
     sc.stop()
