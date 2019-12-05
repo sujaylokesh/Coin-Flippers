@@ -5,18 +5,18 @@ import sys
 import datetime
 from operator import add
 import statistics
+import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
-import task2_M as task2
-import FileInputManager_task2 as fm
+import FileInputManager as fm
 from dateutil import parser
 import re
 
 
 key_column_threshold = 10
-output_path = 'E:\\homework\\big data\hw1\project\\'
+output_path = 'ml6543/project_final'
 
 
 def output(metadata, key_columns, _sc, table_name ):
@@ -25,7 +25,7 @@ def output(metadata, key_columns, _sc, table_name ):
         "columns": metadata,
         "key_column_candidates": key_columns
     }
-    print(results)
+    #print(results)
     path = "%s\\%s.json" % (output_path, table_name)
     with open(path, 'w') as json_file:
         json.dump(results, json_file)
@@ -66,11 +66,6 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     }
     results.append(temp_col_metadata)
 
-    #### need updates for count
-    #   semantics = task2.semanticCheck(discinct_rows)
-    # print("semantics", semantics)
-    # results.append(semantics)
-    # check if this column can be a keycolumn
     key_columns = []
     diff = abs(non_empty - distinct_count)
     if diff < key_column_threshold:
@@ -163,8 +158,13 @@ def calc_statistics(_sc, discinct_rows):
     return res
 
 if __name__ == "__main__":
-    sc = SparkContext()
-    #lines = sc.textFile("files/small.tsv")
+
+    config = pyspark.SparkConf().setAll(
+        [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
+         ('spark.driver.memory', '8g')])
+    sc = SparkContext(conf=config)
+    sc.addFile("FileInputManager.py")
+    sc.addFile("task1_coinflippers.py")
 
     spark = SparkSession \
         .builder \
@@ -175,14 +175,4 @@ if __name__ == "__main__":
     sqlContext = SQLContext(spark)
     fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
 
-    # get command-line arguments
-    # files = []
-    # for i in range(1, len(sys.argv)):
-    #     files.append(sys.argv[i])
-    #
-    # for i in range(0, len(files)):
-    #     extractMeta(spark, sqlContext, files[i])
-
-
-    # Enter your modules here
     sc.stop()

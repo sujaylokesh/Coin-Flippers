@@ -1,6 +1,10 @@
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import requests
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql import SQLContext
+from pyspark import SparkContext
 import json
 import pandas as pd
 import random
@@ -8,6 +12,7 @@ import numpy as np
 from pandas.io.json import json_normalize
 import re
 from names_dataset import NameDataset
+import FileInputManager_task2 as fm
 
 
 neiborhood_names = 0
@@ -208,6 +213,50 @@ def initialize():
 
 
 ## Main Function
+output_path = 'ml6543/project_final'
+
+
+def output(metadata, _sc, table_name ):
+    results = {
+        "dataset_name": table_name,
+        "columns": metadata,
+    }
+
+
+def profileTable(data,_sc, sqlContext, table_name):
+    results = []
+    for i in range(0,len(data.columns)):
+        colName = data.columns[i].replace(" ","").replace("(", "").replace(")", "")
+        temp_results = profile_colum(_sc, sqlContext, colName, table_name)
+        results.append(temp_results)
+    return results
+
+
+def profile_colum(_sc, sqlContext, colName, table_name):
+    results = []
+
+    query = "select %s from %s" % (colName, table_name)
+    temp = sqlContext.sql(query)
+    temp_col_metadata = {
+        "column_name": colName,
+        "semantic_types": semanticCheck(temp)
+    }
+    results.append(temp_col_metadata)
+    return results
+
+
+def extractMeta(_sc, sqlContext, file_path):
+    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
+    table_name = file_path.split('\\')[-1]
+    dot_index = table_name.find(".")
+    table_name = table_name[0: dot_index]
+    data.createOrReplaceTempView(table_name)
+    data = profileTable(data, _sc, sqlContext, table_name)
+    col_metadata = data[0]
+    output(col_metadata,_sc, table_name)
+    sqlContext.dropTempTable(table_name)
+
+
 def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
     result = []
@@ -484,10 +533,20 @@ def colors(item):
             return False
 
 if __name__ == '__main__':
-    column = ['facebook', 'google', 'Spotify', 'nyu']
-    name = ['Sujay', 'school', 'Wayne']
-    street = ['200 schermerhorn st', 'layafayette st', 'boradway']
-    # print(checkBusinessName(column))
-    # print(checkBusinessName(name))
-    # print(checkBusinessName(street))
-    print(checkStreetName(street))
+    config = pyspark.SparkConf().setAll(
+        [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
+         ('spark.driver.memory', '8g')])
+    sc = SparkContext(conf=config)
+    sc.addFile("FileInputManager_task2.py")
+    sc.addFile("task1_coinflippers.py")
+
+    spark = SparkSession \
+        .builder \
+        .appName("hw2sql") \
+        .config("spark.some.config.option", "some-value") \
+        .getOrCreate()
+
+    sqlContext = SQLContext(spark)
+    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
+
+    sc.stop()

@@ -43,6 +43,7 @@ def output(metadata, key_columns, _sc, table_name ):
     #print("End Time =", end_time)
     #print(" Time diff =", end_time-start_time)
     t1 = time.time()
+    t0 = 0
     print("Total Time=>",t1-t0)
     # print(results)
     path = "%s.json" % (table_name)
