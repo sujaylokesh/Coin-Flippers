@@ -6,7 +6,7 @@ import datetime
 from _ctypes import Array
 from operator import add
 from datetime import datetime
-
+import time
 import pyspark
 import string
 import statistics
@@ -38,10 +38,12 @@ def output(metadata, key_columns, _sc, table_name ):
         "columns": metadata,
         "key_column_candidates": key_columns
     }
-    now = datetime.now()
-    end_time = now.strftime("%H:%M:%S")
-    print("End Time =", end_time)
-    print(" Time diff =", end_time-start_time)
+    #now = datetime.now()
+    #end_time = now.strftime("%H:%M:%S")
+    #print("End Time =", end_time)
+    #print(" Time diff =", end_time-start_time)
+    t1 = time.time()
+    print("Total Time=>",t1-t0)
     # print(results)
     path = "%s.json" % (table_name)
     #path = "%s\\%s.json" % (output_path, table_name)
@@ -94,9 +96,10 @@ def profile(data,_sc, sqlContext, table_name):
 
 def extractMeta(_sc, sql, file_path):
     print("read data")
-    now = datetime.now()
-    start_time = now.strftime("%H:%M:%S")
-    print("Current Time =", start_time)
+    #now = datetime.now()
+    #start_time = now.strftime("%H:%M:%S")
+    #print("Current Time =", start_time)
+    t0 = time.time()
 
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     for col in range(0,len(data.columns)):
