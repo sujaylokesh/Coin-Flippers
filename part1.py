@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import sys
-import datetime
+from datetime import datetime
 from operator import add
 import statistics
 from pyspark.sql import SparkSession
@@ -10,6 +10,7 @@ from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
 import task2_M as task2
+import FileInputManager as fm
 from dateutil import parser
 import re
 
@@ -102,8 +103,8 @@ def calc_statistics(_sc, discinct_rows):
     max_int = -100000000000
     min_int = 1000000000000
 
-    max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
-    min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    max_date = datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
+    min_date = datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
     for i in range(len(rows)):
         typeElement = type(rows[i][0])
@@ -115,7 +116,7 @@ def calc_statistics(_sc, discinct_rows):
         elif typeElement == str:
             #check date
             try:
-                temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+                temp_date = datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
                 max_date = max(max_date, temp_date)
                 min_date = min(min_date, temp_date)
                 date_count = date_count + 1
@@ -172,16 +173,18 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    task2.initialize()
+    # task2.initialize()
 
+    cluster_file_path = "E:\\homework\\big data\\hw1\\project\\cluster1.txt"
+    fm.getFilePathsFromFile(sc, cluster_file_path)
     # get command-line arguments
-    files = []
-    for i in range(1, len(sys.argv)):
-        files.append(sys.argv[i])
-
-    for i in range(0, len(files)):
-        extractMeta(spark, sqlContext, files[i])
-
+    # files = []
+    # for i in range(1, len(sys.argv)):
+    #     files.append(sys.argv[i])
+    #
+    # for i in range(0, len(files)):
+    #     extractMeta(spark, sqlContext, files[i])
+    #
 
     # Enter your modules here
     sc.stop()

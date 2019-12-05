@@ -325,7 +325,7 @@ def parsecolumn(column):
     lis.append(res7)
     lis.append(res8)
     for i in range(0,len(lis)-1):
-        if sum(lis[i]) > .8*len(lis[i]):
+        if sum(lis[i]) >= .8*len(lis[i]):
             result.append(li[i])
 
 def checkCarMake(column):
@@ -362,123 +362,123 @@ def checkSchoolSubject(column):
     return generalCheck(column, schoolSubject)
 
 
-# def namecheck(column):
-#     count = 0
-#     for i in range(0, int(round(1 * len(names)))):
-#         inp = names[random.randint(0, len(names) - 1)]
-#         if m.search_first_name(inp) == False:
-#             if m.search_last_name(inp) == False:
-#                 print("not a name")
-#             else:
-#                 count += 1
-#                 print(inp, m.search_last_name(inp))
-#         else:
-#             count += 1
-#             print(inp, m.search_first_name(inp))
-#     probability = (count / len(names)) * 100
-#     if probability >= 90:
-#         return True
-#     else:
-#         return False
-#
-#
-# def phonecheck(column):
-#     countrycode = '1'
-#     n = '15179181419'
-#     if len(n) == 10:
-#         num = countrycode + n
-#     else:
-#         num = n
-#     url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number=' + num + '&country_code=&format=1'
-#     r = requests.get(url)
-#     js = r.json()
-#     if js['valid'] == False:
-#         return False
-#     else:
-#         return True
-#
-# def zipcodeCheck(column):
-#     val = '560043'
-#     url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/' + val + '?key=DEMOAPIKEY'
-#     a = requests.get(url)
-#     json_data = json.loads(a.text)
-#     if len(json_data) == 0:
-#         return False
-#     else:
-#         return True
-#
-# def collegeCheck(column):
-#     csv_file = 'college.csv'
-#     fields = ['NAME']
-#     df = pd.read_csv(csv_file, usecols=fields)
-#     val = 'nyu'
-#     max = 0
-#     for ind in df.index:
-#         temp = fuzz.ratio(val, df['NAME'][ind])
-#     if temp > max:
-#         max = temp
-#         maxid = ind
-#     if max > 50:
-#         return True
-#     else:
-#         return False
-#
-# def FieldCheck(column):
-#     csv_file = 'study.csv'
-#     fields = ['MOT']
-#     df = pd.read_csv(csv_file, usecols=fields)
-#     df = df.dropna()
-#     val = 'nyu'
-#     max = 0
-#     for ind in df.index:
-#         temp = fuzz.ratio(val, df['Arts'][ind])
-#         if temp > max:
-#             max = temp
-#             maxid = ind
-#     if max > :
-#         return True
-#     else:
-#         return False
-#
-# def CarType(column):
-#     csv_file = 'cars.csv'
-#     fields = ['MOT']
-#     df = pd.read_csv(csv_file, usecols=fields)
-#     df = df.dropna()
-#     val = 'sdn'
-#     max = 0
-#     for ind in df.index:
-#         temp = fuzz.ratio(val, df['MOT'][ind])
-#         if temp > max:
-#             max = temp
-#             maxind = ind
-#     if max > 50:
-#         return True
-#     else:
-#         return False
-#
-# def latlon(column):
-#     pattern = '^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$'
-#     test = ''
-#     result = re.match(pattern, test)
-#     if result:
-#         return True
-#     else:
-#         return False
-#
-# def colors(column):
-#     csv_file = 'color.csv'
-#     df = pd.read_csv(csv_file)
-#     df = df.dropna()
-#     val1 = 'cyab'
-#     max1 = 0
-#     for ind in df.index:
-#         temp = df['Air Superiority Blue'][ind]
-#         val = fuzz.ratio(val1, temp)
-#         if val > 50:
-#             return True
-#         else:
-#             return False
+def namecheck(column):
+    count = 0
+    for i in range(0, int(round(1 * len(names)))):
+        inp = names[random.randint(0, len(names) - 1)]
+        if m.search_first_name(inp) == False:
+            if m.search_last_name(inp) == False:
+                print("not a name")
+            else:
+                count += 1
+                print(inp, m.search_last_name(inp))
+        else:
+            count += 1
+            print(inp, m.search_first_name(inp))
+    probability = (count / len(names)) * 100
+    if probability >= 90:
+        return True
+    else:
+        return False
+
+
+def phonecheck(item):
+    countrycode = '1'
+    n = str(item)
+    if len(n) == 10:
+        num = countrycode + n
+    else:
+        num = n
+    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number=' + num + '&country_code=&format=1'
+    r = requests.get(url)
+    js = r.json()
+    if js['valid'] == False:
+        return False
+    else:
+        return True
+
+def zipcodeCheck(item):
+    val = str(item)
+    url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/' + val + '?key=DEMOAPIKEY'
+    a = requests.get(url)
+    json_data = json.loads(a.text)
+    if len(json_data) == 0:
+        return False
+    else:
+        return True
+
+def collegeCheck(item):
+    csv_file = 'college.csv'
+    fields = ['NAME']
+    df = pd.read_csv(csv_file, usecols=fields)
+    val = str(item)
+    max = 0
+    for ind in df.index:
+        temp = fuzz.ratio(val, df['NAME'][ind])
+    if temp > max:
+        max = temp
+        maxid = ind
+    if max > 50:
+        return True
+    else:
+        return False
+
+def FieldCheck(item):
+    csv_file = 'study.csv'
+    fields = ['MOT']
+    df = pd.read_csv(csv_file, usecols=fields)
+    df = df.dropna()
+    val = str(item)
+    max = 0
+    for ind in df.index:
+        temp = fuzz.ratio(val, df['Arts'][ind])
+        if temp > max:
+            max = temp
+            maxid = ind
+    if max > 50:
+        return True
+    else:
+        return False
+
+def CarType(item):
+    csv_file = 'cars.csv'
+    fields = ['MOT']
+    df = pd.read_csv(csv_file, usecols=fields)
+    df = df.dropna()
+    val = str(item)
+    max = 0
+    for ind in df.index:
+        temp = fuzz.ratio(val, df['MOT'][ind])
+        if temp > max:
+            max = temp
+            maxind = ind
+    if max > 50:
+        return True
+    else:
+        return False
+
+def latlon(item):
+    pattern = '^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?),[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$'
+    test = str(item)
+    result = re.match(pattern, test)
+    if result:
+        return True
+    else:
+        return False
+
+def colors(item):
+    csv_file = 'color.csv'
+    df = pd.read_csv(csv_file)
+    df = df.dropna()
+    val1 = str(item)
+    max1 = 0
+    for ind in df.index:
+        temp = df['Air Superiority Blue'][ind]
+        val = fuzz.ratio(val1, temp)
+        if val > 50:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     column = ['facebook', 'google', 'Spotify', 'nyu']
