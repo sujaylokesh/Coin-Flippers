@@ -7,6 +7,7 @@ import random
 import numpy as np
 from pandas.io.json import json_normalize
 import re
+from names_dataset import NameDataset
 
 
 neiborhood_names = 0
@@ -209,6 +210,7 @@ def initialize():
 ## Main Function
 def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
+    result = []
     checkEach = [checkBusinessName(col),
                  checkSchoolLevel(col),
                  checkStreetName(col),
@@ -223,29 +225,52 @@ def semanticCheck(col):
                  checkColor(col),
                  checkTypeOfLocation(col),
                  checkSchoolSubject(col)]
-    result = []
+    colLables1 = []
+    colLabels2 = []
+
     for i in range(0, len(checkEach)):
         if checkEach[i]:
-            semantic = {
-                "semantic_type": labels[i],
-                "count": 0 # len(col),
-            }
-            result.append(semantic)
+            colLables1.append(labels[i])
+    colLabels2 = parsecolumn(col)
+    colLabels = colLables1+colLabels2
+    if(len(colLabels)==1):
+        semantic = {
+            "semantic_type": colLabels[0],
+            "count": col.count()
+        }
+        result.append(semantic)
+        return result
+    elif len(colLabels)==0 :
+        semantic = {
+            "semantic_type": 'Other',
+            "count": col.count()
+        }
+        result.append(semantic)
+        return result
+    else:
+        return checkMultipleLabels(col, colLabels)
 
+
+def checkMultipleLabels(col,colLabels):
+    result =[]
+    for i in range(0, len(colLabels)):
+        semantic = {
+            "semantic_type": colLabels[i],
+            "count": col.count()
+        }
+        result.append(semantic)
     return result
-
-
 
 def generalCheck(column, list):
     columns = column.collect()
-    size = column.count()
+    size = len(columns)
     sampleSize = size * 0.1
     check = sampleSize
     cnt = 0
 
     while check > 0:
         rand = random.randint(0, size - 1)
-        ele = str(columns[rand])
+        ele = str(columns[rand]).split('=')[1].split(')')[0]
         flag = False
         for s in list:
             if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
@@ -267,7 +292,7 @@ def checkBoroughs(column):
 def checkWebsites(column):
     if type(column) != str:
         return False
-    exp = "^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"
+    exp = "^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
     result = re.search(exp, column)
     return result
 
@@ -292,7 +317,8 @@ def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
 def parsecolumn(column):
-    size = column.count()
+    columns = column.collect()
+    size = len(columns)
     elem = []
     res1 = []
     res2 = []
@@ -300,13 +326,20 @@ def parsecolumn(column):
     res4 = []
     res5 = []
     res6 = []
+    res7 = []
     res8 = []
     li = ['NAME','Phone Number','zipcode','college','field of study','type of vehicle','latitude/longitude','color']
     lis = []
     ran = .1*size
+    ran = int(ran)
+    result = []
     for i in range(0,ran):
         rand = random.randint(0,size-1)
-        elem.append(str(column[rand]))
+        b = str(column[rand])
+        a = b.split('=')
+        a = a[1].split(')')
+        a = a[0]
+        elem.append(a)
     for i in range(0,len(elem)-1):
         res1.append(namecheck(elem[i]))
         res2.append(phonecheck(elem[i]))
@@ -327,6 +360,7 @@ def parsecolumn(column):
     for i in range(0,len(lis)-1):
         if sum(lis[i]) >= .8*len(lis[i]):
             result.append(li[i])
+    return result
 
 def checkCarMake(column):
     return generalCheck(column, carBrand)
@@ -346,66 +380,38 @@ def checkSchoolSubject(column):
 def checkAreasOfStudy(column):
     return generalCheck(column, subjects)
 
-def checkCarMake(column):
-    return generalCheck(column, carBrand)
 
-def checkColor(column):
-    return generalCheck(column, color)
-
-def checkSchoolName(column):
-    return generalCheck(column, schoolName)
-
-def checkTypeOfLocation(column):
-    return generalCheck(column, poi)
-
-def checkSchoolSubject(column):
-    return generalCheck(column, schoolSubject)
-
-
-def namecheck(column):
+def namecheck(inp):
+    m=NameDataset()
     count = 0
-    for i in range(0, int(round(1 * len(names)))):
-        inp = names[random.randint(0, len(names) - 1)]
-        if m.search_first_name(inp) == False:
-            if m.search_last_name(inp) == False:
-                print("not a name")
-            else:
-                count += 1
-                print(inp, m.search_last_name(inp))
+    inp = str(inp)
+    if m.search_first_name(inp) == False:
+        if m.search_last_name(inp) == False:
+            return False
+        elif m.search_last_name(inp) ==False:
+            return False
         else:
-            count += 1
-            print(inp, m.search_first_name(inp))
-    probability = (count / len(names)) * 100
-    if probability >= 90:
-        return True
-    else:
+            return True
+    elif m.search_first_name(inp) == False:
         return False
+    else:
+        return True
 
 
 def phonecheck(item):
-    countrycode = '1'
-    n = str(item)
-    if len(n) == 10:
-        num = countrycode + n
-    else:
-        num = n
-    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number=' + num + '&country_code=&format=1'
-    r = requests.get(url)
-    js = r.json()
-    if js['valid'] == False:
-        return False
-    else:
+    pattern = '^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$'
+    r = re.match(pattern,item)
+    if r:
         return True
+    else:
+        return False
+    return False
 
 def zipcodeCheck(item):
-    val = str(item)
-    url = 'https://api.zip-codes.com/ZipCodesAPI.svc/1.0/QuickGetZipCodeDetails/' + val + '?key=DEMOAPIKEY'
-    a = requests.get(url)
-    json_data = json.loads(a.text)
-    if len(json_data) == 0:
-        return False
-    else:
+    if len(item) == 5:
         return True
+    else:
+        return False
 
 def collegeCheck(item):
     csv_file = 'college.csv'
@@ -417,7 +423,6 @@ def collegeCheck(item):
         temp = fuzz.ratio(val, df['NAME'][ind])
     if temp > max:
         max = temp
-        maxid = ind
     if max > 50:
         return True
     else:
@@ -425,7 +430,7 @@ def collegeCheck(item):
 
 def FieldCheck(item):
     csv_file = 'study.csv'
-    fields = ['MOT']
+    fields = ['Arts']
     df = pd.read_csv(csv_file, usecols=fields)
     df = df.dropna()
     val = str(item)
@@ -434,7 +439,6 @@ def FieldCheck(item):
         temp = fuzz.ratio(val, df['Arts'][ind])
         if temp > max:
             max = temp
-            maxid = ind
     if max > 50:
         return True
     else:
@@ -442,16 +446,15 @@ def FieldCheck(item):
 
 def CarType(item):
     csv_file = 'cars.csv'
-    fields = ['MOT']
+    fields = ['Unnamed: 0']
     df = pd.read_csv(csv_file, usecols=fields)
     df = df.dropna()
     val = str(item)
     max = 0
     for ind in df.index:
-        temp = fuzz.ratio(val, df['MOT'][ind])
+        temp = fuzz.ratio(val, df['Unnamed: 0'][ind])
         if temp > max:
             max = temp
-            maxind = ind
     if max > 50:
         return True
     else:
@@ -467,7 +470,7 @@ def latlon(item):
         return False
 
 def colors(item):
-    csv_file = 'color.csv'
+    csv_file = 'colors.csv'
     df = pd.read_csv(csv_file)
     df = df.dropna()
     val1 = str(item)
