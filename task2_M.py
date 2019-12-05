@@ -335,7 +335,10 @@ def parsecolumn(column):
     result = []
     for i in range(0,ran):
         rand = random.randint(0,size-1)
-        a = str(columns[rand]).split('=')[1].split(')')[0]
+        b = str(column[rand])
+        a = b.split('=')
+        a = a[1].split(')')
+        a = a[0]
         elem.append(a)
     for i in range(0,len(elem)-1):
         res1.append(namecheck(elem[i]))
@@ -396,19 +399,12 @@ def namecheck(inp):
 
 
 def phonecheck(item):
-#     countrycode = '1'
-#     n = str(item)
-#     if len(n) == 10:
-#         num = countrycode + n
-#     else:
-#         num = n
-#     url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number=' + num + '&country_code=&format=1'
-#     r = requests.get(url)
-#     js = r.json()
-#     if js['valid'] == False:
-#         return False
-#     else:
-#         return True
+    pattern = '^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$'
+    r = re.match(pattern,item)
+    if r:
+        return True
+    else:
+        return False
     return False
 
 def zipcodeCheck(item):
