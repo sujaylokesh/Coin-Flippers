@@ -10,6 +10,7 @@ from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
 import task2_M as task2
+import FileInputManager as fm
 from dateutil import parser
 import re
 
@@ -79,7 +80,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 
 
 def extractMeta(_sc, sqlContext, file_path):
-    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
+    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     table_name = file_path.split('\\')[-1]
     dot_index = table_name.find(".")
     table_name = table_name[0: dot_index]
@@ -172,7 +173,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    #task2.initialize()
+    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
 
     # get command-line arguments
     # files = []

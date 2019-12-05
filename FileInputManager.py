@@ -11,11 +11,16 @@ from pyspark.sql.functions import udf
 from pyspark.sql.types import ArrayType, StructField, StructType, StringType, IntegerType
 import part1 as p1
 
+def strip_char(str):
+    return str.replace('[', "")\
+        .replace(']', "")\
+        .replace("\\", "").replace("\'", "")
+
 def customMap(file_name):
     fields = file_name.split('.')
-    name = file_name.replace('[', "").replace(']', "")
-    table_name = fields[0].replace('[', "").replace(']', "").replace("-", "_")
-    col_name = fields[1]
+    name = strip_char(file_name)
+    table_name = strip_char(fields[0])
+    col_name = strip_char(fields[1])
     return name, table_name, col_name
 
 def getFilePathsFromFile(sc, path):
@@ -38,7 +43,7 @@ def extractMetaByColum(_sc, sqlContext, file_info):
     p1.output(col_metadata, key_col_candidate, _sc, table_name)
     sqlContext.dropTempTable(table_name)
 
-def iterate_files(sc, sqlContext, path):
+def iterate_files_from_file(sc,ss, sqlContext, path):
     files = getFilePathsFromFile(sc, path)
     for file in files:
-        extractMetaByColum(sc, sqlContext, file)
+        extractMetaByColum(ss,sqlContext, file)

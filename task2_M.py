@@ -439,7 +439,7 @@ def FieldCheck(item):
         temp = fuzz.ratio(val, df['Arts'][ind])
         if temp > max:
             max = temp
-    if max > 50:
+    if max >   50:
         return True
     else:
         return False
