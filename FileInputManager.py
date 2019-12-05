@@ -31,6 +31,7 @@ def getFilePathsFromFile(sc, path):
     return results
 
 def extractMetaByColum(_sc, sqlContext, file_info):
+    # file_path = '/user/hm74/NYCOpenData/' + file_info[0]
     file_path = 'E:\\homework\\big data\hw1\project\\' + file_info[0]
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     table_name = file_path.split('\\')[-1]
@@ -47,3 +48,32 @@ def iterate_files_from_file(sc,ss, sqlContext, path):
     files = getFilePathsFromFile(sc, path)
     for file in files:
         extractMetaByColum(ss,sqlContext, file)
+
+
+def iterate_files_from_file(sc, ss, sqlContext, path):
+    files = getFilePathsFromFile(sc, path)
+    for file in files:
+        extractMetaByColum(ss, sqlContext, file)
+
+
+def getFilePathsFromFile_for_dumbo(sc, path):
+    data = sc.textFile(path)
+    file_arrays = data.first().split(',')
+    for i in range(0, len(file_arrays)):
+        file_arrays[i] = strip_char(file_arrays[i])
+    return file_arrays
+
+def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
+    files = getFilePathsFromFile_for_dumbo(sc, path)
+    counter = 0
+    for file in files:
+        if counter < start_index:
+            counter += 1
+            continue
+        file_path = 'E:\\homework\\big data\hw1\project\\' + file
+        p1.extractMeta(ss, sqlContext, file_path)
+        if counter % 2 == 0:
+            f = open("%s.txt" % counter, "w")
+            f.write(str(counter))
+            f.close()
+        counter += 1
