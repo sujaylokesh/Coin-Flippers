@@ -30,64 +30,66 @@ def output(metadata, key_columns, _sc, table_name ):
         json.dump(results, json_file)
 
 
-def profile(data,_sc, sqlContext, table_name):
+def profileTable(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
-    for i in range(0,len(data.columns )):
-        colName = data.columns[i]
-        query = "select %s from %s" % (colName, table_name)
-        temp = sqlContext.sql(query)
-
-        #get data sets
-        discinct_rows = temp.distinct()
-        non_empty_rows = temp.filter(temp[0].isNull())
-
-        null_count = non_empty_rows.count()
-        non_empty = temp.count() - null_count
-        distinct_count = discinct_rows.count()
-
-        query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
-        top5 = sqlContext.sql(query)
-        top5 = top5.rdd.map(lambda x: x[0]).take(5)
-        temp_col_metadata = {
-            "column_name": colName,
-            "number_non_empty_cells": non_empty,
-            "number_empty_cells": null_count,
-            "number_distinct_values": distinct_count,
-            "frequent_values": top5,
-            "data_types": calc_statistics(_sc, discinct_rows)
-        }
-        results.append(temp_col_metadata)
-        #### need updates for count
-     #   semantics = task2.semanticCheck(discinct_rows)
-        #print("semantics", semantics)
-        #results.append(semantics)
-
-        #check if this column can be a keycolumn
-        diff = abs(non_empty - distinct_count)
-        if diff < key_column_threshold:
-            key_columns.append(colName)
-
-    print(results)
-
+    for i in range(0,len(data.columns)):
+        colName = data.columns[i].replace(" ","").replace("(", "").replace(")", "")
+        temp_results = profile_colum(_sc, sqlContext, colName, table_name)
+        results.append(temp_results[0])
+        key_columns.append(temp_results[1])
     return [results, key_columns]
 
 
+def profile_colum(_sc, sqlContext, colName, table_name):
+    results = []
+
+    query = "select %s from %s" % (colName, table_name)
+    temp = sqlContext.sql(query)
+    # get data sets
+    discinct_rows = temp.distinct()
+    non_empty_rows = temp.filter(temp[0].isNull())
+    null_count = non_empty_rows.count()
+    non_empty = temp.count() - null_count
+    distinct_count = discinct_rows.count()
+    query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
+    top5 = sqlContext.sql(query)
+    top5 = top5.rdd.map(lambda x: x[0]).take(5)
+    temp_col_metadata = {
+        "column_name": colName,
+        "number_non_empty_cells": non_empty,
+        "number_empty_cells": null_count,
+        "number_distinct_values": distinct_count,
+        "frequent_values": top5,
+        "data_types": calc_statistics(_sc, discinct_rows)
+    }
+    results.append(temp_col_metadata)
+
+    #### need updates for count
+    #   semantics = task2.semanticCheck(discinct_rows)
+    # print("semantics", semantics)
+    # results.append(semantics)
+    # check if this column can be a keycolumn
+    key_columns = []
+    diff = abs(non_empty - distinct_count)
+    if diff < key_column_threshold:
+        key_columns.append(colName)
+
+    return results, key_columns
+
+
 def extractMeta(_sc, sqlContext, file_path):
-    data = _sc.read.csv(path=file_path,sep='\t', header=True, inferSchema=True)
-    for col in range(0,len(data.columns)):
-        data = data.withColumnRenamed(data.columns[col],
-                                      data.columns[col].replace(" ","")
-                                      .replace("(", "")
-                                      .replace(")", ""))
+    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     table_name = file_path.split('\\')[-1]
     dot_index = table_name.find(".")
     table_name = table_name[0: dot_index]
     data.createOrReplaceTempView(table_name)
-    data = profile(data, _sc, sqlContext, table_name)
+    data = profileTable(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
-    output(col_metadata,key_col_candidate,_sc, table_name)
+    output(col_metadata, key_col_candidate,_sc, table_name)
+    sqlContext.dropTempTable(table_name)
+
 
 
 # getting statistics based on data type of the elements in a column
@@ -133,7 +135,6 @@ def calc_statistics(_sc, discinct_rows):
         res.append(result)
 
     if date_count > 0:
-
         result = {
             "type": "DATE/TIME",
             "count": date_count,
@@ -174,12 +175,12 @@ if __name__ == "__main__":
     #task2.initialize()
 
     # get command-line arguments
-    files = []
-    for i in range(1, len(sys.argv)):
-        files.append(sys.argv[i])
-
-    for i in range(0, len(files)):
-        extractMeta(spark, sqlContext, files[i])
+    # files = []
+    # for i in range(1, len(sys.argv)):
+    #     files.append(sys.argv[i])
+    #
+    # for i in range(0, len(files)):
+    #     extractMeta(spark, sqlContext, files[i])
 
 
     # Enter your modules here
