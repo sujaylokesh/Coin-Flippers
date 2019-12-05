@@ -191,7 +191,7 @@ def calc_statistics(_sc, discinct_rows):
     return res
 
 if __name__ == "__main__":
-    config = pyspark.SparkConf().setAll([('spark.executor.memory', '8g'), ('spark.executor.cores', '3'), ('spark.cores.max', '3'), ('spark.driver.memory','8g')])
+    config = pyspark.SparkConf().setAll([('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'), ('spark.driver.memory','8g')])
     sc = SparkContext(conf=config)
     
     spark = SparkSession \
