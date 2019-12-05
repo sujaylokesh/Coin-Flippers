@@ -191,8 +191,9 @@ def calc_statistics(_sc, discinct_rows):
     return res
 
 if __name__ == "__main__":
-    conf = new SparkConf().setMaster("ClusterManager").setAppName("test-executor-allocation-manager").set("spark.dynamicAllocation.enabled", "true").set("spark.dynamicAllocation.minExecutors", 1).set("spark.dynamicAllocation.maxExecutors", 2).set("spark.shuffle.service.enabled", "true")
-    sc = SparkContext(conf)
+    sc.stop
+    config = pyspark.SparkConf().setAll([('spark.executor.memory', '8g'), ('spark.executor.cores', '3'), ('spark.cores.max', '3'), ('spark.driver.memory','8g')])
+    sc = SparkContext(conf=config)
     
     spark = SparkSession \
         .builder \
