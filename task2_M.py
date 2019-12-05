@@ -240,6 +240,13 @@ def semanticCheck(col):
         }
         result.append(semantic)
         return result
+    elif len(colLabels)==0 :
+        semantic = {
+            "semantic_type": 'Other',
+            "count": col.count()
+        }
+        result.append(semantic)
+        return result
     else:
         return checkMultipleLabels(col, colLabels)
 
@@ -248,7 +255,7 @@ def checkMultipleLabels(col,colLabels):
     result =[]
     for i in range(0, len(colLabels)):
         semantic = {
-            "semantic_type": colLabels[0],
+            "semantic_type": colLabels[i],
             "count": col.count()
         }
         result.append(semantic)
@@ -263,7 +270,7 @@ def generalCheck(column, list):
 
     while check > 0:
         rand = random.randint(0, size - 1)
-        ele = str(columns[rand])
+        ele = str(columns[rand]).split('=')[1].split(')')[0]
         flag = False
         for s in list:
             if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
@@ -389,19 +396,20 @@ def namecheck(inp):
 
 
 def phonecheck(item):
-    countrycode = '1'
-    n = str(item)
-    if len(n) == 10:
-        num = countrycode + n
-    else:
-        num = n
-    url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number=' + num + '&country_code=&format=1'
-    r = requests.get(url)
-    js = r.json()
-    if js['valid'] == False:
-        return False
-    else:
-        return True
+#     countrycode = '1'
+#     n = str(item)
+#     if len(n) == 10:
+#         num = countrycode + n
+#     else:
+#         num = n
+#     url = 'http://apilayer.net/api/validate?access_key=167e9c0b6bdce3f2e3318195c6211b1b&number=' + num + '&country_code=&format=1'
+#     r = requests.get(url)
+#     js = r.json()
+#     if js['valid'] == False:
+#         return False
+#     else:
+#         return True
+    return False
 
 def zipcodeCheck(item):
     if len(item) == 5:
