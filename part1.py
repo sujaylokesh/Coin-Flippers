@@ -10,7 +10,7 @@ from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
 import task2_M as task2
-import FileInputManager_task2 as fm
+import FileInputManager as fm
 from dateutil import parser
 import re
 
@@ -173,7 +173,8 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
+    fm.iterate_files_from_file_for_dumbo(sc, spark, sqlContext, sys.argv[1],
+                                         int(sys.argv[2]))
 
     # get command-line arguments
     # files = []

@@ -12,7 +12,7 @@ import numpy as np
 from pandas.io.json import json_normalize
 import re
 from names_dataset import NameDataset
-import FileInputManager_task2 as fm
+import FileInputManager as fm
 
 
 neiborhood_names = 0
@@ -537,8 +537,8 @@ if __name__ == '__main__':
         [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
          ('spark.driver.memory', '8g')])
     sc = SparkContext(conf=config)
-    sc.addFile("FileInputManager_task2.py")
-    sc.addFile("task1_coinflippers.py")
+    sc.addFile("FileInputManager.py")
+    sc.addFile("task2_coinflippers.py")
 
     spark = SparkSession \
         .builder \
