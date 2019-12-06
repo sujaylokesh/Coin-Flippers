@@ -14,7 +14,8 @@ import task2_coinflippers as p2
 dumbo_path = '/user/hm74/NYCOpenData/'
 local_mac_path ='/Users/mina/Downloads/testDumbo/'
 local_windows_path ='E:\\homework\\big_data\\hw1\\project\\'
-output_path = '/home/ml6543/project_final/output'
+output_path = '/home/ml6543/project_final/output_task1'
+global final_results
 
 def strip_char(str):
     return str.replace('[', "")\
@@ -51,7 +52,8 @@ def extractMetaByColum(_sc,spark, sqlContext, file_info):
     data.createOrReplaceTempView(table_name)
     p2.initialize()
     data = p2.profile_colum(_sc, sqlContext, column_name,table_name)
-    p2.output(_sc.parallelize(data), table_name)
+    print(data)
+    p2.output(data, table_name)
     sqlContext.dropTempTable(table_name)
 
 def iterate_files_from_file(sc,spark, sqlContext, path):
@@ -70,17 +72,23 @@ def getFilePathsFromFile_for_dumbo(sc, path):
 def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
     files = getFilePathsFromFile_for_dumbo(sc, path)
     counter = 0
+    final_results =[]
     for file in files:
         if counter < start_index:
             counter += 1
             continue
         file_path = dumbo_path + (file).replace(" ","").replace("_","-")
         #file_path = (local_path + file).replace(" ","").replace("_","-")
-        p1.extractMeta(ss, sqlContext, file_path, counter)
+        p1.extractMeta(ss, sqlContext, file_path, final_results)
+        output_json_path = "%s/%s.json" % (output_path, counter)
+
         if counter % 2 == 0:
-            f = open("%s/%s.txt" % (output_path,counter), "w")
-            f.write(str(counter))
-            f.close()
+            # f = open("%s/%s.txt" % (output_path,counter), "w")
+            # f.write(str(counter))
+            # f.close()
+            with open(output_json_path, 'w') as json_file:
+                json.dump(final_results, json_file)
+                final_results.clear()
         counter += 1
 
 def Process_column_name_for_dataframe(str):

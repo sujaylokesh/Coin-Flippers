@@ -19,24 +19,13 @@ key_column_threshold = 10
 output_path = '/home/ml6543/project_final/output_task1'
 final_results = []
 
-def output(metadata, key_columns, _sc, table_name, counter):
-    results = {
-        "dataset_name": table_name,
-        "columns": metadata,
-        "key_column_candidates": key_columns
-    }
-    global final_results
-    final_results.append(results)
-    path = "%s/%s.json" % (output_path, table_name)
-    if counter % 2 == 0:
-        with open(path, 'w') as json_file:
-            json.dump(results, json_file)
-            final_results.clear()
+
 
 
 def profileTable(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
+    print(table_name)
     for i in range(0,len(data.columns)):
         colName = fm.Process_column_name_for_dataframe(data.columns[i])
         temp_results = profile_colum(_sc, sqlContext, colName, table_name)
@@ -47,7 +36,6 @@ def profileTable(data,_sc, sqlContext, table_name):
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
-    print(table_name)
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     # get data sets
@@ -76,7 +64,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 
     return results, key_columns
 
-def extractMeta(_sc, sqlContext, file_path, counter):
+def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
@@ -90,7 +78,13 @@ def extractMeta(_sc, sqlContext, file_path, counter):
     data = profileTable(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
-    output(col_metadata, key_col_candidate, _sc, table_name, counter)
+    #OUTPUT
+    results = {
+        "dataset_name": table_name,
+        "columns": col_metadata,
+        "key_column_candidates": key_col_candidate
+    }
+    final_results.append(results)
     sqlContext.dropTempTable(table_name)
 
 
