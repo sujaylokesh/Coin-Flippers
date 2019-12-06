@@ -18,6 +18,7 @@ import re
 key_column_threshold = 10
 output_mac_path = '/home/ml6543/project_final/output'
 output_win_path = 'E:\\homework\\big_data\hw1\\project\\'
+output_path = '/home/ml6543/project_final/output_task1'
 final_results = []
 
 def output(metadata, key_columns, _sc, table_name, counter):
@@ -48,6 +49,7 @@ def profileTable(data,_sc, sqlContext, table_name):
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
+    print(table_name)
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     # get data sets
