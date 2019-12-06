@@ -16,10 +16,9 @@ import re
 
 
 key_column_threshold = 10
+output_mac_path = '/home/ml6543/project_final/output'
+output_win_path = 'E:\\homework\\big_data\hw1\\project\\'
 output_path = '/home/ml6543/project_final/output_task1'
-final_results = []
-
-
 
 
 def profileTable(data,_sc, sqlContext, table_name):
@@ -68,8 +67,13 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
-    #data.printSchema()
-    table_name = file_path.split('/')[-1]
+    data.printSchema()
+    delm = ""
+    if file_path.find('/') > -1:
+        delm = '/'
+    else:
+        delm = '\\'
+    table_name = file_path.split(delm)[-1]
     dot_index = table_name.find(".")
     if dot_index == -1:
         dot_index = len(table_name)
@@ -104,13 +108,12 @@ def calc_statistics(_sc, discinct_rows):
     min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
     for i in range(len(rows)):
-        typeElement = type(rows[i][0])
-        val = rows[i][0]
-        if typeElement == int or typeElement == float:
-            intList.append(val)
-            max_int = max(max_int, val)
-            min_int = max(min_int, val)
-        elif typeElement == str:
+        val = str(rows[i][0])
+        if val.isnumeric():
+            intList.append(int(val))
+            max_int = max(max_int, int(val))
+            min_int = max(min_int, int(val))
+        else:
             #check date
             try:
                 temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
@@ -175,7 +178,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    fm.iterate_files_from_file_for_dumbo(sc, spark, sqlContext, sys.argv[1],
+    fm.iterate_files_from_file_for_task1(sc, spark, sqlContext, sys.argv[1],
                                          int(sys.argv[2]))
 
     sc.stop()
