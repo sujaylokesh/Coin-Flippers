@@ -13,7 +13,7 @@ import random
 import numpy as np
 from pandas.io.json import json_normalize
 import re
-from names_dataset import NameDataset
+#from names_dataset import NameDataset
 import FileInputManager as fm
 
 
@@ -327,10 +327,14 @@ def checkWebsites(column):
     return result
 
 def checkBusinessName(column):
-    businessNames = [item['current_entity_name'] for item in business_data]
-    return generalCheck(column, businessNames)
+    print(business_data)
+    # businessNames = [item['current_entity_name'] for item in business_data]
+    # return generalCheck(column, businessNames)
+    return False
 
 def checkSchoolLevel(column):
+    global schoolLevels
+    print(schoolLevels)
     return generalCheck(column, schoolLevels)
 
 def checkStreetName(column):
@@ -412,20 +416,21 @@ def checkAreasOfStudy(column):
 
 
 def namecheck(inp):
-    m=NameDataset()
-    count = 0
-    inp = str(inp)
-    if m.search_first_name(inp) == False:
-        if m.search_last_name(inp) == False:
-            return False
-        elif m.search_last_name(inp) ==False:
-            return False
-        else:
-            return True
-    elif m.search_first_name(inp) == False:
-        return False
-    else:
-        return True
+    return False
+    # m=NameDataset()
+    # count = 0
+    # inp = str(inp)
+    # if m.search_first_name(inp) == False:
+    #     if m.search_last_name(inp) == False:
+    #         return False
+    #     elif m.search_last_name(inp) ==False:
+    #         return False
+    #     else:
+    #         return True
+    # elif m.search_first_name(inp) == False:
+    #     return False
+    # else:
+    #     return True
 
 
 def phonecheck(item):
@@ -514,12 +519,15 @@ def colors(item):
             return False
 
 if __name__ == '__main__':
+
     config = pyspark.SparkConf().setAll(
         [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
          ('spark.driver.memory', '8g')])
     sc = SparkContext(conf=config)
     sc.addFile("FileInputManager.py")
     sc.addFile("task2_coinflippers.py")
+    sc.addFile("task1_coinflippers.py")
+
 
     spark = SparkSession \
         .builder \
@@ -528,7 +536,7 @@ if __name__ == '__main__':
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-
+    initialize()
     fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
 
     sc.stop()
