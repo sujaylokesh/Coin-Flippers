@@ -352,7 +352,6 @@ def parsecolumn(column):
     result = []
     columns = column.collect()
     size = len(columns)
-    print(size)
     elem = []
     res1 = []
     res2 = []
@@ -368,7 +367,7 @@ def parsecolumn(column):
     ran = int(ran)
     for i in range(0,ran):
         rand = random.randint(0,size-1)
-        b = str(column[rand])
+        b = str(columns[rand])
         a = b.split('=')
         a = a[1].split(')')
         a = a[0]

@@ -16,7 +16,7 @@ import re
 
 
 key_column_threshold = 10
-output_path = '/home/ml6543/project_final/output'
+output_path = '/home/ml6543/project_final/output_task1'
 final_results = []
 
 def output(metadata, key_columns, _sc, table_name, counter):
