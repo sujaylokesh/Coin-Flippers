@@ -226,7 +226,7 @@ def output(data, _sc, table_name ):
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
-
+    colName = fm.Process_column_name_for_dataframe(colName)
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     temp_col_metadata = {
@@ -520,23 +520,24 @@ def colors(item):
 
 if __name__ == '__main__':
 
-    config = pyspark.SparkConf().setAll(
-        [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
-         ('spark.driver.memory', '8g')])
-    sc = SparkContext(conf=config)
-    sc.addFile("FileInputManager.py")
-    sc.addFile("task2_coinflippers.py")
-    sc.addFile("task1_coinflippers.py")
+    # config = pyspark.SparkConf().setAll(
+    #     [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
+    #      ('spark.driver.memory', '8g')])
+    # sc = SparkContext(conf=config)
+    # sc.addFile("FileInputManager.py")
+    # sc.addFile("task2_coinflippers.py")
+    # sc.addFile("task1_coinflippers.py")
+    #
+    #
+    # spark = SparkSession \
+    #     .builder \
+    #     .appName("hw2sql") \
+    #     .config("spark.some.config.option", "some-value") \
+    #     .getOrCreate()
+    #
+    # sqlContext = SQLContext(spark)
+    # initialize()
+    # fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
 
-
-    spark = SparkSession \
-        .builder \
-        .appName("hw2sql") \
-        .config("spark.some.config.option", "some-value") \
-        .getOrCreate()
-
-    sqlContext = SQLContext(spark)
-    initialize()
-    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
-
-    sc.stop()
+    # sc.stop()
+    fm.Process_column_name_for_dataframe("soft !@#! sf---@#agency#")

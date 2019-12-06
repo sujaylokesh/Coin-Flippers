@@ -18,12 +18,6 @@ import re
 key_column_threshold = 10
 output_path = '/home/ml6543/project_final/output'
 final_results = []
-def strip_char(str):
-    return str.replace('[', "")\
-        .replace(']', "")\
-        .replace("//", "").replace("\'", "").replace("\`", "").replace("-", "_").replace(" ", "_")\
-        .replace("#","").replace("%","").replace("$","").replace("&","").replace("*","").replace("(", "").replace(")", "")
-
 
 def output(metadata, key_columns, _sc, table_name, counter):
     results = {
@@ -43,7 +37,7 @@ def profileTable(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
     for i in range(0,len(data.columns)):
-        colName = data.columns[i].replace(" ","").replace("(", "").replace(")", "").replace("\'","").replace("\`","").replace("-","_").replace("//","")
+        colName = fm.Process_column_name_for_dataframe(data.columns[i])
         temp_results = profile_colum(_sc, sqlContext, colName, table_name)
         results.append(temp_results[0])
         key_columns.append(temp_results[1])
@@ -83,7 +77,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 def extractMeta(_sc, sqlContext, file_path, counter):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
-        data = data.withColumnRenamed(data.columns[col], strip_char(data.columns[col]))
+        data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
     data.printSchema()
     table_name = file_path.split('/')[-1]
     dot_index = table_name.find(".")

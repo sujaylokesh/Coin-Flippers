@@ -44,7 +44,7 @@ def extractMetaByColum(_sc, sqlContext, file_info):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0, len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
-                                      strip_char(data.columns[col]))
+                                     Process_column_name_for_dataframe(data.columns[col]))
 
     table_name = (file_info[1]).replace("-","_")
     column_name = file_info[2]
@@ -82,3 +82,13 @@ def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
             f.close()
         counter += 1
 
+def Process_column_name_for_dataframe(str):
+    converted = []
+    for i in range(0, len(str)):
+        if str[i].isalpha():
+            converted.append(str[i])
+        else:
+            converted.append('_')
+    result = ''.join(converted)
+    print(result)
+    return result
