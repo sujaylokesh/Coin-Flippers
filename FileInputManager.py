@@ -12,6 +12,7 @@ from pyspark.sql.types import ArrayType, StructField, StructType, StringType, In
 import task1_coinflippers as p1
 
 dumbo_path = '/user/hm74/NYCOpenData/'
+output_path = '/home/ml6543/project_final/output'
 
 def strip_char(str):
     return str.replace('[', "")\
@@ -70,7 +71,7 @@ def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
         file_path = (dumbo_path + file).replace(" ","")
         p1.extractMeta(ss, sqlContext, file_path, counter)
         if counter % 2 == 0:
-            f = open("%s.txt" % counter, "w")
+            f = open("%s/%s.txt" % (output_path,counter), "w")
             f.write(str(counter))
             f.close()
         counter += 1

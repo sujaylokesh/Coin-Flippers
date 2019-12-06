@@ -16,26 +16,28 @@ import re
 
 
 key_column_threshold = 10
-output_path = 'ml6543/project_final'
+output_path = '/home/ml6543/project_final/output'
+final_results = []
 
-
-def output(metadata, key_columns, _sc, table_name ):
+def output(metadata, key_columns, _sc, table_name,counter):
     results = {
         "dataset_name": table_name,
         "columns": metadata,
         "key_column_candidates": key_columns
     }
-    #print(results)
-    path = "%s\\%s.json" % (output_path, table_name)
-    with open(path, 'w') as json_file:
-        json.dump(results, json_file)
+    final_results.append(results)
+    path = "%s/%s.json" % (output_path, table_name)
+    if counter% 2 == 0:
+        with open(path, 'w') as json_file:
+            json.dump(final_results, json_file)
+            final_results.clear()
 
 
 def profileTable(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
     for i in range(0,len(data.columns)):
-        colName = data.columns[i].replace(" ","").replace("(", "").replace(")", "")
+        colName = data.columns[i].replace(" ","").replace("(", "").replace(")", "").replace("\'","").replace("\`","").replace("-","_").replace("//","")
         temp_results = profile_colum(_sc, sqlContext, colName, table_name)
         results.append(temp_results[0])
         key_columns.append(temp_results[1])
@@ -44,7 +46,6 @@ def profileTable(data,_sc, sqlContext, table_name):
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
-
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     # get data sets
@@ -53,6 +54,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
     distinct_count = discinct_rows.count()
+    print(non_empty, null_count, distinct_count)
     query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
@@ -74,16 +76,21 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     return results, key_columns
 
 
-def extractMeta(_sc, sqlContext, file_path):
+def extractMeta(_sc, sqlContext, file_path,counter):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
-    table_name = file_path.split('\\')[-1]
+    for col in range(0,len(data.columns)):
+        data = data.withColumnRenamed(data.columns[col], data.columns[col].replace(" ","_").replace("//","").replace("(", "").replace(")", "")).replace("\'","").replace("\`","").replace("-","_")
+    data.printSchema()
+    table_name = file_path.split('/')[-1]
     dot_index = table_name.find(".")
-    table_name = table_name[0: dot_index]
+    if dot_index == -1:
+        dot_index = len(table_name)
+    table_name = table_name[0: dot_index].replace("-", "_")
     data.createOrReplaceTempView(table_name)
     data = profileTable(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
-    output(col_metadata, key_col_candidate,_sc, table_name)
+    output(col_metadata, key_col_candidate, _sc, table_name,counter)
     sqlContext.dropTempTable(table_name)
 
 
@@ -173,6 +180,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
+    fm.iterate_files_from_file_for_dumbo(sc, spark, sqlContext, sys.argv[1],
+                                         int(sys.argv[2]))
 
     sc.stop()
