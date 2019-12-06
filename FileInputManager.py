@@ -78,7 +78,7 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
             counter += 1
             continue
         file_path = dumbo_path + (file).replace(" ","").replace("_","-")
-        #file_path = (local_path + file).replace(" ","").replace("_","-")
+        #file_path = (local_mac_path + file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, final_results)
         output_json_path = "%s/%s.json" % (output_path, counter)
 
