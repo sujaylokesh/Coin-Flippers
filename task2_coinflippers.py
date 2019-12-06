@@ -1,3 +1,5 @@
+import sys
+
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import requests
@@ -213,23 +215,13 @@ def initialize():
 
 
 ## Main Function
-output_path = 'ml6543/project_final'
+output_path = 'ml6543/project_final/'
 
 
-def output(metadata, _sc, table_name ):
-    results = {
-        "dataset_name": table_name,
-        "columns": metadata,
-    }
-
-
-def profileTable(data,_sc, sqlContext, table_name):
-    results = []
-    for i in range(0,len(data.columns)):
-        colName = data.columns[i].replace(" ","").replace("(", "").replace(")", "")
-        temp_results = profile_colum(_sc, sqlContext, colName, table_name)
-        results.append(temp_results)
-    return results
+def output(data, _sc, table_name ):
+    path = "%s\\%s.json" % (output_path, table_name)
+    with open(path, 'w') as json_file:
+        json.dump(data, json_file)
 
 
 def profile_colum(_sc, sqlContext, colName, table_name):
@@ -244,17 +236,6 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     results.append(temp_col_metadata)
     return results
 
-
-def extractMeta(_sc, sqlContext, file_path):
-    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
-    table_name = file_path.split('\\')[-1]
-    dot_index = table_name.find(".")
-    table_name = table_name[0: dot_index]
-    data.createOrReplaceTempView(table_name)
-    data = profileTable(data, _sc, sqlContext, table_name)
-    col_metadata = data[0]
-    output(col_metadata,_sc, table_name)
-    sqlContext.dropTempTable(table_name)
 
 
 def semanticCheck(col):
@@ -547,6 +528,7 @@ if __name__ == '__main__':
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
+
     fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
 
     sc.stop()

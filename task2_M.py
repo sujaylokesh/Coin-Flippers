@@ -240,7 +240,7 @@ def semanticCheck(col):
         }
         result.append(semantic)
         return result
-    elif len(colLabels)==0 :
+    elif len(colLabels) == 0:
         semantic = {
             "semantic_type": 'Other',
             "count": col.count()
