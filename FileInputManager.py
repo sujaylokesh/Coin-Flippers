@@ -13,18 +13,20 @@ import task1_coinflippers as p1
 import task2_coinflippers as p2
 
 dumbo_path = '/user/hm74/NYCOpenData/'
+local_path ='/Users/mina/Downloads/testDumbo/'
 output_path = '/home/ml6543/project_final/output'
 
 def strip_char(str):
     return str.replace('[', "")\
         .replace(']', "")\
-        .replace("\\", "").replace("\'", "")
+        .replace("\\", "").replace("\'", "").replace("\`", "").replace("-", "_").replace(" ", "_")
 
 def customMap(file_name):
     fields = file_name.split('.')
-    name = strip_char(file_name)
     table_name = strip_char(fields[0])
     col_name = strip_char(fields[1])
+    name = strip_char(file_name.replace("." + col_name, ""))
+
     return name, table_name, col_name
 
 def getFilePathsFromFile(sc, path):
@@ -35,13 +37,19 @@ def getFilePathsFromFile(sc, path):
     return results
 
 def extractMetaByColum(_sc, sqlContext, file_info):
-    file_path = dumbo_path + file_info[0]
+    file_path = dumbo_path + file_info[0].replace("_","-")
     #file_path = '/user/hm74/NYCOpenData/'+ file_info[0]
-    #file_path = 'E:\\homework\\big data\hw1\project\\' + file_info[0]
-    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
-    table_name = file_path.split('\\')[-1]
+    #file_path = local_path + file_info[0]
+
+    data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
+    for col in range(0, len(data.columns)):
+        data = data.withColumnRenamed(data.columns[col],
+                                      strip_char(data.columns[col]))
+
+    table_name = (file_info[1]).replace("-","_")
+    column_name = file_info[2]
     data.createOrReplaceTempView(table_name)
-    data = p2.profile_colum(data, _sc, sqlContext, table_name)
+    data = p2.profile_colum(_sc, sqlContext, column_name,table_name)
     p2.output(_sc.pararellize(data), table_name)
     sqlContext.dropTempTable(table_name)
 
@@ -65,7 +73,8 @@ def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
         if counter < start_index:
             counter += 1
             continue
-        file_path = (dumbo_path + file).replace(" ","")
+        #file_path = (dumbo_path + file).replace(" ","").replace("_","-")
+        file_path = (local_path + file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, counter)
         if counter % 2 == 0:
             f = open("%s/%s.txt" % (output_path,counter), "w")

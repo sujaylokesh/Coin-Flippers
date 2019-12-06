@@ -18,8 +18,14 @@ import re
 key_column_threshold = 10
 output_path = '/home/ml6543/project_final/output'
 final_results = []
+def strip_char(str):
+    return str.replace('[', "")\
+        .replace(']', "")\
+        .replace("//", "").replace("\'", "").replace("\`", "").replace("-", "_").replace(" ", "_")\
+        .replace("#","").replace("%","").replace("$","").replace("&","").replace("*","").replace("(", "").replace(")", "")
 
-def output(metadata, key_columns, _sc, table_name,counter):
+
+def output(metadata, key_columns, _sc, table_name, counter):
     results = {
         "dataset_name": table_name,
         "columns": metadata,
@@ -27,9 +33,9 @@ def output(metadata, key_columns, _sc, table_name,counter):
     }
     final_results.append(results)
     path = "%s/%s.json" % (output_path, table_name)
-    if counter% 2 == 0:
+    if counter % 2 == 0:
         with open(path, 'w') as json_file:
-            json.dump(final_results, json_file)
+            json.dump(results, json_file)
             final_results.clear()
 
 
@@ -54,7 +60,6 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
     distinct_count = discinct_rows.count()
-    print(non_empty, null_count, distinct_count)
     query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
@@ -75,11 +80,10 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 
     return results, key_columns
 
-
-def extractMeta(_sc, sqlContext, file_path,counter):
+def extractMeta(_sc, sqlContext, file_path, counter):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
-        data = data.withColumnRenamed(data.columns[col], data.columns[col].replace(" ","_").replace("//","").replace("(", "").replace(")", "")).replace("\'","").replace("\`","").replace("-","_")
+        data = data.withColumnRenamed(data.columns[col], strip_char(data.columns[col]))
     data.printSchema()
     table_name = file_path.split('/')[-1]
     dot_index = table_name.find(".")
@@ -90,7 +94,7 @@ def extractMeta(_sc, sqlContext, file_path,counter):
     data = profileTable(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
-    output(col_metadata, key_col_candidate, _sc, table_name,counter)
+    output(col_metadata, key_col_candidate, _sc, table_name, counter)
     sqlContext.dropTempTable(table_name)
 
 
@@ -172,6 +176,7 @@ if __name__ == "__main__":
     sc = SparkContext(conf=config)
     sc.addFile("FileInputManager.py")
     sc.addFile("task1_coinflippers.py")
+    sc.addFile("task2_coinflippers.py")
 
     spark = SparkSession \
         .builder \
