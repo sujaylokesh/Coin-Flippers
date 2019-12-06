@@ -215,13 +215,13 @@ def initialize():
 
 
 ## Main Function
-output__dumbo_path = 'ml6543/project_final/'
+output__dumbo_path = '/home/ml6543/project_final/output_task2'
 output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
 output_path = '/home/yy3090/project_final/output'
 
 
 def output(data, table_name ):
-    path = "%s/%s.json" % (output_win_path, table_name)
+    path = "%s/%s.json" % (output__dumbo_path, table_name)
     with open(path, 'w') as json_file:
         json.dump(data, json_file)
 
@@ -504,18 +504,19 @@ def latlon(item):
         return False
 
 def colors(item):
-    csv_file = 'colors.csv'
-    df = pd.read_csv(csv_file)
-    df = df.dropna()
-    val1 = str(item)
-    max1 = 0
-    for ind in df.index:
-        temp = df['Air Superiority Blue'][ind]
-        val = fuzz.ratio(val1, temp)
-        if val > 50:
-            return True
-        else:
-            return False
+    return False
+    # csv_file = 'colors.csv'
+    # df = pd.read_csv(csv_file)
+    # df = df.dropna()
+    # val1 = str(item)
+    # max1 = 0
+    # for ind in df.index:
+    #     temp = df['Air Superiority Blue'][ind]
+    #     val = fuzz.ratio(val1, temp)
+    #     if val > 50:
+    #         return True
+    #     else:
+    #         return False
 
 if __name__ == '__main__':
 

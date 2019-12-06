@@ -6,7 +6,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
-#import task2_M as task2
 from pyspark.sql.functions import udf
 from pyspark.sql.types import ArrayType, StructField, StructType, StringType, IntegerType
 import task1_coinflippers as p1
@@ -86,14 +85,14 @@ def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
 
 def Process_column_name_for_dataframe(str):
     converted = []
-    dict = {"#":"num", "%":"percent","@":"at", "&":"and","*":"star"}
+    dict = {"#":"num", "%":"percent","@":"at", "&":"and","*":"star","$":"dollar","+":"plus","-":"minus","=":"equal","^":"6","!":"ex","(":"open",")":"close"}
     for i in range(0, len(str)):
-        if str[i].isalpha():
+        if str[i].isalnum():
             converted.append(str[i])
         elif str[i] in dict:
             converted.append(dict[str[i]])
         else:
             converted.append('_')
     result = ''.join(converted)
-    print(result)
+    #print(result)
     return result

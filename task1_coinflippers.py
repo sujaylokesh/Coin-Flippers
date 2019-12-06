@@ -47,6 +47,7 @@ def profileTable(data,_sc, sqlContext, table_name):
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
+    print(table_name)
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     # get data sets
@@ -79,7 +80,7 @@ def extractMeta(_sc, sqlContext, file_path, counter):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
-    data.printSchema()
+    #data.printSchema()
     table_name = file_path.split('/')[-1]
     dot_index = table_name.find(".")
     if dot_index == -1:
