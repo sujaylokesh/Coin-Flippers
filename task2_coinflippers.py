@@ -217,10 +217,11 @@ def initialize():
 ## Main Function
 output__mac_path = 'ml6543/project_final/'
 output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
+output_path = '/home/yy3090/project_final/output'
 
 
 def output(data, table_name ):
-    path = "%s\\%s.json" % (output_win_path, table_name)
+    path = "%s/%s.json" % (output_win_path, table_name)
     with open(path, 'w') as json_file:
         json.dump(data, json_file)
 
