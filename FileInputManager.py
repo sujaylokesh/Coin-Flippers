@@ -49,6 +49,7 @@ def extractMetaByColum(_sc, sqlContext, file_info):
     table_name = (file_info[1]).replace("-","_")
     column_name = file_info[2]
     data.createOrReplaceTempView(table_name)
+    p2.initialize()
     data = p2.profile_colum(_sc, sqlContext, column_name,table_name)
     p2.output(_sc.pararellize(data), table_name)
     sqlContext.dropTempTable(table_name)
@@ -73,8 +74,8 @@ def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
         if counter < start_index:
             counter += 1
             continue
-        #file_path = (dumbo_path + file).replace(" ","").replace("_","-")
-        file_path = (local_path + file).replace(" ","").replace("_","-")
+        file_path = (dumbo_path + file).replace(" ","").replace("_","-")
+        #file_path = (local_path + file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, counter)
         if counter % 2 == 0:
             f = open("%s/%s.txt" % (output_path,counter), "w")

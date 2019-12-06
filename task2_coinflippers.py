@@ -327,14 +327,11 @@ def checkWebsites(column):
     return result
 
 def checkBusinessName(column):
-    print(business_data)
-    # businessNames = [item['current_entity_name'] for item in business_data]
-    # return generalCheck(column, businessNames)
-    return False
+    businessNames = [item['current_entity_name'] for item in business_data]
+    return generalCheck(column, businessNames)
 
 def checkSchoolLevel(column):
     global schoolLevels
-    print(schoolLevels)
     return generalCheck(column, schoolLevels)
 
 def checkStreetName(column):
@@ -351,49 +348,49 @@ def checkBuildingType(column):
     return generalCheck(column, buildingTypes)
 
 def parsecolumn(column):
-    columns = column.collect()
-    size = len(columns)
-    elem = []
-    res1 = []
-    res2 = []
-    res3 = []
-    res4 = []
-    res5 = []
-    res6 = []
-    res7 = []
-    res8 = []
-    li = ['NAME','Phone Number','zipcode','college','field of study','type of vehicle','latitude/longitude','color']
-    lis = []
-    ran = .1*size
-    ran = int(ran)
     result = []
-    for i in range(0,ran):
-        rand = random.randint(0,size-1)
-        b = str(column[rand])
-        a = b.split('=')
-        a = a[1].split(')')
-        a = a[0]
-        elem.append(a)
-    for i in range(0,len(elem)-1):
-        res1.append(namecheck(elem[i]))
-        res2.append(phonecheck(elem[i]))
-        res3.append(zipcodeCheck(elem[i]))
-        res4.append(collegeCheck(elem[i]))
-        res5.append(FieldCheck(elem[i]))
-        res6.append(CarType(elem[i]))
-        res7.append(latlon(elem[i]))
-        res8.append(colors(elem[i]))
-    lis.append(res1)
-    lis.append(res2)
-    lis.append(res3)
-    lis.append(res4)
-    lis.append(res5)
-    lis.append(res6)
-    lis.append(res7)
-    lis.append(res8)
-    for i in range(0,len(lis)-1):
-        if sum(lis[i]) >= .8*len(lis[i]):
-            result.append(li[i])
+    # columns = column.collect()
+    # size = len(columns)
+    # elem = []
+    # res1 = []
+    # res2 = []
+    # res3 = []
+    # res4 = []
+    # res5 = []
+    # res6 = []
+    # res7 = []
+    # res8 = []
+    # li = ['NAME','Phone Number','zipcode','college','field of study','type of vehicle','latitude/longitude','color']
+    # lis = []
+    # ran = .1*size
+    # ran = int(ran)
+    # for i in range(0,ran):
+    #     rand = random.randint(0,size-1)
+    #     b = str(column[rand])
+    #     a = b.split('=')
+    #     a = a[1].split(')')
+    #     a = a[0]
+    #     elem.append(a)
+    # for i in range(0,len(elem)-1):
+    #     res1.append(namecheck(elem[i]))
+    #     res2.append(phonecheck(elem[i]))
+    #     res3.append(zipcodeCheck(elem[i]))
+    #     res4.append(collegeCheck(elem[i]))
+    #     res5.append(FieldCheck(elem[i]))
+    #     res6.append(CarType(elem[i]))
+    #     res7.append(latlon(elem[i]))
+    #     res8.append(colors(elem[i]))
+    # lis.append(res1)
+    # lis.append(res2)
+    # lis.append(res3)
+    # lis.append(res4)
+    # lis.append(res5)
+    # lis.append(res6)
+    # lis.append(res7)
+    # lis.append(res8)
+    # for i in range(0,len(lis)-1):
+    #     if sum(lis[i]) >= .8*len(lis[i]):
+    #         result.append(li[i])
     return result
 
 def checkCarMake(column):
