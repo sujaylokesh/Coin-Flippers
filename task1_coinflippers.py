@@ -29,7 +29,7 @@ def output(metadata, key_columns, _sc, table_name, counter):
     }
     global final_results
     final_results.append(results)
-    path = "%s%s.json" % (output_win_path, table_name)
+    path = "%s/%s.json" % (output_path, table_name)
     if counter % 2 == 0:
         with open(path, 'w') as json_file:
             json.dump(results, json_file)
