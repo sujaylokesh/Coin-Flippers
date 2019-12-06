@@ -37,9 +37,9 @@ def getFilePathsFromFile(sc, path):
     return results
 
 def extractMetaByColum(_sc, sqlContext, file_info):
-    file_path = dumbo_path + file_info[0].replace("_","-")
+    file_path = (dumbo_path + file_info[0]).replace(" ","").replace("_","-")
     #file_path = '/user/hm74/NYCOpenData/'+ file_info[0]
-    #file_path = local_path + file_info[0]
+    #file_path = (local_path + file_info[0]).replace(" ","").replace("_","-")
 
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0, len(data.columns)):
