@@ -61,25 +61,25 @@ def iterate_files_from_file(sc,spark, sqlContext, path):
         extractMetaByColum(sc, spark, sqlContext, file)
 
 
-def getFilePathsFromFile_for_dumbo(sc, path):
+def getFilePathsFromFile_for_task1(sc, path):
     data = sc.textFile(path)
     file_arrays = data.first().split(',')
     for i in range(0, len(file_arrays)):
         file_arrays[i] = strip_char(file_arrays[i])
     return file_arrays
 
-def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
-    files = getFilePathsFromFile_for_dumbo(sc, path)
+def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
+    files = getFilePathsFromFile_for_task1(sc, path)
     counter = 0
     for file in files:
         if counter < start_index:
             counter += 1
             continue
-        file_path = dumbo_path + (file).replace(" ","").replace("_","-")
-        #file_path = (local_path + file).replace(" ","").replace("_","-")
+        # file_path = dumbo_path + (file).replace(" ","").replace("_","-")
+        file_path = local_windows_path + (file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, counter)
         if counter % 2 == 0:
-            f = open("%s/%s.txt" % (output_path,counter), "w")
+            f = open("%s/%s.txt" % (output_path, counter), "w")
             f.write(str(counter))
             f.close()
         counter += 1
