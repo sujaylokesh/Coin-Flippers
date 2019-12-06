@@ -29,7 +29,7 @@ def output(metadata, key_columns, _sc, table_name, counter):
     }
     global final_results
     final_results.append(results)
-    path = "%s/%s.json" % (output_win_path, table_name)
+    path = "%s%s.json" % (output_win_path, table_name)
     if counter % 2 == 0:
         with open(path, 'w') as json_file:
             json.dump(results, json_file)
@@ -49,7 +49,7 @@ def profileTable(data,_sc, sqlContext, table_name):
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
-    print(table_name)
+    print(colName)
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     # get data sets
@@ -130,7 +130,8 @@ def calc_statistics(_sc, discinct_rows):
                 min_date = min(min_date, temp_date)
                 date_count = date_count + 1
             except ValueError:
-                txtList.append(rows[i][0])
+                if "None" != val:
+                    txtList.append(rows[i][0])
 
     if len(intList) > 0:
         result = {
@@ -154,7 +155,7 @@ def calc_statistics(_sc, discinct_rows):
 
     if len(txtList) > 0:
         templist = _sc.sparkContext.parallelize(txtList)
-        sorted_list = templist.map(lambda x: len(x)).sortBy(lambda x: x, ascending=False)
+        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=False)
         longest = sorted_list.take(5)
         shortest = sorted_list.take(5)
         count = templist.count()
@@ -163,7 +164,7 @@ def calc_statistics(_sc, discinct_rows):
         result = {
             "type": "TEXT",
             "count": len(txtList),
-            "shortest_values": shortest,
+            "shortest_values": shortest.,
             "longest_values": longest,
             "average_length": "%.f2" % average
         }
