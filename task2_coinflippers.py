@@ -215,11 +215,12 @@ def initialize():
 
 
 ## Main Function
-output_path = 'ml6543/project_final/'
+output__mac_path = 'ml6543/project_final/'
+output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
 
 
-def output(data, _sc, table_name ):
-    path = "%s\\%s.json" % (output_path, table_name)
+def output(data, table_name ):
+    path = "%s\\%s.json" % (output_win_path, table_name)
     with open(path, 'w') as json_file:
         json.dump(data, json_file)
 
@@ -517,24 +518,23 @@ def colors(item):
 
 if __name__ == '__main__':
 
-    # config = pyspark.SparkConf().setAll(
-    #     [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
-    #      ('spark.driver.memory', '8g')])
-    # sc = SparkContext(conf=config)
+    config = pyspark.SparkConf().setAll(
+        [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
+         ('spark.driver.memory', '8g')])
+    sc = SparkContext(conf=config)
     # sc.addFile("FileInputManager.py")
     # sc.addFile("task2_coinflippers.py")
     # sc.addFile("task1_coinflippers.py")
-    #
-    #
-    # spark = SparkSession \
-    #     .builder \
-    #     .appName("hw2sql") \
-    #     .config("spark.some.config.option", "some-value") \
-    #     .getOrCreate()
-    #
-    # sqlContext = SQLContext(spark)
-    # initialize()
-    # fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
 
-    # sc.stop()
-    fm.Process_column_name_for_dataframe("soft !@#! sf---@#agency#")
+
+    spark = SparkSession \
+        .builder \
+        .appName("hw2sql") \
+        .config("spark.some.config.option", "some-value") \
+        .getOrCreate()
+
+    sqlContext = SQLContext(spark)
+    initialize()
+
+    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
+    sc.stop()
