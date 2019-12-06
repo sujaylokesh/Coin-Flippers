@@ -10,6 +10,7 @@ import json
 from pyspark.sql.functions import udf
 from pyspark.sql.types import ArrayType, StructField, StructType, StringType, IntegerType
 import task1_coinflippers as p1
+import task2_coinflippers as p2
 
 dumbo_path = '/user/hm74/NYCOpenData/'
 
@@ -38,13 +39,9 @@ def extractMetaByColum(_sc, sqlContext, file_info):
     #file_path = 'E:\\homework\\big data\hw1\project\\' + file_info[0]
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=True)
     table_name = file_path.split('\\')[-1]
-    dot_index = table_name.find(".")
-    table_name = table_name[0: dot_index]
     data.createOrReplaceTempView(table_name)
-    data = p1.profile_colum(data, _sc, sqlContext, table_name)
-    col_metadata = data[0]
-    key_col_candidate = data[1]
-    p1.output(col_metadata, key_col_candidate, _sc, table_name)
+    data = p2.profile_colum(data, _sc, sqlContext, table_name)
+    p2.output(_sc.pararellize(data), table_name)
     sqlContext.dropTempTable(table_name)
 
 def iterate_files_from_file(sc,ss, sqlContext, path):
