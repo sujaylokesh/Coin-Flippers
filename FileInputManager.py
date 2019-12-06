@@ -38,8 +38,8 @@ def getFilePathsFromFile(sc, path):
     return results
 
 def extractMetaByColum(_sc,spark, sqlContext, file_info):
-    file_path = local_windows_path + (file_info[0]).replace(" ","").replace("_","-")
-    #file_path = '/user/hm74/NYCOpenData/'+ file_info[0]
+    #file_path = local_windows_path + (file_info[0]).replace(" ","").replace("_","-")
+    file_path = '/user/hm74/NYCOpenData/'+ (file_info[0]).replace(" ","").replace("_","-")
     #file_path = (local_path + file_info[0]).replace(" ","").replace("_","-")
 
     data = spark.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
@@ -86,9 +86,12 @@ def iterate_files_from_file_for_dumbo(sc, ss, sqlContext, path, start_index):
 
 def Process_column_name_for_dataframe(str):
     converted = []
+    dict = {"#":"num", "%":"percent","@":"at", "&":"and","*":"star"}
     for i in range(0, len(str)):
         if str[i].isalpha():
             converted.append(str[i])
+        elif str[i] in dict:
+            converted.append(dict[str[i]])
         else:
             converted.append('_')
     result = ''.join(converted)

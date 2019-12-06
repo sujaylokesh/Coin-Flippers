@@ -25,6 +25,7 @@ def output(metadata, key_columns, _sc, table_name, counter):
         "columns": metadata,
         "key_column_candidates": key_columns
     }
+    global final_results
     final_results.append(results)
     path = "%s/%s.json" % (output_path, table_name)
     if counter % 2 == 0:
