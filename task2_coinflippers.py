@@ -27,12 +27,16 @@ buildingTypes = 0
 
 
 def initialize():
+    global threshold
+    threshold = 0.5
 
     global labels # DO NOT CHANGE THE ORDER OF LABELS
     labels = np.asarray(["Business Name", 'School Levels',  'Street Name', 'Park/Playground', 'City agency', 'Building Classification',\
                         'Neighborhood', 'Borough','Car Make', 'Areas of study', 'Websites','Color','Type of location','Subjects in school',  \
                          'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
                         'Zip code',  'School Name',  "Person Name", 'Vehicle Type', ])
+    global label_proportion
+    label_proportion = {}
 
     global neiborhood_names
     global boroughs
@@ -220,80 +224,72 @@ output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
 output_path = '/home/yy3090/project_final/output'
 
 
-def output(data, table_name):
-    path = "%s/%s.json" % (output__dumbo_path, table_name)
-    with open(path, 'w') as json_file:
-        json.dump(data, json_file)
-
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
     colName = fm.Process_column_name_for_dataframe(colName)
+    print("col name done")
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
+    print("query done")
+
     temp_col_metadata = {
         "column_name": colName,
         "semantic_types": semanticCheck(temp)
     }
+    print("semantic check done")
     results.append(temp_col_metadata)
     return results
 
+
+labels = np.asarray(
+    ["Business Name", 'School Levels', 'Street Name', 'Park/Playground', 'City agency', 'Building Classification', \
+     'Neighborhood', 'Borough', 'Car Make', 'Areas of study', 'Websites', 'Color', 'Type of location',
+     'Subjects in school', \
+     'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
+                                                                    'Zip code', 'School Name', "Person Name",
+     'Vehicle Type', ])
 
 
 def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
     result = []
-    checkEach = [checkBusinessName(col),
-                 checkSchoolLevel(col),
-                 checkStreetName(col),
-                 checkParkandPlayground(col),
-                 checkCityAgencies(col),
-                 checkBuildingType(col),
-                 checkNeiborhoods(col),
-                 checkBoroughs(col),
-                 checkCarMake(col),
-                 checkAreasOfStudy(col),
-                 checkWebsites(col),
-                 checkColor(col),
-                 checkTypeOfLocation(col),
-                 checkSchoolSubject(col)]
-    colLables1 = []
-    colLabels2 = []
+    checkBusinessName(col, "Business Name")
+    checkSchoolLevel(col,'School Levels')
+    checkStreetName(col,'Street Name')
+    checkParkandPlayground(col,'Park/Playground')
+    checkCityAgencies(col,'City agency')
+    checkBuildingType(col,'Building Classification')
+    checkNeiborhoods(col,'Neighborhood')
+    checkBoroughs(col,'Borough')
+    checkCarMake(col,'Car Make')
+    checkAreasOfStudy(col,'Areas of study')
+    checkWebsites(col, 'Websites')
+    checkColor(col,'Color')
+    checkTypeOfLocation(col,'Type of location')
+    checkSchoolSubject(col,'Subjects in school')
+    parsecolumn(col)
 
-    for i in range(0, len(checkEach)):
-        if checkEach[i]:
-            colLables1.append(labels[i])
-    colLabels2 = parsecolumn(col)
-    colLabels = colLables1+colLabels2
-    if(len(colLabels)==1):
-        semantic = {
-            "semantic_type": colLabels[0],
-            "count": col.count()
-        }
-        result.append(semantic)
-        return result
-    elif len(colLabels)==0 :
+    colSize =col.count()
+    for key in label_proportion:
+        if label_proportion[key]!=0:
+            semantic = {
+                "semantic_type": key,
+                "count": colSize*label_proportion[key]
+            }
+            result.append(semantic)
+
+    if(len(result)==0):
         semantic = {
             "semantic_type": 'Other',
-            "count": col.count()
+            "count": colSize
         }
         result.append(semantic)
-        return result
-    else:
-        return checkMultipleLabels(col, colLabels)
 
-
-def checkMultipleLabels(col,colLabels):
-    result =[]
-    for i in range(0, len(colLabels)):
-        semantic = {
-            "semantic_type": colLabels[i],
-            "count": col.count()
-        }
-        result.append(semantic)
     return result
 
-def generalCheck(column, list):
+
+def generalCheck(column, list, label):
     columns = column.collect()
     size = len(columns)
     sampleSize = size * 0.1
@@ -312,42 +308,48 @@ def generalCheck(column, list):
         if flag:
             cnt += 1
         check -= 1
+    prob = cnt / sampleSize
+    if prob < threshold:
+        prob =0
+    label_proportion[label]=prob
+    return prob > threshold
 
-    return cnt / sampleSize > 0.5
+def checkNeiborhoods(column, label):
+    return generalCheck(column, neiborhood_names, label)
 
-def checkNeiborhoods(column):
-    return generalCheck(column, neiborhood_names)
+def checkBoroughs(column, label):
+    return generalCheck(column, boroughs, label)
 
-def checkBoroughs(column):
-    return generalCheck(column, boroughs)
-
-def checkWebsites(column):
+def checkWebsites(column, label):
     if type(column) != str:
         return False
     exp = "^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$"
     result = re.search(exp, column)
+    if result:
+        label_proportion[label] = 1
+    else:
+        label_proportion[label] = 0
     return result
 
-def checkBusinessName(column):
+def checkBusinessName(column, label):
     businessNames = [item['current_entity_name'] for item in business_data]
-    return generalCheck(column, businessNames)
+    return generalCheck(column, businessNames, label)
 
-def checkSchoolLevel(column):
-    global schoolLevels
-    return generalCheck(column, schoolLevels)
+def checkSchoolLevel(column, label):
+    return generalCheck(column, schoolLevels, label)
 
-def checkStreetName(column):
+def checkStreetName(column, label):
     ## If this is not enough, then we can use real street data
-    return generalCheck(column, streets)
+    return generalCheck(column, streets, label)
 
-def checkParkandPlayground(column):
-    return generalCheck(column, parks)
+def checkParkandPlayground(column, label):
+    return generalCheck(column, parks, label)
 
-def checkCityAgencies(column):
-    return generalCheck(column, agencies)
+def checkCityAgencies(column, label):
+    return generalCheck(column, agencies, label)
 
-def checkBuildingType(column):
-    return generalCheck(column, buildingTypes)
+def checkBuildingType(column, label):
+    return generalCheck(column, buildingTypes, label)
 
 def parsecolumn(column):
     result = []
@@ -392,26 +394,26 @@ def parsecolumn(column):
     lis.append(res8)
     for i in range(0,len(lis)-1):
         if sum(lis[i]) >= .8*len(lis[i]):
-            result.append(li[i])
-    return result
+            label_proportion[li[i]] = sum(lis[i])/len(lis[i])
 
-def checkCarMake(column):
-    return generalCheck(column, carBrand)
 
-def checkColor(column):
-    return generalCheck(column, color)
+def checkCarMake(column, label):
+    return generalCheck(column, carBrand, label)
 
-def checkSchoolName(column):
-    return generalCheck(column, schoolName)
+def checkColor(column, label):
+    return generalCheck(column, color, label)
 
-def checkTypeOfLocation(column):
-    return generalCheck(column, poi)
+def checkSchoolName(column, label):
+    return generalCheck(column, schoolName, label)
 
-def checkSchoolSubject(column):
-    return generalCheck(column, schoolSubject)
+def checkTypeOfLocation(column, label):
+    return generalCheck(column, poi, label)
 
-def checkAreasOfStudy(column):
-    return generalCheck(column, subjects)
+def checkSchoolSubject(column, label):
+    return generalCheck(column, schoolSubject, label)
+
+def checkAreasOfStudy(column, label):
+    return generalCheck(column, subjects, label)
 
 
 def namecheck(inp):

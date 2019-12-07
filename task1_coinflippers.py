@@ -67,7 +67,7 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
-    data.printSchema()
+    #data.printSchema()
     delm = ""
     if file_path.find('/') > -1:
         delm = '/'
@@ -112,7 +112,7 @@ def calc_statistics(_sc, discinct_rows):
         if val.isnumeric():
             intList.append(int(val))
             max_int = max(max_int, int(val))
-            min_int = max(min_int, int(val))
+            min_int = min(min_int, int(val))
         else:
             #check date
             try:
@@ -125,14 +125,24 @@ def calc_statistics(_sc, discinct_rows):
                     txtList.append(val)
 
     if len(intList) > 0:
-        result = {
-            "type": "INTEGER/REAL",
-            "count": len(intList),
-            "max_value": max_int,
-            "min_value": min_int,
-            "mean": statistics.mean(intList),
-            "stddev": statistics.stdev(intList)
-        }
+        if len(intList)>1:
+            result = {
+                "type": "INTEGER/REAL",
+                "count": len(intList),
+                "max_value": max_int,
+                "min_value": min_int,
+                "mean": statistics.mean(intList),
+                "stddev": statistics.stdev(intList)
+            }
+        else:
+            result = {
+                "type": "INTEGER/REAL",
+                "count": len(intList),
+                "max_value": max_int,
+                "min_value": min_int,
+                "mean": statistics.mean(intList),
+                "stddev": 0
+            }
         res.append(result)
 
     if date_count > 0:
