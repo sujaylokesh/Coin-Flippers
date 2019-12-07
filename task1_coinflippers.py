@@ -67,7 +67,7 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
-    #data.printSchema()
+    data.printSchema()
     delm = ""
     if file_path.find('/') > -1:
         delm = '/'

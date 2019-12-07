@@ -14,8 +14,10 @@ import task2_coinflippers as p2
 dumbo_path = '/user/hm74/NYCOpenData/'
 local_mac_path ='/Users/mina/Downloads/testDumbo/'
 local_windows_path ='E:\\homework\\big_data\\hw1\\project\\'
-output_path = '/home/ml6543/project_final/output_task1'
+output_path = '/home/ml6543/project_final/output_task12'
+output__dumbo_task2 = '/home/ml6543/project_final/output_task2'
 global final_results
+global final_results2
 
 def strip_char(str):
     return str.replace('[', "")\
@@ -37,30 +39,36 @@ def getFilePathsFromFile(sc, path):
     results = file_rdd.map(lambda x: customMap(x)).collect()
     return results
 
-def extractMetaByColum(_sc,spark, sqlContext, file_info):
-    file_path = local_windows_path + (file_info[0]).replace(" ","").replace("_","-")
-    # file_path = '/user/hm74/NYCOpenData/'+ (file_info[0]).replace(" ","").replace("_","-")
-
-    #file_path = (local_path + file_info[0]).replace(" ","").replace("_","-")
-
+def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
+    #file_path = local_windows_path + (file_info[0]).replace(" ","").replace("_","-")
+    file_path = '/user/hm74/NYCOpenData/'+ (file_info[0]).replace(" ","").replace("_","-")
+    #file_path = local_mac_path + (file_info[0]).replace(" ","").replace("_","-")
     data = spark.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
+    print("readdata")
     for col in range(0, len(data.columns)):
         data = data.withColumnRenamed(data.columns[col],
                                      Process_column_name_for_dataframe(data.columns[col]))
-
+    print("column done")
     table_name = (file_info[1]).replace("-","_")
     column_name = file_info[2]
     data.createOrReplaceTempView(table_name)
+    print("data view done")
     p2.initialize()
-    data = p2.profile_colum(_sc, sqlContext, column_name,table_name)
-    print(data)
-    p2.output(data, table_name)
+    print("initial done")
+    data2 = p2.profile_colum(_sc, sqlContext, column_name,table_name)
+    print(data2)
+    final_results2.append(data2)
     sqlContext.dropTempTable(table_name)
 
 def iterate_files_from_file(sc,spark, sqlContext, path):
     files = getFilePathsFromFile(sc, path)
+    final_results2 =[]
     for file in files:
-        extractMetaByColum(sc, spark, sqlContext, file)
+        extractMetaByColum(sc, spark, sqlContext, file, final_results2)
+        if files[-1] == file:
+            path = "%s/task2.json" % (output__dumbo_task2)
+            with open(path, 'w') as json_file:
+                json.dump(final_results2, json_file)
 
 
 def getFilePathsFromFile_for_task1(sc, path):
@@ -83,8 +91,7 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
         p1.extractMeta(ss, sqlContext, file_path, final_results)
         output_json_path = "%s/%s.json" % (output_path, counter)
 
-
-        if counter % 2 == 0:
+        if counter % 10 == 0:
             with open(output_json_path, 'w') as json_file:
                 json.dump(final_results, json_file)
                 final_results.clear()
