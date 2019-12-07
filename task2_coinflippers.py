@@ -13,9 +13,9 @@ import random
 import numpy as np
 from pandas.io.json import json_normalize
 import re
-#from names_dataset import NameDataset
+from names_dataset import NameDataset
 import FileInputManager as fm
-
+import fuzzy
 
 neiborhood_names = 0
 boroughs = 0
@@ -301,7 +301,11 @@ def generalCheck(column, list, label):
         ele = str(columns[rand]).split('=')[1].split(')')[0]
         flag = False
         for s in list:
-            if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
+            ele = ele.lower()
+            s = s.lower()
+            ele = fuzzy.nysiis(ele)
+            s = fuzzy.nysiis(s)
+            if fuzz.ratio(ele,s) > 70:
                 flag = True
                 break
         #print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
@@ -417,21 +421,20 @@ def checkAreasOfStudy(column, label):
 
 
 def namecheck(inp):
-    return False
-    # m=NameDataset()
-    # count = 0
-    # inp = str(inp)
-    # if m.search_first_name(inp) == False:
-    #     if m.search_last_name(inp) == False:
-    #         return False
-    #     elif m.search_last_name(inp) ==False:
-    #         return False
-    #     else:
-    #         return True
-    # elif m.search_first_name(inp) == False:
-    #     return False
-    # else:
-    #     return True
+    m=NameDataset()
+    count = 0
+    inp = str(inp)
+    if m.search_first_name(inp) == False:
+        if m.search_last_name(inp) == False:
+            return False
+        elif m.search_last_name(inp) ==False:
+            return False
+        else:
+            return True
+    elif m.search_first_name(inp) == False:
+        return False
+    else:
+        return True
 
 
 def phonecheck(item):
