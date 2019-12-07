@@ -568,7 +568,7 @@ if __name__ == '__main__':
          ('spark.driver.memory', '8g')])
     sc = SparkContext(conf=config)
     sc.addFile("FileInputManager.py")
-    sc.addFile("task2_coinflippers.py")
+    sc.addFile("task2_sl.py")
     sc.addFile("task1_coinflippers.py")
 
 
