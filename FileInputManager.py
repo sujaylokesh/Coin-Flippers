@@ -64,7 +64,7 @@ def iterate_files_from_file(sc,spark, sqlContext, path):
     final_results2 =[]
     for i in range(len(files)):
         extractMetaByColum(sc, spark, sqlContext, files[i], final_results2)
-        if i %5 == 0:
+        if i %1 == 0:
             path = "%s/Task2_%s.json" % (output_path, i)
             with open(path, 'w') as json_file:
                 json.dump(final_results2, json_file)
@@ -86,11 +86,11 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
             counter += 1
             continue
         file_path = dumbo_path + (file).replace(" ","").replace("_","-")
-        #file_path = (local_mac_path + file).replace(" ","").replace("_","-")
+        #file_path = local_mac_path + (file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, final_results)
         output_json_path = "%s/%s.json" % (output_path, counter)
 
-        if counter % 5 == 0:
+        if counter % 1 == 0:
             with open(output_json_path, 'w') as json_file:
                 json.dump(final_results, json_file)
                 final_results.clear()

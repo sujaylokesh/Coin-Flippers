@@ -24,13 +24,17 @@ output_path = '/home/ml6543/project_final/output_task1'
 def profileTable(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
+    data_type = [0,0,0]
     print(table_name)
     for i in range(0,len(data.columns)):
         colName = fm.Process_column_name_for_dataframe(data.columns[i])
         temp_results = profile_colum(_sc, sqlContext, colName, table_name)
         results.append(temp_results[0])
         key_columns.append(temp_results[1])
-    return [results, key_columns]
+        data_type[0] += temp_results[2][0]
+        data_type[1] += temp_results[2][1]
+        data_type[2] += temp_results[2][2]
+    return [results, key_columns, data_type]
 
 
 def profile_colum(_sc, sqlContext, colName, table_name):
@@ -46,22 +50,22 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
+    data_type_stats, typeCount = calc_statistics(_sc, discinct_rows)
     temp_col_metadata = {
         "column_name": colName,
         "number_non_empty_cells": non_empty,
         "number_empty_cells": null_count,
         "number_distinct_values": distinct_count,
         "frequent_values": top5,
-        "data_types": calc_statistics(_sc, discinct_rows)
+        "data_types": data_type_stats
     }
     results.append(temp_col_metadata)
-
     key_columns = []
     diff = abs(non_empty - distinct_count)
     if diff < key_column_threshold:
         key_columns.append(colName)
 
-    return results, key_columns
+    return results, key_columns, typeCount
 
 def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
@@ -83,11 +87,15 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
     data = profileTable(data, _sc, sqlContext, table_name)
     col_metadata = data[0]
     key_col_candidate = data[1]
+    data_type_count = data[2]
     #OUTPUT
     results = {
         "dataset_name": table_name,
         "columns": col_metadata,
-        "key_column_candidates": key_col_candidate
+        "key_column_candidates": key_col_candidate,
+        "data_type_count": {"integer/real": data_type_count[0],
+                            "date": data_type_count[1],
+                            "text": data_type_count[2]}
     }
     final_results.append(results)
     sqlContext.dropTempTable(table_name)
@@ -100,6 +108,7 @@ def calc_statistics(_sc, discinct_rows):
     txtList=[]
     date_count = 0
     res = []
+    typeCount = [0,0,0]
     rows = discinct_rows.collect()
 
     max_int = -100000000000
@@ -144,6 +153,7 @@ def calc_statistics(_sc, discinct_rows):
                 "mean": statistics.mean(intList),
                 "stddev": 0
             }
+        typeCount[0]=1
         res.append(result)
 
     if date_count > 0:
@@ -154,6 +164,7 @@ def calc_statistics(_sc, discinct_rows):
             "min_value": min_date.strftime("%Y/%m/%d %H:%M:%S")
         }
         res.append(result)
+        typeCount[1]=1
 
     if len(txtList) > 0:
         templist = _sc.sparkContext.parallelize(txtList)
@@ -171,7 +182,9 @@ def calc_statistics(_sc, discinct_rows):
             "average_length": "%.f2" % average
         }
         res.append(result)
-    return res
+        typeCount[2]=1
+
+    return res, typeCount
 
 if __name__ == "__main__":
 
