@@ -29,7 +29,8 @@ def profileTable(data,_sc, sqlContext, table_name):
         colName = fm.Process_column_name_for_dataframe(data.columns[i])
         temp_results = profile_colum(_sc, sqlContext, colName, table_name)
         results.append(temp_results[0])
-        key_columns.append(temp_results[1])
+        if len(key_columns) > 0:
+            key_columns.append(temp_results[1])
     return [results, key_columns]
 
 
@@ -58,7 +59,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 
     key_columns = []
     diff = abs(non_empty - distinct_count)
-    if diff < key_column_threshold:
+    if diff < key_column_threshold and len(key_columns) > 0:
         key_columns.append(colName)
 
     return results, key_columns
