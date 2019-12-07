@@ -32,10 +32,9 @@ def profileTable(data,_sc, sqlContext, table_name):
         results.append(temp_results[0])
         if len(key_columns) > 0:
             key_columns.append(temp_results[1])
-            key_columns.append(temp_results[1])
-            data_type[0] += temp_results[2][0]
-            data_type[1] += temp_results[2][1]
-            data_type[2] += temp_results[2][2]
+        data_type[0] += temp_results[2][0]
+        data_type[1] += temp_results[2][1]
+        data_type[2] += temp_results[2][2]
     return [results, key_columns, data_type]
 
 
