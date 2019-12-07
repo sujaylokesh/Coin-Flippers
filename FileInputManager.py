@@ -54,19 +54,18 @@ def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
     data.createOrReplaceTempView(table_name)
     print("data view done")
     p2.initialize()
-    print("initial done")
+    print("initial done", table_name)
     data2 = p2.profile_colum(_sc, sqlContext, column_name,table_name)
-    print(data2)
     final_results2.append(data2)
     sqlContext.dropTempTable(table_name)
 
 def iterate_files_from_file(sc,spark, sqlContext, path):
     files = getFilePathsFromFile(sc, path)
     final_results2 =[]
-    for file in files:
-        extractMetaByColum(sc, spark, sqlContext, file, final_results2)
-        if files[-1] == file:
-            path = "%s/task2.json" % (output__dumbo_task2)
+    for i in range(len(files)):
+        extractMetaByColum(sc, spark, sqlContext, files[i], final_results2)
+        if i %5 == 0:
+            path = "%s/Task2_%s.json" % (output_path, i)
             with open(path, 'w') as json_file:
                 json.dump(final_results2, json_file)
 
@@ -91,7 +90,7 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
         p1.extractMeta(ss, sqlContext, file_path, final_results)
         output_json_path = "%s/%s.json" % (output_path, counter)
 
-        if counter % 10 == 0:
+        if counter % 5 == 0:
             with open(output_json_path, 'w') as json_file:
                 json.dump(final_results, json_file)
                 final_results.clear()

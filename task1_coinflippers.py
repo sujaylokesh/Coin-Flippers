@@ -43,7 +43,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
     distinct_count = discinct_rows.count()
-    query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
+    query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
     temp_col_metadata = {
@@ -74,6 +74,7 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
     else:
         delm = '\\'
     table_name = file_path.split(delm)[-1]
+    print(table_name)
     dot_index = table_name.find(".")
     if dot_index == -1:
         dot_index = len(table_name)
