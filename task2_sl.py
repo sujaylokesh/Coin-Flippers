@@ -342,8 +342,8 @@ def generalCheck(column, list, label):
         for s in list:
             ele = ele.lower()
             s = s.lower()
-            s = fuzzy.nysiis(s)
-            ele = fuzzy.nysiis(ele)
+            s = nysiis(s)
+            ele = nysiis(ele)
             if fuzz.partial_ratio(ele,s) > 70:
                 flag = True
                 break
