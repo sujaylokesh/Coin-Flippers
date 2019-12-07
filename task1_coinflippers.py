@@ -121,7 +121,8 @@ def calc_statistics(_sc, discinct_rows):
                 min_date = min(min_date, temp_date)
                 date_count = date_count + 1
             except ValueError:
-                txtList.append(rows[i][0])
+                if val != "None":
+                    txtList.append(val)
 
     if len(intList) > 0:
         result = {
