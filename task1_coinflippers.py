@@ -43,7 +43,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
     distinct_count = discinct_rows.count()
-    query = "select %s as val, count(*) as cnt from %s group by %s order by cnt desc" % (colName, table_name, colName)
+    query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name, colName)
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
     temp_col_metadata = {
