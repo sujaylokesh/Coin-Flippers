@@ -73,12 +73,12 @@ def initialize():
     last_name = pd.read_csv("lname.csv")
 
     global colleges
-    fields = ['NAME']
-    colleges = pd.read_csv("college", usecols=fields)
+    f = ['NAME']
+    colleges = pd.read_csv("college", usecols=f)
 
     global cars
-    fields = ['Unnamed: 0']
-    cars = pd.read_csv("cars.csv", usecols=fields)
+    f = ['Unnamed: 0']
+    cars = pd.read_csv("cars.csv", usecols=f)
 
     global fields
     f = ['Arts']
@@ -426,7 +426,7 @@ def parsecolumn(column):
     lis = []
     ran = .1*size
     ran = int(ran)
-    for i in range(0,ran):
+    for i in range(0,clamp(ran)):
         rand = random.randint(0,size-1)
         b = str(columns[rand])
         a = b.split('=')
