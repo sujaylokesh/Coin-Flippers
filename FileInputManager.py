@@ -55,7 +55,7 @@ def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
     column_name = file_info[2]
     data.createOrReplaceTempView(table_name)
     print("data view done")
-
+    p2.initialize()
     print("initial done", table_name)
     data2 = p2.profile_colum(_sc, sqlContext, column_name,table_name)
     final_results2.append(data2)
