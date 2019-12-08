@@ -453,21 +453,29 @@ def checkAreasOfStudy(column, label):
     return generalCheck(column, subjects, label)
 
 
-def namecheck(inp):
-    m=NameDataset()
+def namecheck(item):
+    name = nysiis(item)
+    df = p.read_csv('fname.csv')
+    df1 = p.read_csv('lname.csv')
+    df = df.dropna()
+    df1 = df1.dropna()
     count = 0
-    inp = str(inp)
-    if m.search_first_name(inp) == False:
-        if m.search_last_name(inp) == False:
-            return False
-        elif m.search_last_name(inp) ==False:
-            return False
-        else:
+    for index,row in df.iterrows():
+        rat = fuzz.ratio(name,row['ny'])
+        if rat > 99:
             return True
-    elif m.search_first_name(inp) == False:
-        return False
-    else:
-        return True
+        else:
+            if count < 10000:
+                for index,row in df1.iterrows():
+                    rat1 = fuzz.ratio(name,row['ny'])
+                    if rat1 > 90:
+                        return True
+                    else:
+                        count+=1
+                        continue
+    return False
+
+
 
 
 def phonecheck(item):
@@ -493,8 +501,8 @@ def collegeCheck(item):
     max = 0
     for ind in df.index:
         temp = fuzz.ratio(val, df['NAME'][ind])
-    if temp > max:
-        max = temp
+        if temp > max:
+            max = temp
     if max > 50:
         return True
     else:
