@@ -53,10 +53,11 @@ def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
     print("column done")
     table_name = (file_info[1]).replace("-","_")
     column_name = file_info[2]
+
     data.createOrReplaceTempView(table_name)
     print("data view done")
-    p2.initialize()
-    print("initial done", table_name)
+    # p2.initialize()
+    print("table name", table_name)
     data2 = p2.profile_colum(_sc, sqlContext, column_name,table_name)
     final_results2.append(data2)
     sqlContext.dropTempTable(table_name)
@@ -64,6 +65,8 @@ def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
 def iterate_files_from_file(sc,spark, sqlContext, path):
     files = getFilePathsFromFile(sc, path)
     final_results2 =[]
+    p2.initialize()
+    print("initial done")
     for i in range(len(files)):
         extractMetaByColum(sc, spark, sqlContext, files[i], final_results2)
         if i %1 == 0:
@@ -104,7 +107,7 @@ def Process_column_name_for_dataframe(str):
     dict = {"#": "num", "%": "percent","@":"at", "&":"and",
             "*":"star","$":"dollar","+":"plus",
             "-":"minus","=":"equal",
-            "^":"6","!":"ex","(":"open",")":"close"
+            "^":"6","!":"ex","(":"_",")":"_"
             }
     for i in range(0, len(str)):
         if str[i].isalnum():
