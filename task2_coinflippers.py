@@ -73,16 +73,16 @@ def initialize():
     last_name = pd.read_csv("lname.csv")
 
     global colleges
-    f = ['NAME']
-    colleges = pd.read_csv("college", usecols=f)
+    f1 = ['NAME']
+    colleges = pd.read_csv("college.csv", usecols=f1)
 
     global cars
-    f = ['Unnamed: 0']
-    cars = pd.read_csv("cars.csv", usecols=f)
+    f2 = ['Unnamed: 0']
+    cars = pd.read_csv("cars.csv", usecols=f2)
 
     global fields
-    f = ['Arts']
-    fields = pd.read_csv("study.csv", usecols=f)
+    f3 = ['Arts']
+    fields = pd.read_csv("study.csv", usecols=f3)
 
     global buildingTypes
     buildingTypes = np. asarray(['A0	CAPE COD', 'A1	TWO STORIES - DETACHED SM OR MID',
@@ -241,7 +241,7 @@ def initialize():
 
 
 ## Main Function
-output__dumbo_path = '/home/sl5202/project/Coin-Flippers'
+output__dumbo_path = '/home/ml6543/project_final/output_task2'
 #output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
 # output_path = '/home/yy3090/project_final/output'
 
@@ -269,18 +269,31 @@ def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
     result = []
     checkBusinessName(col, "Business Name")
+    print("biz done")
     checkSchoolLevel(col,'School Levels')
     checkStreetName(col,'Street Name')
+    print("street done")
+
     checkParkandPlayground(col,'Park/Playground')
     checkCityAgencies(col,'City agency')
+    print("agendcy done")
+
     checkBuildingType(col,'Building Classification')
     checkNeiborhoods(col,'Neighborhood')
+    print("neighborhood done")
+
     checkBoroughs(col,'Borough')
     checkCarMake(col,'Car Make')
     checkAreasOfStudy(col,'Areas of study')
+    print("area done")
+
     checkWebsites(col, 'Websites')
+    print("website done")
+
     checkColor(col,'Color')
     checkTypeOfLocation(col,'Type of location')
+    print("location done")
+
     checkSchoolSubject(col,'Subjects in school')
     parsecolumn(col)
 
@@ -426,6 +439,8 @@ def parsecolumn(column):
     lis = []
     ran = .1*size
     ran = int(ran)
+    print("parse sampling done")
+
     for i in range(0,clamp(ran)):
         rand = random.randint(0,size-1)
         b = str(columns[rand])
@@ -442,6 +457,8 @@ def parsecolumn(column):
         res6.append(CarType(elem[i]))
         res7.append(latlon(elem[i]))
         res8.append(colors(elem[i]))
+        print("parse check", i)
+
     lis.append(res1)
     lis.append(res2)
     lis.append(res3)
@@ -563,18 +580,18 @@ def latlon(item):
         return False
 
 def colors(item):
-    csv_file = 'colors.csv'
-    df = pd.read_csv(csv_file)
-    df = df.dropna()
-    val1 = str(item)
-    max1 = 0
-    for ind in df.index:
-        temp = df['Air Superiority Blue'][ind]
-        val = fuzz.ratio(val1, temp)
-        if val > 50:
-            return True
-        else:
-            return False
+    # csv_file = 'colors.csv'
+    # df = pd.read_csv(csv_file)
+    # df = df.dropna()
+    # val1 = str(item)
+    # max1 = 0
+    # for ind in df.index:
+    #     temp = df['Air Superiority Blue'][ind]
+    #     val = fuzz.ratio(val1, temp)
+    #     if val > 50:
+    #         return True
+    #     else:
+    return False
 
 def clamp(num, limit = 1000):
     if num > limit:
