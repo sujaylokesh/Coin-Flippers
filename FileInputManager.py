@@ -42,8 +42,8 @@ def getFilePathsFromFile(sc, path):
     return results
 
 def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
-    #file_path = local_windows_path + (file_info[0]).replace(" ","").replace("_","-")
-    file_path = '/user/hm74/NYCOpenData/'+ (file_info[0]).replace(" ","").replace("_","-")
+    file_path = local_windows_path + (file_info[0]).replace(" ","").replace("_","-")
+    # file_path = '/user/hm74/NYCOpenData/'+ (file_info[0]).replace(" ","").replace("_","-")
     #file_path = local_mac_path + (file_info[0]).replace(" ","").replace("_","-")
     data = spark.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     print("readdata")
@@ -87,8 +87,9 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
         if counter < start_index:
             counter += 1
             continue
-        file_path = dumbo_path + (file).replace(" ","").replace("_","-")
+        # file_path = dumbo_path + (file).replace(" ","").replace("_","-")
         #file_path = local_mac_path + (file).replace(" ","").replace("_","-")
+        file_path = local_windows_path + (file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, final_results)
         output_json_path = "%s/%s.json" % (output_path, counter)
 

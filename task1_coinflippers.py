@@ -10,6 +10,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
+
+from pyspark.sql.types import DoubleType, IntegerType, FloatType
+
 import FileInputManager as fm
 import random
 from dateutil import parser
@@ -29,17 +32,114 @@ def profileTable(data,_sc, sqlContext, table_name):
     print(table_name)
     for i in range(0,len(data.columns)):
         colName = fm.Process_column_name_for_dataframe(data.columns[i])
-        temp_results = profile_colum(_sc, sqlContext, colName, table_name)
+        col_type = data.schema.fields[i].dataType
+        if (col_type == DoubleType() or \
+                col_type == IntegerType() or\
+                col_type == FloatType) and False:
+            temp_results = profile_int_column(data, _sc, sqlContext, colName, table_name)
+        elif does_col_contain_dates(_sc, data, colName, table_name):
+            temp_results = profile_date_column()
+        else:
+            temp_results = profile_text_colum(_sc, sqlContext, colName, table_name)
+
         results.append(temp_results[0])
+
         if len(key_columns) > 0:
             key_columns.append(temp_results[1])
         data_type[0] += temp_results[2][0]
         data_type[1] += temp_results[2][1]
         data_type[2] += temp_results[2][2]
-    return [results, key_columns, data_type]
+    return [results, data.selectkey_columns, data_type]
 
+def does_col_contain_dates(_sc, data, colName, table_name):
+    size = data.count()
+    sample_count = 10
+    sampled_rows = data.select(data[colName])\
+        .sample(True, sample_count / size).collect()
+    all_dates = True
+    for r in sampled_rows:
+        try:
+            parser.parse()
+        except:
+            all_dates = False
+            break
+    return all_dates
 
-def profile_colum(_sc, sqlContext, colName, table_name):
+def profile_date_column(data, _sc, sqlContext,colName, table_name):
+    results = []
+    total_count = data.select(data[colName]).count()
+    empty_count = data.filter(data[colName].isNull()).count()
+    distinct = data.select(data[colName]).distinct()
+    distinct_count = distinct.count()
+    query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
+    top5 = sqlContext.sql(query)
+    top5 = top5.rdd.map(lambda x: x[0]).take(5)
+    temp_col_metadata = {
+        "column_name": colName,
+        "data_types": ["DATE", total_count - empty_count]
+    }
+
+    results.append(temp_col_metadata)
+
+    key_columns = []
+    diff = abs(total_count - empty_count - distinct_count)
+    if diff < key_column_threshold:
+        key_columns.append(colName)
+
+    return results, key_columns, total_count - empty_count
+
+def profile_int_column(data, _sc, sqlContext,colName, table_name):
+    results = []
+    list = data.collect()
+    total_count = data.select(data[colName]).count()
+    empty_count = data.filter(data[colName].isNull()).count()
+    distinct = data.select(data[colName]).distinct()
+    distinct_count = distinct.count()
+    query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
+    top5 = sqlContext.sql(query)
+    top5 = top5.rdd.map(lambda x: x[0]).take(5)
+    type_results = {}
+    if total_count > 1:
+        type_results = {
+            "type": "INTEGER/REAL",
+            "count": total_count,
+            "max_value": top5[0],
+            "min_value": top5.rdd.map(lambda x: x[0]).last(),
+            "mean": statistics.mean(list),
+            "stddev": statistics.stdev(list)
+        }
+    else:
+        type_results = {
+            "type": "INTEGER/REAL",
+            "count": total_count,
+            "max_value": top5[0],
+            "min_value": top5.rdd.map(lambda x: x[0]).last(),
+            "mean": statistics.mean(intList),
+            "stddev": 0
+        }
+
+    temp_col_metadata = {
+        "column_name": colName,
+        "number_non_empty_cells": total_count - empty_count,
+        "number_empty_cells": empty_count,
+        "number_distinct_values": distinct_count,
+        "frequent_values": top5,
+        "data_types":
+    }
+
+    typeCount[0] = 1
+    res.append(result)
+
+    results.append(temp_col_metadata)
+
+    key_columns = []
+    diff = abs(total_count - empty_count - distinct_count)
+    if diff < key_column_threshold:
+        key_columns.append(colName)
+
+    return results, key_columns, total_count - empty_count
+
+def profile_text_colum(_sc, sqlContext, colName, table_name):
     results = []
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
@@ -55,7 +155,8 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     print("after query")
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
-    data_type_stats, typeCount = calc_statistics(_sc, discinct_rows)
+    data_type_stats, \
+    typeCount = calc_statistics(_sc, discinct_rows)
     temp_col_metadata = {
         "column_name": colName,
         "number_non_empty_cells": non_empty,
@@ -67,7 +168,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     results.append(temp_col_metadata)
     key_columns = []
     diff = abs(non_empty - distinct_count)
-    if diff < key_column_threshold and len(key_columns) > 0:
+    if diff < key_column_threshold:
         key_columns.append(colName)
 
     return results, key_columns, typeCount
@@ -80,7 +181,7 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
     if col_size * row_size > size_limit:
         return
 
-    for col in range(0,):
+    for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
     data.printSchema()
     delm = ""
@@ -127,7 +228,6 @@ def calc_statistics(_sc, discinct_rows):
 
     max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
     min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
-
 
     for i in range(len(rows)):
         val = str(rows[i][0])
