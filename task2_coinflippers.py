@@ -600,6 +600,5 @@ if __name__ == '__main__':
 
     sqlContext = SQLContext(spark)
     initialize()
-
     fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
     sc.stop()
