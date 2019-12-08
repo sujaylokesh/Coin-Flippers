@@ -13,9 +13,7 @@ import random
 import numpy as np
 from pandas.io.json import json_normalize
 import re
-#from names_dataset import NameDataset
 import FileInputManager as fm
-import fuzzy
 
 
 neiborhood_names = 0
