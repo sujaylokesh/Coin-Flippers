@@ -11,6 +11,7 @@ from pyspark.sql import SQLContext
 from pyspark import SparkContext
 import json
 import FileInputManager as fm
+import random
 from dateutil import parser
 import re
 
@@ -47,8 +48,11 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     non_empty_rows = temp.filter(temp[0].isNull())
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
+    print("here")
     distinct_count = discinct_rows.count()
+    print("distinct_count",distinct_count)
     query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
+    print("after query")
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
     data_type_stats, typeCount = calc_statistics(_sc, discinct_rows)
@@ -118,6 +122,8 @@ def calc_statistics(_sc, discinct_rows):
     max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
     min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
+
+    sample = [ random.randint(0, samplesize-1)]
     for i in range(len(rows)):
         val = str(rows[i][0])
         if val.isnumeric():
