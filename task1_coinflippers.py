@@ -74,7 +74,13 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 
 def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
-    for col in range(0,len(data.columns)):
+    col_size = len(data.columns)
+    row_size = len(data.count())
+    size_limit = 30000000
+    if col_size * row_size > size_limit:
+        return
+
+    for col in range(0,):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
     data.printSchema()
     delm = ""
@@ -123,7 +129,6 @@ def calc_statistics(_sc, discinct_rows):
     min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
 
-    sample = [ random.randint(0, samplesize-1)]
     for i in range(len(rows)):
         val = str(rows[i][0])
         if val.isnumeric():
