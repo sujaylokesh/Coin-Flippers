@@ -23,6 +23,11 @@ schoolLevels = 0
 streets = 0
 parks = 0
 buildingTypes = 0
+first_name = 0
+last_name = 0
+colleges = 0
+cars = 0
+fields = 0
 
 
 def initialize():
@@ -60,6 +65,24 @@ def initialize():
 
     global parks
     parks = np.asarray(['park','playground','field'])
+
+    global first_name
+    first_name = pd.read_csv("fname.csv")
+
+    global last_name
+    last_name = pd.read_csv("lname.csv")
+
+    global colleges
+    fields = ['NAME']
+    colleges = pd.read_csv("college", usecols=fields)
+
+    global cars
+    fields = ['Unnamed: 0']
+    cars = pd.read_csv("cars.csv", usecols=fields)
+
+    global fields
+    f = ['Arts']
+    fields = pd.read_csv("study.csv", usecols=f)
 
     global buildingTypes
     buildingTypes = np. asarray(['A0	CAPE COD', 'A1	TWO STORIES - DETACHED SM OR MID',
@@ -324,7 +347,7 @@ def generalCheck(column, list, label):
     columns = column.collect()
     size = len(columns)
     sampleSize = size * 0.1
-    check = sampleSize
+    check = clamp(sampleSize)
     cnt = 0
 
     while check > 0:
@@ -345,7 +368,7 @@ def generalCheck(column, list, label):
         check -= 1
     prob = cnt / sampleSize
     if prob < threshold:
-        prob =0
+        prob = 0
     label_proportion[label]=prob
     return prob > threshold
 
@@ -453,23 +476,22 @@ def checkAreasOfStudy(column, label):
 
 def namecheck(item):
     name = nysiis(item)
-    df = p.read_csv('fname.csv')
-    df1 = p.read_csv('lname.csv')
-    df = df.dropna()
-    df1 = df1.dropna()
+
+    first_name_df = first_name.dropna()
+    last_name_df = last_name.dropna()
     count = 0
-    for index,row in df.iterrows():
-        rat = fuzz.ratio(name,row['ny'])
+    for index, row in first_name_df.iterrows():
+        rat = fuzz.ratio(name, row['ny'])
         if rat > 99:
             return True
         else:
             if count < 10000:
-                for index,row in df1.iterrows():
-                    rat1 = fuzz.ratio(name,row['ny'])
+                for index, row in last_name_df.iterrows():
+                    rat1 = fuzz.ratio(name, row['ny'])
                     if rat1 > 90:
                         return True
                     else:
-                        count+=1
+                        count += 1
                         continue
     return False
 
@@ -492,13 +514,11 @@ def zipcodeCheck(item):
         return False
 
 def collegeCheck(item):
-    csv_file = 'college.csv'
-    fields = ['NAME']
-    df = pd.read_csv(csv_file, usecols=fields)
+
     val = str(item)
     max = 0
-    for ind in df.index:
-        temp = fuzz.ratio(val, df['NAME'][ind])
+    for ind in colleges.index:
+        temp = fuzz.ratio(val, colleges['NAME'][ind])
         if temp > max:
             max = temp
     if max > 50:
@@ -507,30 +527,25 @@ def collegeCheck(item):
         return False
 
 def FieldCheck(item):
-    csv_file = 'study.csv'
-    fields = ['Arts']
-    df = pd.read_csv(csv_file, usecols=fields)
-    df = df.dropna()
+
+    f = fields.dropna()
     val = str(item)
     max = 0
-    for ind in df.index:
-        temp = fuzz.ratio(val, df['Arts'][ind])
+    for ind in f.index:
+        temp = fuzz.ratio(val, f['Arts'][ind])
         if temp > max:
             max = temp
-    if max >   50:
+    if max > 50:
         return True
     else:
         return False
 
 def CarType(item):
-    csv_file = 'cars.csv'
-    fields = ['Unnamed: 0']
-    df = pd.read_csv(csv_file, usecols=fields)
-    df = df.dropna()
+    c = cars.dropna()
     val = str(item)
     max = 0
-    for ind in df.index:
-        temp = fuzz.ratio(val, df['Unnamed: 0'][ind])
+    for ind in c.index:
+        temp = fuzz.ratio(val, c['Unnamed: 0'][ind])
         if temp > max:
             max = temp
     if max > 50:
@@ -560,6 +575,11 @@ def colors(item):
             return True
         else:
             return False
+
+def clamp(num, limit = 1000):
+    if num > limit:
+        return limit
+    return num
 
 if __name__ == '__main__':
 
