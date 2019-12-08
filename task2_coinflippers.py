@@ -13,7 +13,6 @@ import random
 import numpy as np
 from pandas.io.json import json_normalize
 import re
-#from names_dataset import NameDataset
 import FileInputManager as fm
 
 
@@ -24,6 +23,11 @@ schoolLevels = 0
 streets = 0
 parks = 0
 buildingTypes = 0
+first_name = 0
+last_name = 0
+colleges = 0
+cars = 0
+fields = 0
 
 
 def initialize():
@@ -61,6 +65,24 @@ def initialize():
 
     global parks
     parks = np.asarray(['park','playground','field'])
+
+    global first_name
+    first_name = pd.read_csv("fname.csv")
+
+    global last_name
+    last_name = pd.read_csv("lname.csv")
+
+    global colleges
+    fields = ['NAME']
+    colleges = pd.read_csv("college", usecols=fields)
+
+    global cars
+    fields = ['Unnamed: 0']
+    cars = pd.read_csv("cars.csv", usecols=fields)
+
+    global fields
+    f = ['Arts']
+    fields = pd.read_csv("study.csv", usecols=f)
 
     global buildingTypes
     buildingTypes = np. asarray(['A0	CAPE COD', 'A1	TWO STORIES - DETACHED SM OR MID',
@@ -219,9 +241,9 @@ def initialize():
 
 
 ## Main Function
-output__dumbo_path = '/home/ml6543/project_final/output_task2'
-output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
-output_path = '/home/yy3090/project_final/output'
+output__dumbo_path = '/home/sl5202/project/Coin-Flippers'
+#output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
+# output_path = '/home/yy3090/project_final/output'
 
 
 
@@ -279,13 +301,53 @@ def semanticCheck(col):
         result.append(semantic)
 
     return result
-
+_vowels = 'AEIOU'
+ 
+def replace_at(text, position, fromlist, tolist):
+    for f, t in zip(fromlist, tolist):
+        if text[position:].startswith(f):
+            return ''.join([text[:position],
+                            t,
+                            text[position+len(f):]])
+    return text
+ 
+def replace_end(text, fromlist, tolist):
+    for f, t in zip(fromlist, tolist):
+        if text.endswith(f):
+            return text[:-len(f)] + t
+    return text
+ 
+def nysiis(name):
+    name = re.sub(r'\W', '', name).upper()
+    name = replace_at(name, 0, ['MAC', 'KN', 'K', 'PH', 'PF', 'SCH'],
+                               ['MCC', 'N',  'C', 'FF', 'FF', 'SSS'])
+    name = replace_end(name, ['EE', 'IE', 'DT', 'RT', 'RD', 'NT', 'ND'],
+                             ['Y',  'Y',  'D',  'D',  'D',  'D',  'D'])
+    key, key1 = name[0], ''
+    i = 1
+    while i < len(name):
+        #print(i, name, key1, key)
+        n_1, n = name[i-1], name[i]
+        n1_ = name[i+1] if i+1 < len(name) else ''
+        name = replace_at(name, i, ['EV'] + list(_vowels), ['AF'] + ['A']*5)
+        name = replace_at(name, i, 'QZM', 'GSN')
+        name = replace_at(name, i, ['KN', 'K'], ['N', 'C'])
+        name = replace_at(name, i, ['SCH', 'PH'], ['SSS', 'FF'])
+        if n == 'H' and (n_1 not in _vowels or n1_ not in _vowels):
+            name = ''.join([name[:i], n_1, name[i+1:]])
+        if n == 'W' and n_1 in _vowels:
+            name = ''.join([name[:i], 'A', name[i+1:]])
+        if key and key[-1] != name[i]:
+            key += name[i]
+        i += 1
+    key = replace_end(key, ['S', 'AY', 'A'], ['', 'Y', ''])
+    return key1 + key
 
 def generalCheck(column, list, label):
     columns = column.collect()
     size = len(columns)
     sampleSize = size * 0.1
-    check = sampleSize
+    check = clamp(sampleSize)
     cnt = 0
 
     while check > 0:
@@ -293,7 +355,11 @@ def generalCheck(column, list, label):
         ele = str(columns[rand]).split('=')[1].split(')')[0]
         flag = False
         for s in list:
-            if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
+            ele = ele.lower()
+            s = s.lower()
+            s = nysiis(s)
+            ele = nysiis(ele)
+            if fuzz.ratio(ele,s) > 70:
                 flag = True
                 break
         #print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
@@ -302,7 +368,7 @@ def generalCheck(column, list, label):
         check -= 1
     prob = cnt / sampleSize
     if prob < threshold:
-        prob =0
+        prob = 0
     label_proportion[label]=prob
     return prob > threshold
 
@@ -408,22 +474,28 @@ def checkAreasOfStudy(column, label):
     return generalCheck(column, subjects, label)
 
 
-def namecheck(inp):
+def namecheck(item):
+    name = nysiis(item)
+
+    first_name_df = first_name.dropna()
+    last_name_df = last_name.dropna()
+    count = 0
+    for index, row in first_name_df.iterrows():
+        rat = fuzz.ratio(name, row['ny'])
+        if rat > 99:
+            return True
+        else:
+            if count < 10000:
+                for index, row in last_name_df.iterrows():
+                    rat1 = fuzz.ratio(name, row['ny'])
+                    if rat1 > 90:
+                        return True
+                    else:
+                        count += 1
+                        continue
     return False
-    # m=NameDataset()
-    # count = 0
-    # inp = str(inp)
-    # if m.search_first_name(inp) == False:
-    #     if m.search_last_name(inp) == False:
-    #         return False
-    #     elif m.search_last_name(inp) ==False:
-    #         return False
-    #     else:
-    #         return True
-    # elif m.search_first_name(inp) == False:
-    #     return False
-    # else:
-    #     return True
+
+
 
 
 def phonecheck(item):
@@ -442,45 +514,38 @@ def zipcodeCheck(item):
         return False
 
 def collegeCheck(item):
-    csv_file = 'college.csv'
-    fields = ['NAME']
-    df = pd.read_csv(csv_file, usecols=fields)
+
     val = str(item)
     max = 0
-    for ind in df.index:
-        temp = fuzz.ratio(val, df['NAME'][ind])
-    if temp > max:
-        max = temp
+    for ind in colleges.index:
+        temp = fuzz.ratio(val, colleges['NAME'][ind])
+        if temp > max:
+            max = temp
     if max > 50:
         return True
     else:
         return False
 
 def FieldCheck(item):
-    csv_file = 'study.csv'
-    fields = ['Arts']
-    df = pd.read_csv(csv_file, usecols=fields)
-    df = df.dropna()
+
+    f = fields.dropna()
     val = str(item)
     max = 0
-    for ind in df.index:
-        temp = fuzz.ratio(val, df['Arts'][ind])
+    for ind in f.index:
+        temp = fuzz.ratio(val, f['Arts'][ind])
         if temp > max:
             max = temp
-    if max >   50:
+    if max > 50:
         return True
     else:
         return False
 
 def CarType(item):
-    csv_file = 'cars.csv'
-    fields = ['Unnamed: 0']
-    df = pd.read_csv(csv_file, usecols=fields)
-    df = df.dropna()
+    c = cars.dropna()
     val = str(item)
     max = 0
-    for ind in df.index:
-        temp = fuzz.ratio(val, df['Unnamed: 0'][ind])
+    for ind in c.index:
+        temp = fuzz.ratio(val, c['Unnamed: 0'][ind])
         if temp > max:
             max = temp
     if max > 50:
@@ -498,19 +563,23 @@ def latlon(item):
         return False
 
 def colors(item):
-    return False
-    # csv_file = 'colors.csv'
-    # df = pd.read_csv(csv_file)
-    # df = df.dropna()
-    # val1 = str(item)
-    # max1 = 0
-    # for ind in df.index:
-    #     temp = df['Air Superiority Blue'][ind]
-    #     val = fuzz.ratio(val1, temp)
-    #     if val > 50:
-    #         return True
-    #     else:
-    #         return False
+    csv_file = 'colors.csv'
+    df = pd.read_csv(csv_file)
+    df = df.dropna()
+    val1 = str(item)
+    max1 = 0
+    for ind in df.index:
+        temp = df['Air Superiority Blue'][ind]
+        val = fuzz.ratio(val1, temp)
+        if val > 50:
+            return True
+        else:
+            return False
+
+def clamp(num, limit = 1000):
+    if num > limit:
+        return limit
+    return num
 
 if __name__ == '__main__':
 

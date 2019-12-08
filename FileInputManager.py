@@ -14,8 +14,8 @@ import task2_coinflippers as p2
 dumbo_path = '/user/hm74/NYCOpenData/'
 local_mac_path ='/Users/mina/Downloads/testDumbo/'
 local_windows_path ='E:\\homework\\big_data\\hw1\\project\\'
-output_path = '/home/ml6543/project_final/output_task12'
-output__dumbo_task2 = '/home/ml6543/project_final/output_task2'
+output_path = '/home/sl5202/project/'
+output__dumbo_task2 = '/home/sl5202/project/'
 global final_results
 global final_results2
 
