@@ -338,7 +338,7 @@ def generalCheck(column, list, label):
             s = s.lower()
             s = nysiis(s)
             ele = nysiis(ele)
-            if fuzz.partial_ratio(ele,s) > 70:
+            if fuzz.ratio(ele,s) > 70:
                 flag = True
                 break
         #print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
