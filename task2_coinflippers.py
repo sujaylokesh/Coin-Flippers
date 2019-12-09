@@ -34,6 +34,14 @@ def initialize():
     global threshold
     threshold = 0.8
 
+    global labels  # DO NOT CHANGE THE ORDER OF LABELS
+    labels = np.asarray(
+        ["Business Name", 'School Levels', 'Street Name', 'Park/Playground', 'City agency', 'Building Classification', \
+         'Neighborhood', 'Borough', 'Car Make', 'Areas of study', 'Websites', 'Color', 'Type of location',
+         'Subjects in school', 'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
+         'Zip code', 'School Name', "Person Name", 'Vehicle Type', ])
+
+
     global label_proportion
     label_proportion = {}
 
