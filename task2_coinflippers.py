@@ -32,7 +32,7 @@ fields = 0
 
 def initialize():
     global threshold
-    threshold = 0.5
+    threshold = 0.8
 
     global label_proportion
     label_proportion = {}
@@ -374,7 +374,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     print("query done")
-    if temp.size()>100000:
+    if temp.count()>100000:
         return results.append({"skip":table_name})
     temp_col_metadata = {
         "column_name": colName,
@@ -465,7 +465,28 @@ def generalCheck(col, list, label):
             s = s.lower()
             s = nysiis(s)
             ele = nysiis(ele)
-            if fuzz.partial_ratio(ele, s) > 70:
+            if fuzz.ratio(ele, s) > 50:
+                flag = True
+                break
+        # print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
+        if flag:
+            cnt += 1
+    prob = cnt / sampleSize
+    if prob < threshold:
+        prob = 0
+    label_proportion[label] = prob
+    return prob > threshold
+
+
+def generalCheck2(col, list, label):
+    cnt=0
+    sampleSize = len(col)
+
+    for i in range(sampleSize):
+        ele = col[i]
+        flag = False
+        for s in list:
+            if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
                 flag = True
                 break
         # print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
@@ -507,11 +528,11 @@ def checkSchoolLevel(column, label):
 
 def checkStreetName(column, label):
     ## If this is not enough, then we can use real street data
-    return generalCheck(column, streets, label)
+    return generalCheck2(column, streets, label)
 
 
 def checkParkandPlayground(column, label):
-    return generalCheck(column, parks, label)
+    return generalCheck2(column, parks, label)
 
 
 def checkCityAgencies(column, label):
@@ -535,11 +556,9 @@ def parsecolumn(column):
     for i in range(0, sample - 1):
         rand = random.randint(0, size - 1)
         b = str(columns[rand])
-        print("b ", b)
         a = b.split('=')
         a = a[1].split(')')
         a = a[0]
-        print("a ", a)
         elem.append(a)
     print("parse sampling done")
 
@@ -583,7 +602,7 @@ def parsecolumn(column):
 
 
 def checkCarMake(column, label):
-    return generalCheck(column, carBrand, label)
+    return generalCheck2(column, carBrand, label)
 
 
 def checkColor(column, label):
@@ -591,15 +610,15 @@ def checkColor(column, label):
 
 
 def checkSchoolName(column, label):
-    return generalCheck(column, schoolName, label)
+    return generalCheck2(column, schoolName, label)
 
 
 def checkTypeOfLocation(column, label):
-    return generalCheck(column, poi, label)
+    return generalCheck2(column, poi, label)
 
 
 def checkSchoolSubject(column, label):
-    return generalCheck(column, schoolSubject, label)
+    return generalCheck2(column, schoolSubject, label)
 
 
 def checkAreasOfStudy(column, label):
@@ -715,7 +734,7 @@ def latlon(col, label):
     proportion(lis, label)
 
 
-def clamp(num, limit=500):
+def clamp(num, limit=1000):
     if num > limit:
         return limit
     return num
