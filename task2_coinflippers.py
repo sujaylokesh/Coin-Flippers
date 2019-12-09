@@ -371,7 +371,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
     colName = fm.Process_column_name_for_dataframe(colName)
     print("col name done")
-    query = "select %s from %s" % (colName, table_name)
+    query = "select distinct %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     print("query done")
     if temp.count()>100000:
@@ -549,29 +549,43 @@ def proportion(lis, label):
 
 
 def parsecolumn(column):
-    columns = column.collect()
-    size = len(columns)
-    sample = clamp(int(size * 0.1))
+    print("collecting")
+    size = column.count()
+    print(size)
+    sample = clamp(size)
     elem = []
-    for i in range(0, sample - 1):
-        rand = random.randint(0, size - 1)
-        b = str(columns[rand])
-        a = b.split('=')
-        a = a[1].split(')')
-        a = a[0]
-        elem.append(a)
-    print("parse sampling done")
+    # columns = column.collect()
+    # size = len(columns)
+    # sample = clamp(int(size * 0.1))
+    # elem = []
+    # for i in range(0, sample - 1):
+    #     rand = random.randint(0, size - 1)
+    #     b = str(columns[rand])
+    #     a = b.split('=')
+    #     a = a[1].split(')')
+    #     a = a[0]
+    #     elem.append(a)
+    # print("parse sampling done")
 
+    if size < 0:
+        elem = column.toPandas().values.flatten().tolist()
+    else:
+        elem = column.toPandas().sample(sample).values.flatten().tolist()
+    if len(elem) == 0:
+        return
+
+    print("parse sampling done")
+    #
     checkBusinessName(elem, "Business Name")
     print("biz done")
     checkSchoolLevel(elem, 'School Levels')
     checkStreetName(elem, 'Street Name')
     print("street done")
-
+    #
     checkParkandPlayground(elem, 'Park/Playground')
     checkCityAgencies(elem, 'City agency')
     print("agendcy done")
-
+    #
     checkBuildingType(elem, 'Building Classification')
     checkNeiborhoods(elem, 'Neighborhood')
     print("neighborhood done")
@@ -756,7 +770,6 @@ if __name__ == '__main__':
         .getOrCreate()
 
     sqlContext = SQLContext(spark)
-    initialize()
 
     fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
     sc.stop()

@@ -137,7 +137,7 @@ def calc_statistics(_sc, discinct_rows):
         else:
             #check date
             try:
-                temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+                temp_date = parser.parse(val)
                 max_date = max(max_date, temp_date)
                 min_date = min(min_date, temp_date)
                 date_count = date_count + 1
