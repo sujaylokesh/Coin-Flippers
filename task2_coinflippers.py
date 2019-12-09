@@ -393,35 +393,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 def semanticCheck(col):
     # DO NOT CHANGE THE ORDER OF FUNCTION CALLS
     result = []
-    checkBusinessName(col, "Business Name")
-    print("biz done")
-    checkSchoolLevel(col, 'School Levels')
-    checkStreetName(col, 'Street Name')
-    print("street done")
-
-    checkParkandPlayground(col, 'Park/Playground')
-    checkCityAgencies(col, 'City agency')
-    print("agendcy done")
-
-    checkBuildingType(col, 'Building Classification')
-    checkNeiborhoods(col, 'Neighborhood')
-    print("neighborhood done")
-
-    checkBoroughs(col, 'Borough')
-    checkCarMake(col, 'Car Make')
-    checkAreasOfStudy(col, 'Areas of study')
-    print("area done")
-
-    checkWebsites(col, 'Websites')
-    print("website done")
-
-    checkColor(col, 'Color')
-    checkTypeOfLocation(col, 'Type of location')
-    print("location done")
-
-    checkSchoolSubject(col, 'Subjects in school')
     parsecolumn(col)
-
     colSize = col.count()
     for key in label_proportion:
         if label_proportion[key] != 0:
@@ -484,16 +456,12 @@ def nysiis(name):
     return key1 + key
 
 
-def generalCheck(column, list, label):
-    columns = column.collect()
-    size = len(columns)
-    sampleSize = size * 0.1
-    check = clamp(sampleSize)
-    cnt = 0
+def generalCheck(col, list, label):
+    cnt=0
+    sampleSize = len(col)
 
-    while check > 0:
-        rand = random.randint(0, size - 1)
-        ele = str(columns[rand]).split('=')[1].split(')')[0]
+    for i in range(sampleSize):
+        ele = col[i]
         flag = False
         for s in list:
             ele = ele.lower()
@@ -506,7 +474,6 @@ def generalCheck(column, list, label):
         # print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
         if flag:
             cnt += 1
-        check -= 1
     prob = cnt / sampleSize
     if prob < threshold:
         prob = 0
@@ -577,12 +544,42 @@ def parsecolumn(column):
         elem.append(a)
     print("parse sampling done")
 
+    checkBusinessName(elem, "Business Name")
+    print("biz done")
+    checkSchoolLevel(elem, 'School Levels')
+    checkStreetName(elem, 'Street Name')
+    print("street done")
+
+    checkParkandPlayground(elem, 'Park/Playground')
+    checkCityAgencies(elem, 'City agency')
+    print("agendcy done")
+
+    checkBuildingType(elem, 'Building Classification')
+    checkNeiborhoods(elem, 'Neighborhood')
+    print("neighborhood done")
+
+    checkBoroughs(elem, 'Borough')
+    checkCarMake(elem, 'Car Make')
+    checkAreasOfStudy(elem, 'Areas of study')
+    print("area done")
+
+    checkWebsites(elem, 'Websites')
+    print("website done")
+
+    checkColor(elem, 'Color')
+    checkTypeOfLocation(elem, 'Type of location')
+    print("location done")
+
+    checkSchoolSubject(elem, 'Subjects in school')
     namecheck(elem, 'Name')
+    print("Name done")
     phonecheck(elem, 'Phone Number')
     zipcodeCheck(elem, 'Zipcode')
     collegeCheck(elem, 'College')
+    print("College done")
     FieldCheck(elem, 'Study')
     CarType(elem, 'Vehicle Type')
+    print("vehicle done")
     latlon(elem, 'Langitude/Longitude')
 
 
