@@ -75,7 +75,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
 def extractMeta(_sc, sqlContext, file_path, final_results):
     data = _sc.read.csv(path=file_path, sep='\t', header=True, inferSchema=False)
     col_size = len(data.columns)
-    row_size = len(data.count())
+    row_size = data.count()
     size_limit = 30000000
     if col_size * row_size > size_limit:
         return
@@ -128,7 +128,6 @@ def calc_statistics(_sc, discinct_rows):
     min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
 
-    sample = [ random.randint(0, samplesize-1)]
     for i in range(len(rows)):
         val = str(rows[i][0])
         if val.isnumeric():
@@ -138,7 +137,7 @@ def calc_statistics(_sc, discinct_rows):
         else:
             #check date
             try:
-                temp_date = datetime.datetime.strptime(val, "%m/%d/%Y %H:%M:%S %p")
+                temp_date = parser.parse(val)
                 max_date = max(max_date, temp_date)
                 min_date = min(min_date, temp_date)
                 date_count = date_count + 1
