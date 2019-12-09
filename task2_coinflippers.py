@@ -34,12 +34,6 @@ def initialize():
     global threshold
     threshold = 0.5
 
-    global labels  # DO NOT CHANGE THE ORDER OF LABELS
-    labels = np.asarray(
-        ["Business Name", 'School Levels', 'Street Name', 'Park/Playground', 'City agency', 'Building Classification', \
-         'Neighborhood', 'Borough', 'Car Make', 'Areas of study', 'Websites', 'Color', 'Type of location','Subjects in school', \
-         'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
-         'Zip code', 'School Name', "Person Name", 'Vehicle Type', ])
     global label_proportion
     label_proportion = {}
 
@@ -380,7 +374,8 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     query = "select %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
     print("query done")
-
+    if temp.size()>100000:
+        return results.append({"skip":table_name})
     temp_col_metadata = {
         "column_name": colName,
         "semantic_types": semanticCheck(temp)
@@ -399,7 +394,7 @@ def semanticCheck(col):
         if label_proportion[key] != 0:
             semantic = {
                 "semantic_type": key,
-                "count": colSize * label_proportion[key]
+                "count": int(colSize * label_proportion[key])
             }
             result.append(semantic)
 
@@ -430,6 +425,8 @@ def replace_end(text, fromlist, tolist):
 
 
 def nysiis(name):
+    if len(name)<1:
+        return ''
     name = re.sub(r'\W', '', name).upper()
     name = replace_at(name, 0, ['MAC', 'KN', 'K', 'PH', 'PF', 'SCH'],
                       ['MCC', 'N', 'C', 'FF', 'FF', 'SSS'])
@@ -468,7 +465,7 @@ def generalCheck(col, list, label):
             s = s.lower()
             s = nysiis(s)
             ele = nysiis(ele)
-            if fuzz.ratio(ele, s) > 70:
+            if fuzz.partial_ratio(ele, s) > 70:
                 flag = True
                 break
         # print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
@@ -538,9 +535,11 @@ def parsecolumn(column):
     for i in range(0, sample - 1):
         rand = random.randint(0, size - 1)
         b = str(columns[rand])
+        print("b ", b)
         a = b.split('=')
         a = a[1].split(')')
         a = a[0]
+        print("a ", a)
         elem.append(a)
     print("parse sampling done")
 
@@ -716,7 +715,7 @@ def latlon(col, label):
     proportion(lis, label)
 
 
-def clamp(num, limit=100):
+def clamp(num, limit=500):
     if num > limit:
         return limit
     return num
