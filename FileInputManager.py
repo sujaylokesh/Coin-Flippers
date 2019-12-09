@@ -68,12 +68,16 @@ def iterate_files_from_file(sc,spark, sqlContext, path):
     p2.initialize()
     print("initial done")
     for i in range(len(files)):
-        extractMetaByColum(sc, spark, sqlContext, files[i], final_results2)
-        if i %1 == 0:
-            path = "%s/Task2_%s.json" % (output__dumbo_task2, i)
-            with open(path, 'w') as json_file:
-                json.dump(final_results2, json_file)
-
+        try:
+            extractMetaByColum(sc, spark, sqlContext, files[i], final_results2)
+            if i % 1 == 0:
+                path = "%s/Task2_%s.json" % (output_path, i+120)
+                with open(path, 'w') as json_file:
+                    json.dump(final_results2, json_file)
+        except:
+            print("error for file " + files[i], "skip it")
+            e = sys.exc_info()
+            print(e)
 
 def getFilePathsFromFile_for_task1(sc, path):
     data = sc.textFile(path)
@@ -105,9 +109,9 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index):
 def Process_column_name_for_dataframe(str):
     converted = []
     dict = {"#": "num", "%": "percent","@":"at", "&":"and",
-            "*":"star","$":"dollar","+":"plus",
-            "-":"minus","=":"equal",
-            "^":"6","!":"ex","(":"_",")":"_"
+            "*":"_","$":"dollar","+":"plus",
+            "-":"_","=":"equal",
+            "^":"6","!":"ex","(":"_",")":"_","\n":"_"
             }
     for i in range(0, len(str)):
         if str[i].isalnum():
