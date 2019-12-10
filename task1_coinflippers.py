@@ -170,6 +170,7 @@ def calc_statistics(_sc, discinct_rows):
         templist = _sc.sparkContext.parallelize(txtList)
         sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=False)
         longest = sorted_list.take(5)
+        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=True)
         shortest = sorted_list.take(5)
         count = templist.count()
         sum = templist.map(lambda x: len(x)).reduce(add)

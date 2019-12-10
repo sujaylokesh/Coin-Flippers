@@ -57,7 +57,7 @@ def extractMetaByColum(_sc,spark, sqlContext, file_info, final_results2):
 def iterate_files_from_file(sc,spark, sqlContext, path, out_path):
     global output_path
     output_path = out_path
-    
+
     files = getFilePathsFromFile(sc, path)
     final_results2 =[]
     p2.initialize()
