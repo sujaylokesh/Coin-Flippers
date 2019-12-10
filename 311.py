@@ -40,5 +40,8 @@ data=data.withColumn("Borough", when((col("Borough").isNull()) & (col("Incident 
 
 data = data.drop('Park Facility Name')
 data.createOrReplaceTempView("table")
-data.toPandas().to_csv("clean.csv")
+#data.toPandas().to_csv("clean.csv",index=False)
 #data.coalesce(1).write.csv("Cleaned_311",header=True)
+data.write.csv("hdfs://dumbo/user/sl5202/clean.csv",header=True)
+
+data=spark.read.csv('clean.csv',header=True)
