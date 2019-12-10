@@ -12,7 +12,6 @@ import task1_coinflippers as p1
 import task2_coinflippers as p2
 
 output_path = ''
-dumbo_path = '/user/hm74/NYCOpenData/'
 global final_results
 global final_results2
 
@@ -92,7 +91,7 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index, out
         if counter < start_index:
             counter += 1
             continue
-        file_path = dumbo_path + (file).replace(" ","").replace("_","-")
+        file_path = output_path + (file).replace(" ","").replace("_","-")
         p1.extractMeta(ss, sqlContext, file_path, final_results)
         output_json_path = "%s/%s.json" % (output_path, counter)
 

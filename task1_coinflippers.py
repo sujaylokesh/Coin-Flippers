@@ -42,16 +42,16 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
     distinct_count = discinct_rows.count()
-    # query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
-    # top5 = sqlContext.sql(query)
-    # top5 = top5.rdd.map(lambda x: x[0]).take(5)
+    query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
+    top5 = sqlContext.sql(query)
+    top5 = top5.rdd.map(lambda x: x[0]).take(5)
     data_type_stats, typeCount = calc_statistics(_sc, discinct_rows)
     temp_col_metadata = {
         "column_name": colName,
         "number_non_empty_cells": non_empty,
         "number_empty_cells": null_count,
         "number_distinct_values": distinct_count,
-        "frequent_values": [],
+        "frequent_values": top5,
         "data_types": data_type_stats
     }
     results.append(temp_col_metadata)
@@ -204,6 +204,6 @@ if __name__ == "__main__":
 
     sqlContext = SQLContext(spark)
     fm.iterate_files_from_file_for_task1(sc, spark, sqlContext, sys.argv[1],
-                                         int(sys.argv[2]), output_path)
+                                         int(sys.argv[2]),output_path)
 
     sc.stop()
