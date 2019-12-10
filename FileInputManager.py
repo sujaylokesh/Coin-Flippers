@@ -71,11 +71,11 @@ def iterate_files_from_file(sc,spark, sqlContext, path):
         try:
             extractMetaByColum(sc, spark, sqlContext, files[i], final_results2)
             if i % 1 == 0:
-                path = "%s/Task2_%s.json" % (output_path, i+120)
+                path = "%s/Task2_%s.json" % (output__dumbo_task2, i)
                 with open(path, 'w') as json_file:
                     json.dump(final_results2, json_file)
         except:
-            print("error for file " + files[i], "skip it")
+            print("error for file ", i, "skip it")
             e = sys.exc_info()
             print(e)
 
