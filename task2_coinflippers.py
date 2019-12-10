@@ -2,17 +2,13 @@
 import sys
 
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
 import requests
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
-import json
 import pandas as pd
-import random
 import numpy as np
-from pandas.io.json import json_normalize
 import re
 import FileInputManager as fm
 
@@ -40,7 +36,6 @@ def initialize():
          'Neighborhood', 'Borough', 'Car Make', 'Areas of study', 'Websites', 'Color', 'Type of location',
          'Subjects in school', 'College/University names', 'Phone number', 'Address', 'City', 'LAT/LON coordinates' \
          'Zip code', 'School Name', "Person Name", 'Vehicle Type', ])
-
 
     global label_proportion
     label_proportion = {}
@@ -368,27 +363,19 @@ def initialize():
 
 
 ## Main Function
-output__dumbo_path = '/home/ml6543/project_final/output_task2'
-
-
-# output_win_path = 'E:\\homework\\bigdata\\hw1\\project'
-# output_path = '/home/yy3090/project_final/output'
-
+output__dumbo_path = '/home/ml6543/2019-BigDataResults/task2'
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
     colName = fm.Process_column_name_for_dataframe(colName)
-    print("col name done")
     query = "select distinct %s from %s" % (colName, table_name)
     temp = sqlContext.sql(query)
-    print("query done")
-    if temp.count()>100000:
+    if temp.count() > 100000:
         return results.append({"skip":table_name})
     temp_col_metadata = {
         "column_name": colName,
         "semantic_types": semanticCheck(temp)
     }
-    print("semantic check done")
     results.append(temp_col_metadata)
     return results
 
@@ -430,7 +417,6 @@ def replace_end(text, fromlist, tolist):
         if text.endswith(f):
             return text[:-len(f)] + t
     return text
-
 
 def nysiis(name):
     if len(name)<1:
@@ -476,7 +462,6 @@ def generalCheck(col, list, label):
             if fuzz.ratio(ele, s) > 50:
                 flag = True
                 break
-        # print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
         if flag:
             cnt += 1
     prob = cnt / sampleSize
@@ -497,7 +482,6 @@ def generalCheck2(col, list, label):
             if fuzz.partial_ratio(ele.lower(), s.lower()) > 70:
                 flag = True
                 break
-        # print(ele, "  ", fuzz.partial_ratio(ele.lower(), s.lower()))
         if flag:
             cnt += 1
     prob = cnt / sampleSize
@@ -557,24 +541,9 @@ def proportion(lis, label):
 
 
 def parsecolumn(column):
-    print("collecting")
     size = column.count()
-    print(size)
     sample = clamp(size)
     elem = []
-    # columns = column.collect()
-    # size = len(columns)
-    # sample = clamp(int(size * 0.1))
-    # elem = []
-    # for i in range(0, sample - 1):
-    #     rand = random.randint(0, size - 1)
-    #     b = str(columns[rand])
-    #     a = b.split('=')
-    #     a = a[1].split(')')
-    #     a = a[0]
-    #     elem.append(a)
-    # print("parse sampling done")
-
     if size < 0:
         elem = column.toPandas().values.flatten().tolist()
     else:
@@ -582,44 +551,26 @@ def parsecolumn(column):
     if len(elem) == 0:
         return
 
-    print("parse sampling done")
-    #
     checkBusinessName(elem, "Business Name")
-    print("biz done")
     checkSchoolLevel(elem, 'School Levels')
     checkStreetName(elem, 'Street Name')
-    print("street done")
-    #
     checkParkandPlayground(elem, 'Park/Playground')
     checkCityAgencies(elem, 'City agency')
-    print("agendcy done")
-    #
     checkBuildingType(elem, 'Building Classification')
     checkNeiborhoods(elem, 'Neighborhood')
-    print("neighborhood done")
-
     checkBoroughs(elem, 'Borough')
     checkCarMake(elem, 'Car Make')
     checkAreasOfStudy(elem, 'Areas of study')
-    print("area done")
-
     checkWebsites(elem, 'Websites')
-    print("website done")
-
     checkColor(elem, 'Color')
     checkTypeOfLocation(elem, 'Type of location')
-    print("location done")
-
     checkSchoolSubject(elem, 'Subjects in school')
     namecheck(elem, 'Name')
-    print("Name done")
     phonecheck(elem, 'Phone Number')
     zipcodeCheck(elem, 'Zipcode')
     collegeCheck(elem, 'College')
-    print("College done")
     FieldCheck(elem, 'Study')
     CarType(elem, 'Vehicle Type')
-    print("vehicle done")
     latlon(elem, 'Langitude/Longitude')
 
 
@@ -779,5 +730,5 @@ if __name__ == '__main__':
 
     sqlContext = SQLContext(spark)
 
-    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1])
+    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1], output__dumbo_path)
     sc.stop()
