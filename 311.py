@@ -4,6 +4,9 @@ from pyspark.sql.functions import *
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 
+import plotly.offline as py
+import plotly.graph_objs as go
+
 spark = SparkSession.builder.master("local").appName("DataCleaning311").getOrCreate()
 data = spark.read.csv(path='/user/hm74/NYCOpenData/erm2-nwe9.tsv.gz', sep='\t', header=True, inferSchema=False)
 #data.count()
