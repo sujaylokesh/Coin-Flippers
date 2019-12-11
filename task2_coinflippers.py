@@ -2,13 +2,17 @@
 import sys
 
 from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 import requests
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
+import json
 import pandas as pd
+import random
 import numpy as np
+from pandas.io.json import json_normalize
 import re
 import FileInputManager as fm
 
@@ -373,6 +377,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     if temp.count() > 100000:
         return results.append({"skip":table_name})
     temp_col_metadata = {
+        "file_name": table_name.replace("_","-"),
         "column_name": colName,
         "semantic_types": semanticCheck(temp)
     }
