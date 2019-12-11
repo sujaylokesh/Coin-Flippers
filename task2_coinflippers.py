@@ -385,6 +385,7 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     if temp.count()>100000:
         return results.append({"skip":table_name})
     temp_col_metadata = {
+        "file_name": table_name.replace("_","-"),
         "column_name": colName,
         "semantic_types": semanticCheck(temp)
     }
