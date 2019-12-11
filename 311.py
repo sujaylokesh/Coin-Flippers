@@ -50,10 +50,15 @@ data=spark.read.csv('clean.csv',header=True)
 data.createOrReplaceTempView("table")
 
 #top 3 complaints per borough
+print("Brooklyn")
 spark.sql('SELECT `Complaint Type`, COUNT(*) as Count FROM table WHERE Borough="BROOKLYN" GROUP BY `BOROUGH`,`Complaint Type` ORDER BY Count DESC LIMIT 3').show()
+print("Manhattan")
 spark.sql('SELECT `Complaint Type`, COUNT(*) as Count FROM table WHERE Borough="MANHATTAN" GROUP BY `BOROUGH`,`Complaint Type` ORDER BY Count DESC LIMIT 3').show()
+print("Queens")
 spark.sql('SELECT `Complaint Type`, COUNT(*) as Count FROM table WHERE Borough="QUEENS" GROUP BY `BOROUGH`,`Complaint Type` ORDER BY Count DESC LIMIT 3').show()
+print("Bronx")
 spark.sql('SELECT `Complaint Type`, COUNT(*) as Count FROM table WHERE Borough="BRONX" GROUP BY `BOROUGH`,`Complaint Type` ORDER BY Count DESC LIMIT 3').show()
+print("Staten Island")
 spark.sql('SELECT `Complaint Type`, COUNT(*) as Count FROM table WHERE Borough="STATEN ISLAND" GROUP BY `BOROUGH`,`Complaint Type` ORDER BY Count DESC LIMIT 3').show()
 
 ##Complaints Over the Years
