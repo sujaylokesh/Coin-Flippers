@@ -13,7 +13,7 @@ import FileInputManager as fm
 from dateutil import parser
 
 key_column_threshold = 10
-output_path = '/home/ml6543/2019-BigDataResults/task1'
+output_path = ''
 
 def profileTable(data,_sc, sqlContext, table_name):
     results = []

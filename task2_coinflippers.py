@@ -67,22 +67,22 @@ def initialize():
     parks = np.asarray(['park', 'playground', 'field'])
 
     global first_name
-    first_name = pd.read_csv("fname.csv")
+    first_name = pd.read_csv("/user/yy3090/csv/fname.csv")
 
     global last_name
-    last_name = pd.read_csv("lname.csv")
+    last_name = pd.read_csv("/user/yy3090/csv/lname.csv")
 
     global colleges
     f1 = ['NAME']
-    colleges = pd.read_csv("college.csv", usecols=f1)
+    colleges = pd.read_csv("/user/yy3090/csv/college.csv", usecols=f1)
 
     global cars
     f2 = ['Unnamed: 0']
-    cars = pd.read_csv("cars.csv", usecols=f2)
+    cars = pd.read_csv("/user/yy3090/csv/cars.csv", usecols=f2)
 
     global fields
     f3 = ['Arts']
-    fields = pd.read_csv("study.csv", usecols=f3)
+    fields = pd.read_csv("/user/yy3090/csv/study.csv", usecols=f3)
 
     global buildingTypes
     buildingTypes = np.asarray(['A0	CAPE COD', 'A1	TWO STORIES - DETACHED SM OR MID',
@@ -363,7 +363,7 @@ def initialize():
 
 
 ## Main Function
-output__dumbo_path = '/home/ml6543/2019-BigDataResults/task2'
+output__dumbo_path = ''
 
 def profile_colum(_sc, sqlContext, colName, table_name):
     results = []
