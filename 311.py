@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 from pyspark import SparkContext
 
 spark = SparkSession.builder.master("local").appName("DataCleaning311").getOrCreate()
-data = spark.read.csv(path='/user/hm74/NYCOpenData/erm2-nwe9.tsv.gz', sep='\t', header=True, inferSchema=False)colData = []
+data = spark.read.csv(path='/user/hm74/NYCOpenData/erm2-nwe9.tsv.gz', sep='\t', header=True, inferSchema=False)
 #data.count()
 colData = []
 length = data.count()
