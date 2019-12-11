@@ -19,7 +19,6 @@ def profileTable(data,_sc, sqlContext, table_name):
     results = []
     key_columns = []
     data_type = [0,0,0]
-    print(table_name)
     for i in range(0,len(data.columns)):
         colName = fm.Process_column_name_for_dataframe(data.columns[i])
         temp_results = profile_colum(_sc, sqlContext, colName, table_name)
@@ -71,14 +70,12 @@ def extractMeta(_sc, sqlContext, file_path, final_results):
         return
     for col in range(0,len(data.columns)):
         data = data.withColumnRenamed(data.columns[col], fm.Process_column_name_for_dataframe(data.columns[col]))
-    data.printSchema()
     delm = ""
     if file_path.find('/') > -1:
         delm = '/'
     else:
         delm = '\\'
     table_name = file_path.split(delm)[-1]
-    print(table_name)
     dot_index = table_name.find(".")
     if dot_index == -1:
         dot_index = len(table_name)
@@ -168,12 +165,12 @@ def calc_statistics(_sc, discinct_rows):
 
     if len(txtList) > 0:
         templist = _sc.sparkContext.parallelize(txtList)
-        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=True)
-        longest = sorted_list.take(5)
-        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=False)
-        shortest = sorted_list.take(5)
+        sorted_list = templist.map(lambda x: (len(x), x)).distinct().sortBy(lambda x: x[0], ascending=False)
+        longest = sorted_list.map(lambda x: x[1]).take(5)
+        sorted_list = templist.map(lambda x: (len(x), x)).distinct().sortBy(lambda x: x[0], ascending=True)
+        shortest = sorted_list.map(lambda x: x[1]).take(5)
         count = templist.count()
-        sum = templist.map(lambda x: len(x)).reduce(add)
+        sum = templist.map(lambda x: (len(x))).reduce(add)
         average = float(sum) / float(count)
         result = {
             "type": "TEXT",
