@@ -82,19 +82,23 @@ def iterate_files_from_file_for_task1(sc, ss, sqlContext, path, start_index, out
     counter = 0
     final_results =[]
     for file in files:
-        if counter < start_index:
+        try:
+            if counter < start_index:
+                counter += 1
+                continue
+            file_path = dumbo_path + (file).replace(" ","").replace("_","-")
+            p1.extractMeta(ss, sqlContext, file_path, final_results)
+            output_json_path = "%s/%s.json" % (output_path, counter)
+
+            if counter % 1 == 0:
+                with open(output_json_path, 'w') as json_file:
+                    json.dump(final_results, json_file)
+                    final_results.clear()
+
             counter += 1
-            continue
-        file_path = dumbo_path + (file).replace(" ","").replace("_","-")
-        p1.extractMeta(ss, sqlContext, file_path, final_results)
-        output_json_path = "%s/%s.json" % (output_path, counter)
+        except:
+            e = sys.exc_info()
 
-        if counter % 1 == 0:
-            with open(output_json_path, 'w') as json_file:
-                json.dump(final_results, json_file)
-                final_results.clear()
-
-        counter += 1
 
 def Process_column_name_for_dataframe(str):
     converted = []
