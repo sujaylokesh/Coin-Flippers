@@ -9,18 +9,11 @@ import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 from pyspark import SparkContext
-import json
 import FileInputManager as fm
-import random
 from dateutil import parser
-import re
-
 
 key_column_threshold = 10
-output_mac_path = '/home/ml6543/project_final/output'
-output_win_path = 'E:\\homework\\big_data\hw1\\project\\'
-output_path = '/home/ml6543/project_final/output_task1'
-
+output_path = '/home/ml6543/2019-BigDataResults/task1'
 
 def profileTable(data,_sc, sqlContext, table_name):
     results = []
@@ -48,11 +41,8 @@ def profile_colum(_sc, sqlContext, colName, table_name):
     non_empty_rows = temp.filter(temp[0].isNull())
     null_count = non_empty_rows.count()
     non_empty = temp.count() - null_count
-    print("here")
     distinct_count = discinct_rows.count()
-    print("distinct_count",distinct_count)
     query = "select %s as val, count(*) as cnt from %s group by val order by cnt desc" % (colName, table_name)
-    print("after query")
     top5 = sqlContext.sql(query)
     top5 = top5.rdd.map(lambda x: x[0]).take(5)
     data_type_stats, typeCount = calc_statistics(_sc, discinct_rows)
@@ -127,7 +117,6 @@ def calc_statistics(_sc, discinct_rows):
     max_date = datetime.datetime.strptime("1/1/1900 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
     min_date = datetime.datetime.strptime("12/31/9999 12:00:00 AM", "%m/%d/%Y %H:%M:%S %p")
 
-
     for i in range(len(rows)):
         val = str(rows[i][0])
         if val.isnumeric():
@@ -179,8 +168,9 @@ def calc_statistics(_sc, discinct_rows):
 
     if len(txtList) > 0:
         templist = _sc.sparkContext.parallelize(txtList)
-        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=False)
+        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=True)
         longest = sorted_list.take(5)
+        sorted_list = templist.map(lambda x: len(x)).distinct().sortBy(lambda x: x, ascending=False)
         shortest = sorted_list.take(5)
         count = templist.count()
         sum = templist.map(lambda x: len(x)).reduce(add)
@@ -198,7 +188,6 @@ def calc_statistics(_sc, discinct_rows):
     return res, typeCount
 
 if __name__ == "__main__":
-
     config = pyspark.SparkConf().setAll(
         [('spark.executor.memory', '8g'), ('spark.executor.cores', '5'), ('spark.cores.max', '5'),
          ('spark.driver.memory', '8g')])
@@ -215,6 +204,6 @@ if __name__ == "__main__":
 
     sqlContext = SQLContext(spark)
     fm.iterate_files_from_file_for_task1(sc, spark, sqlContext, sys.argv[1],
-                                         int(sys.argv[2]))
+                                         int(sys.argv[2]),output_path)
 
     sc.stop()
