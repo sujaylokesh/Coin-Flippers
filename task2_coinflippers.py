@@ -730,5 +730,5 @@ if __name__ == '__main__':
 
     sqlContext = SQLContext(spark)
 
-    fm.iterate_files_from_file(sc, spark, sqlContext, sys.argv[1], output__dumbo_path)
+    fm.iterate_files_from_file(sc, spark, sqlContext,  "/user/yy3090/input/task2_filename.txt", output__dumbo_path)
     sc.stop()
