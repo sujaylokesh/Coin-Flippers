@@ -158,7 +158,7 @@ Totalnumber.show()
 #Counts for Each Complaint Type
 countcomplaint=spark.sql('SELECT `Complaint Type`,COUNT(*) AS `Number of Complaints` FROM TABLE GROUP BY `Complaint Type` ORDER BY `Number of Complaints` DESC LIMIT 10')
 countcomplaintplot = go.Bar(y=countcomplaint.toPandas()['Number of Complaints'],x=countcomplaint.toPandas()['Complaint Type'],orientation='h')
-py.plot({'data':[countcomplaintplot],'layout':{'title':'Complaint Types in New York City','margin':{'l':'180'}}},filename='typecount')
+py.plot({'data':[countcomplaintplot],'layout':{'title':'Complaint Types in New York City','margin':{'l':180}}},filename='typecount')
 countcomplaint.show()
 
 #Complaint Status
